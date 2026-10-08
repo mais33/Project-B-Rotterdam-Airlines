@@ -15,6 +15,7 @@
 
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.13" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.2" />
     <PackageReference Include="Dapper" Version="2.1.66" />
   </ItemGroup>
