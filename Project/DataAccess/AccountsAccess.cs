@@ -5,13 +5,14 @@ using Dapper;
 
 public class AccountsAccess
 {
-    private SqliteConnection _connection = new SqliteConnection($"Data Source=DataSources/project.db");
+    private SqliteConnection _connection = new SqliteConnection($"Data Source=DataSources/database.db");
 
-    private string Table = "Accounts";
+    private readonly string Table = "Account";
 
     public void Write(AccountModel account)
     {
-        string sql = $"INSERT INTO {Table} (email, password, fullname) VALUES (@EmailAddress, @Password, @FullName)";
+        string sql = $@"INSERT INTO {Table} (first_name, last_name, email, phone_number, role, password)
+            VALUES (@FirstName, @LastName, @Email, @PhoneNumber, @Role, @Password)";
         _connection.Execute(sql, account);
     }
 
@@ -23,7 +24,8 @@ public class AccountsAccess
 
     public void Update(AccountModel account)
     {
-        string sql = $"UPDATE {Table} SET email = @EmailAddress, password = @Password, fullname = @FullName WHERE id = @Id";
+        string sql = $@"UPDATE {Table} SET first_name = @FirstName, last_name = @LastName,
+            email = @Email, phone_number = @PhoneNumber, role = @Role, password = @Password WHERE id = @Id";
         _connection.Execute(sql, account);
     }
 
@@ -31,6 +33,13 @@ public class AccountsAccess
     {
         string sql = $"DELETE FROM {Table} WHERE id = @Id";
         _connection.Execute(sql, new { Id = account.Id });
+    }
+
+    public void ClearAccounts()
+    {
+        string sql = @"DELETE FROM Account;
+            DELETE FROM sqlite_sequence WHERE name = 'Account';";
+        _connection.Execute(sql);
     }
 
 
