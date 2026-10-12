@@ -5,55 +5,38 @@ public class UserRegistration
     private static AccountsLogic accountsLogic = new AccountsLogic();
     private static AccountsAccess accountsAccess = new AccountsAccess();
 
-    public static string PassWordHider()
-    {
-        string input = "";
 
-        while (true)
-        {
-            ConsoleKeyInfo userInput = Console.ReadKey(true);
 
-            if (userInput.Key == ConsoleKey.Enter)
-            {
-                Console.WriteLine();
-                break;
-            }
-
-            if (userInput.Key == ConsoleKey.Backspace)
-            {
-                if (input.Length > 0)
-                {
-                    input = input.Substring(0, input.Length - 1);
-                    Console.Write("\b \b");
-                }
-            }
-            else if (!char.IsControl(userInput.KeyChar))
-            {
-                input += userInput.KeyChar;
-                Console.Write("*");
-            }
-        }
-
-        return input;
-    }
-
-    public static void Start()
+    public string AskFirstName()
     {
         Console.WriteLine("What is your first name?");
         string firstName = Console.ReadLine()!;
 
+        while(accountsLogic.NameCheck(firstName) == false)
+        {
+            Console.WriteLine("Please enter a valid first name (a name can't contain anyhting else than letters)");
+            firstName = Console.ReadLine()!;
+        }
+
+        return firstName;
+    }
+
+    public string AskLastName()
+    {
         Console.WriteLine("What is your last name?");
         string lastName = Console.ReadLine()!;
 
-        while(accountsLogic.NameCheck(firstName, lastName) == false)
+        while(accountsLogic.NameCheck(lastName) == false)
         {
-            Console.WriteLine("Please enter a valid name (a name can't contain anyhting else than letters)");
-            Console.WriteLine("Enter first name: ");
-            firstName = Console.ReadLine()!;
-            Console.WriteLine("Enter last name: ");
+            Console.WriteLine("Please enter a valid last name (a name can't contain anyhting else than letters)");
             lastName = Console.ReadLine()!;
         }
 
+        return lastName;
+    }
+
+    public string AskEmail()
+    {
         Console.WriteLine("Please enter your email");
         string Email = Console.ReadLine()!;
 
@@ -63,6 +46,11 @@ public class UserRegistration
             Email = Console.ReadLine()!;
         }
 
+        return Email;
+    }
+
+    public string AskPhoneNumber()
+    {
         Console.WriteLine("Please enter your phonenumber");
         string phoneNumber = Console.ReadLine()!;
 
@@ -72,6 +60,11 @@ public class UserRegistration
             phoneNumber = Console.ReadLine()!;
         }
 
+        return phoneNumber;
+    }
+
+    public string AskPassword()
+    {
         string Password = "";
         string identicalPassword = "";
 
@@ -80,7 +73,7 @@ public class UserRegistration
             while(true)
             {
                 Console.WriteLine("register your password (password must contain atleast 8 characters)");
-                Password = PassWordHider();
+                Password = accountsLogic.PassWordHider();
 
                 if(accountsLogic.PasswordCheck(Password!))
                 {
@@ -96,7 +89,7 @@ public class UserRegistration
             while(true)
             {
                 Console.WriteLine("Confirm password");
-                identicalPassword = PassWordHider();
+                identicalPassword = accountsLogic.PassWordHider();
 
                 if (identicalPassword == Password)
                 {
@@ -116,12 +109,24 @@ public class UserRegistration
             {
                 break;
             }
+
         }
-        
-
-        accountsLogic.CreateAccount(firstName, lastName, Email, phoneNumber, Password);
-        accountsAccess.ClearAccounts(); //deletes all values from Account table
-
-        
+            return Password;
     }
+
+    public static void Start()
+    {
+        UserRegistration userRegistration = new();
+
+        string firstName = userRegistration.AskFirstName();
+        string lastName = userRegistration.AskLastName();
+        string email = userRegistration.AskEmail();
+        string phoneNumber = userRegistration.AskPhoneNumber();
+        string password = userRegistration.AskPassword();
+
+        AccountModel registeredAccount = new(0, firstName, lastName, email, phoneNumber, "Customer", password);
+        accountsLogic.CreateAccount(registeredAccount);
+        // accountsAccess.ClearAccounts(); //deletes all values from Account table
+    }
+        
 }

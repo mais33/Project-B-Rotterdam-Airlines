@@ -11,6 +11,11 @@ public class AccountsAccess
 
     public void Write(AccountModel account)
     {
+        if(account == null)
+        {
+            return;
+        }
+
         string sql = $@"INSERT INTO {Table} (first_name, last_name, email, phone_number, role, password)
             VALUES (@FirstName, @LastName, @Email, @PhoneNumber, @Role, @Password)";
         _connection.Execute(sql, account);
@@ -18,12 +23,22 @@ public class AccountsAccess
 
     public AccountModel GetByEmail(string email)
     {
+        if(email == null)
+        {
+            return null;
+        }
+
         string sql = $"SELECT * FROM {Table} WHERE email = @Email";
         return _connection.QueryFirstOrDefault<AccountModel>(sql, new { Email = email });
     }
 
     public void Update(AccountModel account)
     {
+        if(account == null)
+        {
+            return;
+        }
+
         string sql = $@"UPDATE {Table} SET first_name = @FirstName, last_name = @LastName,
             email = @Email, phone_number = @PhoneNumber, role = @Role, password = @Password WHERE id = @Id";
         _connection.Execute(sql, account);
@@ -31,6 +46,11 @@ public class AccountsAccess
 
     public void Delete(AccountModel account)
     {
+        if(account == null)
+        {
+            return;
+        }
+
         string sql = $"DELETE FROM {Table} WHERE id = @Id";
         _connection.Execute(sql, new { Id = account.Id });
     }
@@ -42,6 +62,15 @@ public class AccountsAccess
         _connection.Execute(sql);
     }
 
-
+    public void BlockAccount(AccountModel account)
+    {
+        if(account == null)
+        {
+            return;
+        }
+            
+        string sql = $"Update {Table} Set role = 'Blocked' WHERE id = @Id";
+        _connection.Execute(sql, new { Id = account.Id });
+    }
 
 }

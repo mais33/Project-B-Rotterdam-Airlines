@@ -19,7 +19,7 @@ public class AccountsLogic
 
     public AccountModel CheckLogin(string email, string password)
     {
-
+        password = PassWordHider();
 
         AccountModel acc = _access.GetByEmail(email);
         if (acc != null && acc.Password == password)
@@ -27,7 +27,12 @@ public class AccountsLogic
             CurrentAccount = acc;
             return acc;
         }
-        return null;
+        return null!;
+    }
+
+    public bool IsAdmin(AccountModel account)
+    {
+        return account != null && account.Role == "Admin";
     }
 
     public bool CreateAccount(string firstName, string lastName, string email, string phoneNumber, string password)
@@ -56,9 +61,41 @@ public class AccountsLogic
         return true;
     }
 
-    public bool NameCheck(string firstName, string LastName)
+    public string PassWordHider()
     {
-        if(string.IsNullOrWhiteSpace(firstName) || string.IsNullOrWhiteSpace(LastName) || !firstName.All(char.IsLetter) || !LastName.All(char.IsLetter))
+        string input = "";
+
+        while (true)
+        {
+            ConsoleKeyInfo userInput = Console.ReadKey(true);
+
+            if (userInput.Key == ConsoleKey.Enter)
+            {
+                Console.WriteLine();
+                break;
+            }
+
+            if (userInput.Key == ConsoleKey.Backspace)
+            {
+                if (input.Length > 0)
+                {
+                    input = input.Substring(0, input.Length - 1);
+                    Console.Write("\b \b");
+                }
+            }
+            else if (!char.IsControl(userInput.KeyChar))
+            {
+                input += userInput.KeyChar;
+                Console.Write("*");
+            }
+        }
+
+        return input;
+    }
+
+    public bool NameCheck(string Name)
+    {
+        if(string.IsNullOrWhiteSpace(Name) || !Name.All(char.IsLetter))
         {
             return false;
         }
@@ -90,6 +127,50 @@ public class AccountsLogic
         }
 
         return true;
+    }
+
+    public void CreateAccount(AccountModel account)
+    {
+        if(account == null)
+        {
+            return;
+        }
+        
+        _access.Write(account!);   
+    }
+
+    public bool EditAccount(AccountModel account)
+    {
+        if(account != null)
+        {
+            return false;
+        }
+
+        if(account.Role == "Admin")
+        {
+            _access.Update(account!);
+            return true;
+        }
+
+        Console.WriteLine("You are not allowed to edit an account");
+        return false;
+    }
+
+    public bool BlockAccount(AccountModel account)
+    {
+        if(account != null)
+        {
+            return false;
+        }
+
+        if(account.Role == "Admin")
+        {
+            _access.BlockAccount(account!);
+            return true;
+        }
+
+        Console.WriteLine("You are not allowed ro block an Account");
+        return false;
     }
 
 }
