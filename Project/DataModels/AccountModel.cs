@@ -11,7 +11,7 @@
 
 
 
-    public AccountModel(Int64 id, string firstName, string lastName, string email, string phoneNumber, string role, string password)
+    public AccountModel(Int64 id, string firstName, string lastName, string email, string phoneNumber, string role , string password)
     {
         Id = id;
         FirstName = firstName;
