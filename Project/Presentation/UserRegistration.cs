@@ -5,14 +5,14 @@ public class UserRegistration
     private static AccountsLogic accountsLogic = new AccountsLogic();
     private static AccountsAccess accountsAccess = new AccountsAccess();
 
-
+    
 
     public string AskFirstName()
     {
         Console.WriteLine("What is your first name?");
-        string firstName = Console.ReadLine()!;
+        string firstName = Console.ReadLine() ?? "";
 
-        while(accountsLogic.NameCheck(firstName) == false)
+        while(!accountsLogic.NameCheck(firstName))
         {
             Console.WriteLine("Please enter a valid first name (a name can't contain anyhting else than letters)");
             firstName = Console.ReadLine()!;
@@ -24,9 +24,9 @@ public class UserRegistration
     public string AskLastName()
     {
         Console.WriteLine("What is your last name?");
-        string lastName = Console.ReadLine()!;
+        string lastName = Console.ReadLine() ?? "";
 
-        while(accountsLogic.NameCheck(lastName) == false)
+        while(!accountsLogic.NameCheck(lastName))
         {
             Console.WriteLine("Please enter a valid last name (a name can't contain anyhting else than letters)");
             lastName = Console.ReadLine()!;
@@ -40,7 +40,7 @@ public class UserRegistration
         Console.WriteLine("Please enter your email");
         string Email = Console.ReadLine()!;
 
-        while(accountsLogic.CheckEmail(Email) == false)
+        while(!accountsLogic.CheckEmail(Email))
         {
             Console.WriteLine("Please enter a valid email");
             Email = Console.ReadLine()!;
@@ -54,7 +54,7 @@ public class UserRegistration
         Console.WriteLine("Please enter your phonenumber");
         string phoneNumber = Console.ReadLine()!;
 
-        while(accountsLogic.PhoneNumberCheck(phoneNumber) == false)
+        while(accountsLogic.PhoneNumberCheck(phoneNumber) == false) //make a method an can make a do-while loop somewhere in this current method
         {
             Console.WriteLine("Please enter a valid phonenumber (no longer than 11 digits)");
             phoneNumber = Console.ReadLine()!;
@@ -63,55 +63,52 @@ public class UserRegistration
         return phoneNumber;
     }
 
+    public string GetValidPassword()
+    {
+        while(true)
+            {
+                Console.WriteLine("register your password (atleast 8 characters, 1 uppercase letter, 1 digit and a symbol)");
+                string password = accountsLogic.PassWordHider() ?? "";
+
+                if(accountsLogic.PasswordCheck(password))
+                {
+                    return password;
+                }
+
+                Console.WriteLine("Please enter a valid password atleast 8 characters, 1 uppercase letter, 1 digit and a symbol");
+            }
+    }
+
     public string AskPassword()
     {
         string Password = "";
-        string identicalPassword = "";
+        bool isValid = false;
 
-        while (true)
+
+        do
         {
-            while(true)
+            Password = GetValidPassword();
+
+            Console.WriteLine("Confirm password (or press 'B' to re-enter a new password)");
+            string identicalPassword = accountsLogic.PassWordHider() ?? "";
+
+            if (identicalPassword == Password)
             {
-                Console.WriteLine("register your password (password must contain atleast 8 characters)");
-                Password = accountsLogic.PassWordHider();
-
-                if(accountsLogic.PasswordCheck(Password!))
-                {
-                    break;
-                }
-
-                Console.WriteLine("Please enter a valid password (at least 8 characters).");
-                
+                isValid = true;
             }
 
-            bool startOver = false;
-
-            while(true)
+            else if(identicalPassword == "B" || identicalPassword == "b")
             {
-                Console.WriteLine("Confirm password");
-                identicalPassword = accountsLogic.PassWordHider();
-
-                if (identicalPassword == Password)
-                {
-                    break;
-                }
-
-                if(identicalPassword == "B" || identicalPassword == "b")
-                {
-                    Console.WriteLine("Going back to enter a new password");
-                    startOver = true;
-                    break;
-                }
-
-                Console.WriteLine("The passwords didn't match, please try again. or press (B) to enter a new password");
+                Console.WriteLine("Going back to enter a new password\n");
             }
-            if (!startOver)
+            else
             {
-                break;
+                Console.WriteLine("The passwords didn't match, starting over");
             }
 
-        }
-            return Password;
+        }while(!isValid);
+
+        return Password;
     }
 
     public static void Start()
@@ -124,9 +121,8 @@ public class UserRegistration
         string phoneNumber = userRegistration.AskPhoneNumber();
         string password = userRegistration.AskPassword();
 
-        AccountModel registeredAccount = new(0, firstName, lastName, email, phoneNumber, "Customer", password);
-        accountsLogic.CreateAccount(registeredAccount);
-        // accountsAccess.ClearAccounts(); //deletes all values from Account table
+        AccountModel registeredAccount = new(0, firstName, lastName, email, phoneNumber, UserRole.Customer, false, password);
+        accountsLogic.CreateAccount(registeredAccount, password);
     }
         
 }
