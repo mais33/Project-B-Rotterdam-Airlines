@@ -84,7 +84,6 @@ public class UserRegistration
         string Password = "";
         bool isValid = false;
 
-
         do
         {
             Password = GetValidPassword();
