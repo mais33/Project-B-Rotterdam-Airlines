@@ -1,23 +1,30 @@
+using Microsoft.AspNetCore.Http.Internal;
+
 public  class AccountManager
 {
     private static AccountsLogic accountsLogic = new();
 
     public void AdminMenu()
     {
-        Console.WriteLine("\n--- Admin Menu ---");
-        Console.WriteLine("1: manage accounts\n");
-
         bool isRunning = true;
         AccountManager accountManager = new();
         
         while(isRunning)
         {
-            string choice = Console.ReadLine()!;
+            Console.WriteLine("\n--- Admin Menu ---");
+            Console.WriteLine("1: manage accounts");
+            Console.WriteLine("2. Return to main menu");
+
+
+            string choice = Console.ReadLine() ?? "";
             
             switch(choice)
             {
                 case "1":
                     accountManager.AskAccToManage();
+                    break;
+                case "2":
+                    isRunning = false;
                     break;
                 default:
                     Console.WriteLine("Invalid choice, please try again");
@@ -66,50 +73,50 @@ public  class AccountManager
 
         AccountModel accToEdit = accountsLogic.GetAccountById(numberInput);
 
-        while (true)
+        if(accToEdit is null)
+        {
+            return;
+        }
+        
+        //https://www.reddit.com/r/csharp/comments/wln1f8/dynamic_menu_for_console_app/ (used this as an example)
+        var menu = new Dictionary<int, (string Label, Action Action)>
+        {
+            {1, ("Change Email", () => AccEmailEdit(accToEdit))}, // () => AccEmailEdit(accToEdit), this is an Action and is used to prevent the code being executed immediately.
+            {2, ("Change Role", () => AccRoleEdit(accToEdit))},
+            {3, ("Change Phonenumber", () => EditPhoneNumber(accToEdit))},
+            {4, ("Change Blocked status", () => BlockorUnblockAcc(accToEdit))},
+            {5, ("Return to Admin menu", () => {})} //Action is empty, want to break the loop here
+        };
+
+        bool editing = true;
+
+        while (editing)
         {
             Console.WriteLine($"\nYou are now editing the account of {accToEdit.FirstName} {accToEdit.LastName}\n");
-            Console.WriteLine("1. Change Email");
-            Console.WriteLine("2. Change Role");
-            Console.WriteLine("3. Change Phonenumber");
-            Console.WriteLine("4. Change Blocked status");
-            Console.WriteLine("5. Return to Admin menu");
             
-
-            int actionChoice = Convert.ToInt32(Console.ReadLine()!);
-
-            while(true)
+            foreach(var item in menu)
             {
-                switch(actionChoice) //action 
-                {
-                    case 1:
-                        AccEmailEdit(accToEdit);
-                        AskAccToManage();
-                        break;
-                    case 2:
-                        AccRoleEdit(accToEdit);
-                        AskAccToManage();
-                        break;
-                    case 3:
-                        EditPhoneNumber(accToEdit);
-                        AskAccToManage();
-                        break;
-                    case 4:
-                        BlockorUnblockAcc(accToEdit);
-                        AskAccToManage();
-                        break;
-                    case 5:
-                        AdminMenu();
-                        AccountInfo();
-                        break;
-                    default:
-                        Console.WriteLine("Invalid choice");
-                        break;
+                Console.WriteLine($"{item.Key}. {item.Value.Label}");
+            }
+            
+            int actionChoice = Convert.ToInt32(Console.ReadLine());
 
+            if(menu.TryGetValue(actionChoice, out var selectedChoice))
+            {
+                if(actionChoice == 5)
+                {
+                    editing = false;
+                }
+                else
+                {
+                    selectedChoice.Action(); 
                 }
             }
+            else
+            {
+                Console.WriteLine("Invalid choice, please try again");
+            }
         }
-
     }
 
     public void AccEmailEdit(AccountModel account)

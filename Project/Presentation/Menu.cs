@@ -9,22 +9,34 @@ static class Menu
     {
         // accountsAccess.ClearAccounts(); //deletes all values from Account table
         // accountsLogic.CreateAdminAccount("admin"); // creates the admin. can use this line if admin account is deleted from database. (the password sould always be "admin")
-        Console.WriteLine("Enter 1 to login");
-        Console.WriteLine("Enter 2 to register");
 
-        string input = Console.ReadLine() ?? "";
-        if (input == "1")
+        bool isRunning = true;
+
+        while(isRunning)
         {
-            UserLogin.Start();
-        }
-        else if (input == "2")
-        {
-            UserRegistration.Start();
-        }
-        else
-        {
-            Console.WriteLine("Invalid input");
-            Start();
+            Console.WriteLine("Enter 1 to login");
+            Console.WriteLine("Enter 2 to register");
+            Console.WriteLine("Enter 3 to exit program");
+
+            string input = Console.ReadLine() ?? "";
+            if (input == "1")
+            {
+                UserLogin.Start();
+            }
+            else if (input == "2")
+            {
+                UserRegistration.Start();
+            }
+            else if(input == "3")
+            {
+                Console.WriteLine("exiting program");
+                isRunning = false;
+            }
+            else
+            {
+                Console.WriteLine("Invalid input");
+                Start();
+            }
         }
 
     }
