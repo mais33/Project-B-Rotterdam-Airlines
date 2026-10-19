@@ -157,26 +157,29 @@ public  class AccountManager
         Console.WriteLine("2. change role to Admin");
         Console.WriteLine("3. Return\n");
 
-        int newRole = Convert.ToInt32(Console.ReadLine()!);
+        string inputRole = Console.ReadLine() ?? "";
         
-        if(accountsLogic.IsAdmin(account) && newRole == 1)
-        {    
-            Console.WriteLine($"You are not allowed to change the role of an admin account\n");
-        }
-        else if(!accountsLogic.IsAdmin(account) && newRole == 1)
+        if(int.TryParse(inputRole, out int newRole))
         {
-            account.Role = UserRole.Customer;
-            accountsLogic.EditAccount(account);
-        }
-        else if(newRole == 2)
-        {
-            account.Role = UserRole.Admin;
-            accountsLogic.EditAccount(account);
-            Console.WriteLine("You succesfully changed the role of this account to Admin");
-        }
-        else if(newRole == 3)
-        {
-            AskAccToManage();
+            if(accountsLogic.IsAdmin(account) && newRole == 1)
+            {    
+                Console.WriteLine($"You are not allowed to change the role of an admin account\n");
+            }
+            else if(!accountsLogic.IsAdmin(account) && newRole == 1)
+            {
+                account.Role = UserRole.Customer;
+                accountsLogic.EditAccount(account);
+            }
+            else if(newRole == 2)
+            {
+                account.Role = UserRole.Admin;
+                accountsLogic.EditAccount(account);
+                Console.WriteLine("You succesfully changed the role of this account to Admin");
+            }
+            else if(newRole == 3)
+            {
+                AskAccToManage();
+            }
         }
         else
         {
