@@ -1,3 +1,4 @@
+using System.IO.Pipes;
 using Microsoft.AspNetCore.Http.Internal;
 
 public  class AccountManager
@@ -59,7 +60,13 @@ public  class AccountManager
     public int GetIdFromUser()
     {
         Console.WriteLine("Please enter the number of the account you want to edit");
-        int numberInput = Convert.ToInt32(Console.ReadLine());
+        string input = Console.ReadLine() ?? "";
+
+        if(!int.TryParse(input, out int numberInput))
+        {
+            Console.WriteLine("Please enter a number");
+            return 0;
+        }
 
         return numberInput;
 
@@ -68,7 +75,7 @@ public  class AccountManager
     public void AskAccToManage()
     {
         AccountInfo();
-        
+
         int numberInput = GetIdFromUser();
 
         AccountModel accToEdit = accountsLogic.GetAccountById(numberInput);
@@ -99,9 +106,10 @@ public  class AccountManager
                 Console.WriteLine($"{item.Key}. {item.Value.Label}");
             }
             
-            int actionChoice = Convert.ToInt32(Console.ReadLine());
+            string input = Console.ReadLine() ?? "";
 
-            if(menu.TryGetValue(actionChoice, out var selectedChoice))
+
+            if(int.TryParse(input, out int actionChoice) && menu.TryGetValue(actionChoice, out var selectedChoice))
             {
                 if(actionChoice == 5)
                 {
