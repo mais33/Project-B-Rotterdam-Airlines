@@ -8,6 +8,7 @@ static class Menu
     {
         Console.WriteLine("Enter 1 to login");
         Console.WriteLine("Enter 2 to register");
+        Console.WriteLine("Enter 3 to see flight overview");
 
         string input = Console.ReadLine();
         if (input == "1")
@@ -17,6 +18,10 @@ static class Menu
         else if (input == "2")
         {
             UserRegistration.Start();
+        }
+        else if (input == "3")
+        {
+            FlightOverview.Start();
         }
         else
         {

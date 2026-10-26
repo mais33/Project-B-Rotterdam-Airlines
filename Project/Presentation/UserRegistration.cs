@@ -120,7 +120,7 @@ public class UserRegistration
         
 
         accountsLogic.CreateAccount(firstName, lastName, Email, phoneNumber, Password);
-        accountsAccess.ClearAccounts(); //deletes all values from Account table
+        //accountsAccess.ClearAccounts(); //deletes all values from Account table
 
         
     }
