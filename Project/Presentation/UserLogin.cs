@@ -14,24 +14,22 @@ static class UserLogin
         AccountModel acc = accountsLogic.CheckLogin(email, password);
         if(acc != null)
         {
+            // Go to the right menu based on the role
             if(acc.Role == UserRole.Admin)
             {
                 Console.WriteLine($"Welcome back admin");
-                AccountManager.Start();
+                Menu.AdminMenu();
             }
             else if (acc.Role == UserRole.Customer)
             {
-                Console.WriteLine($"Welcome back " + acc.FirstName + acc.LastName);
-                Console.WriteLine("Your email number is " + acc.Email);
-
-
-                //Write some code to go back to the menu
-                //Menu.Start();
+                Console.WriteLine($"Welcome back " + acc.FirstName + " " + acc.LastName);
+                Console.WriteLine("Your email is " + acc.Email);
+                Menu.CustomerMenu();
             }
-            else
-            {
-                Console.WriteLine("No account found with that email and password");
-            }   
+        }
+        else
+        {
+            Console.WriteLine("No account found with that email and password");
         }
     }
 }
