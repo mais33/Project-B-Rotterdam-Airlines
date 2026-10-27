@@ -1,257 +1,355 @@
-using System.IO.Pipes;
-using Microsoft.AspNetCore.Http.Internal;
-
-public  class AccountManager
+public class AccountManager
 {
     private static AccountsLogic accountsLogic = new();
 
-    public void AdminMenu()
+    public static void Start()
     {
-        bool isRunning = true;
         AccountManager accountManager = new();
-        
-        while(isRunning)
+        accountManager.ManageAccounts();
+    }
+
+    public void ManageAccounts()
+    {
+        while (true)
         {
-            Console.WriteLine("\n--- Admin Menu ---");
-            Console.WriteLine("1: manage accounts");
-            Console.WriteLine("2. Return to main menu");
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine("======================================================================");
+            Console.WriteLine("                           MANAGE ACCOUNTS                            ");
+            Console.WriteLine("======================================================================");
+            Console.WriteLine();
 
+            List<AccountModel> allAccounts = accountsLogic.GetAllAccounts();
 
-            string choice = Console.ReadLine() ?? "";
-            
-            switch(choice)
+            if (allAccounts.Count == 0)
             {
-                case "1":
-                    accountManager.AskAccToManage();
-                    break;
-                case "2":
-                    isRunning = false;
-                    break;
-                default:
-                    Console.WriteLine("Invalid choice, please try again");
-                    break;
+                Console.WriteLine("  > No accounts found.");
+                Console.WriteLine();
+                Console.WriteLine("  Press any key to return...");
+                Console.ReadKey();
+                return;
             }
 
-        }
-    }
-    public void AccountInfo() // shows a list of all accounts that an admin can change
-    {
-        List<AccountModel> allAccounts = accountsLogic.GetAllAccounts();
-        foreach(var acc in allAccounts)
-        {
-            Console.WriteLine(acc.ToAdminString());
-        }
-    }
+            Console.WriteLine("  Select an account to edit:\n");
 
-    public long GetAccId(int searchId)
-    {
-        List<AccountModel> allAccounts = accountsLogic.GetAllAccounts();
-        foreach(var acc in allAccounts)
-        {
-            if(searchId == acc.Id)
+            for (int i = 0; i < allAccounts.Count; i++)
             {
-                return acc.Id;
+                AccountModel acc = allAccounts[i];
+                string status = acc.IsBlocked ? "Blocked" : "Active";
+
+                Console.WriteLine($"  [{i + 1}] {acc.FirstName} {acc.LastName}");
+                Console.WriteLine($"      Email:  {acc.Email}");
+                Console.WriteLine($"      Role:   {acc.Role}   |   Status: {status}");
+                Console.WriteLine();
             }
-        }
 
-        return 0;
-    }
+            int backOption = allAccounts.Count + 1;
+            Console.WriteLine("----------------------------------------------------------------------");
+            Console.WriteLine($"  [{backOption}] Back to Administrator Menu");
+            Console.WriteLine("----------------------------------------------------------------------");
+            Console.Write($"  Choose an option (1-{backOption}): ");
 
-    public int GetIdFromUser()
-    {
-        Console.WriteLine("Please enter the number of the account you want to edit");
-        string input = Console.ReadLine() ?? "";
-
-        if(!int.TryParse(input, out int numberInput))
-        {
-            Console.WriteLine("Please enter a number");
-            return 0;
-        }
-
-        return numberInput;
-
-    }
-
-    public void AskAccToManage()
-    {
-        AccountInfo();
-
-        int numberInput = GetIdFromUser();
-
-        AccountModel accToEdit = accountsLogic.GetAccountById(numberInput);
-
-        if(accToEdit is null)
-        {
-            return;
-        }
-        
-        //https://www.reddit.com/r/csharp/comments/wln1f8/dynamic_menu_for_console_app/ (used this as an example)
-        var menu = new Dictionary<int, (string Label, Action Action)>
-        {
-            {1, ("Change Email", () => AccEmailEdit(accToEdit))}, // () => AccEmailEdit(accToEdit), this is an Action and is used to prevent the code being executed immediately.
-            {2, ("Change Role", () => AccRoleEdit(accToEdit))},
-            {3, ("Change Phonenumber", () => EditPhoneNumber(accToEdit))},
-            {4, ("Change Blocked status", () => BlockorUnblockAcc(accToEdit))},
-            {5, ("Return to Admin menu", () => {})} //Action is empty, want to break the loop here
-        };
-
-        bool editing = true;
-
-        while (editing)
-        {
-            Console.WriteLine($"\nYou are now editing the account of {accToEdit.FirstName} {accToEdit.LastName}\n");
-            
-            foreach(var item in menu)
-            {
-                Console.WriteLine($"{item.Key}. {item.Value.Label}");
-            }
-            
             string input = Console.ReadLine() ?? "";
 
-
-            if(int.TryParse(input, out int actionChoice) && menu.TryGetValue(actionChoice, out var selectedChoice))
+            if (int.TryParse(input, out int choice))
             {
-                if(actionChoice == 5)
+                if (choice == backOption)
                 {
-                    editing = false;
+                    return;
+                }
+                else if (choice >= 1 && choice <= allAccounts.Count)
+                {
+                    AccountModel selectedAccount = allAccounts[choice - 1];
+                    EditAccountMenu(selectedAccount);
                 }
                 else
                 {
-                    selectedChoice.Action(); 
+                    Console.WriteLine();
+                    Console.WriteLine("  > Invalid choice. Please choose a number from the list.");
+                    Console.WriteLine();
+                    Console.WriteLine("  Press any key to continue...");
+                    Console.ReadKey();
                 }
             }
             else
             {
-                Console.WriteLine("Invalid choice, please try again");
+                Console.WriteLine();
+                Console.WriteLine("  > Please enter a valid number.");
+                Console.WriteLine();
+                Console.WriteLine("  Press any key to continue...");
+                Console.ReadKey();
             }
         }
     }
 
-    public void AccEmailEdit(AccountModel account)
+    public void EditAccountMenu(AccountModel account)
     {
-        Console.WriteLine("Enter new Email");
-        string newEmail= Console.ReadLine()!;
-
-        if (!accountsLogic.IsAdmin(AccountsLogic.CurrentAccount!))
+        while (true)
         {
-            Console.WriteLine("You are not authorised to edit an Email");
-            return;
+            // Refresh account from database so changes are visible right away
+            account = accountsLogic.GetAccountById(account.Id);
+
+            if (account == null)
+            {
+                Console.WriteLine();
+                Console.WriteLine("  > Account not found.");
+                Console.WriteLine();
+                Console.WriteLine("  Press any key to continue...");
+                Console.ReadKey();
+                return;
+            }
+
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine("==================================================");
+            Console.WriteLine("                   EDIT ACCOUNT                   ");
+            Console.WriteLine("==================================================");
+            Console.WriteLine();
+
+            string status = account.IsBlocked ? "Blocked" : "Active";
+            Console.WriteLine("  Account Information:");
+            Console.WriteLine("  ------------------------------------------------");
+            Console.WriteLine($"  Name:          {account.FirstName} {account.LastName}");
+            Console.WriteLine($"  Email:         {account.Email}");
+            Console.WriteLine($"  Phone number:  {account.PhoneNumber}");
+            Console.WriteLine($"  Role:          {account.Role}");
+            Console.WriteLine($"  Status:        {status}");
+            Console.WriteLine("  ------------------------------------------------");
+            Console.WriteLine();
+            Console.WriteLine("  Options:");
+            Console.WriteLine("  [1] Edit email");
+            Console.WriteLine("  [2] Edit role");
+            Console.WriteLine("  [3] Edit phone number");
+            Console.WriteLine("  [4] Edit account status");
+            Console.WriteLine("  [5] Back to accounts list");
+            Console.WriteLine();
+            Console.WriteLine("--------------------------------------------------");
+            Console.Write("  Choose an option (1-5): ");
+
+            string choice = Console.ReadLine() ?? "";
+
+            switch (choice)
+            {
+                case "1":
+                    EditEmail(account);
+                    break;
+
+                case "2":
+                    EditRole(account);
+                    break;
+
+                case "3":
+                    EditPhoneNumber(account);
+                    break;
+
+                case "4":
+                    EditAccountStatus(account);
+                    break;
+
+                case "5":
+                    return;
+
+                default:
+                    Console.WriteLine();
+                    Console.WriteLine("  > Invalid choice. Please choose 1, 2, 3, 4 or 5.");
+                    Console.WriteLine();
+                    Console.WriteLine("  Press any key to continue...");
+                    Console.ReadKey();
+                    break;
+            }
         }
+    }
+
+    public void EditEmail(AccountModel account)
+    {
+        Console.Clear();
+        Console.WriteLine();
+        Console.WriteLine("==================================================");
+        Console.WriteLine("                    EDIT EMAIL                    ");
+        Console.WriteLine("==================================================");
+        Console.WriteLine();
+        Console.WriteLine($"  Account:        {account.FirstName} {account.LastName}");
+        Console.WriteLine($"  Current email:  {account.Email}");
+        Console.WriteLine();
+        Console.WriteLine("--------------------------------------------------");
+        Console.Write("  Enter new email: ");
+        string newEmail = Console.ReadLine() ?? "";
 
         while (!accountsLogic.CheckEmail(newEmail))
         {
-            Console.WriteLine("Please enter a valid email");
+            Console.WriteLine();
+            Console.WriteLine("  > Please enter a valid email address.");
+            Console.WriteLine();
+            Console.Write("  Enter new email: ");
             newEmail = Console.ReadLine() ?? "";
         }
-    
-        account.Email = newEmail;
-        
-        accountsLogic.EditAccount(account);
-        Console.WriteLine($"Updated Email to: {account.Email}");
 
+        account.Email = newEmail;
+        bool success = accountsLogic.EditAccount(account);
+
+        Console.WriteLine();
+        Console.WriteLine("--------------------------------------------------");
+        if (success)
+        {
+            Console.WriteLine($"  > Email successfully updated to: {account.Email}");
+        }
+
+        Console.WriteLine();
+        Console.WriteLine("  Press any key to continue...");
+        Console.ReadKey();
     }
 
-    public void AccRoleEdit(AccountModel account)
+    public void EditRole(AccountModel account)
     {
-        Console.WriteLine("1. change role to Customer");
-        Console.WriteLine("2. change role to Admin");
-        Console.WriteLine("3. Return\n");
+        Console.Clear();
+        Console.WriteLine();
+        Console.WriteLine("==================================================");
+        Console.WriteLine("                    EDIT ROLE                     ");
+        Console.WriteLine("==================================================");
+        Console.WriteLine();
+        Console.WriteLine($"  Account:       {account.FirstName} {account.LastName}");
+        Console.WriteLine($"  Current role:  {account.Role}");
+        Console.WriteLine();
+        Console.WriteLine("--------------------------------------------------");
+        Console.WriteLine("  [1] Set role to Customer");
+        Console.WriteLine("  [2] Set role to Admin");
+        Console.WriteLine("  [3] Back");
+        Console.WriteLine("--------------------------------------------------");
+        Console.Write("  Choose an option (1-3): ");
 
-        string inputRole = Console.ReadLine() ?? "";
-        
-        if(int.TryParse(inputRole, out int newRole))
+        string choice = Console.ReadLine() ?? "";
+        Console.WriteLine();
+
+        switch (choice)
         {
-            if(accountsLogic.IsAdmin(account) && newRole == 1)
-            {    
-                Console.WriteLine($"You are not allowed to change the role of an admin account\n");
-            }
-            else if(!accountsLogic.IsAdmin(account) && newRole == 1)
-            {
-                account.Role = UserRole.Customer;
-                accountsLogic.EditAccount(account);
-            }
-            else if(newRole == 2)
-            {
-                account.Role = UserRole.Admin;
-                accountsLogic.EditAccount(account);
-                Console.WriteLine("You succesfully changed the role of this account to Admin");
-            }
-            else if(newRole == 3)
-            {
-                AskAccToManage();
-            }
-        }
-        else
-        {
-            Console.WriteLine("You entered an invalid number");
+            case "1":
+                if (account.Role == UserRole.Customer)
+                {
+                    Console.WriteLine("  > This account already has the Customer role.");
+                }
+                else
+                {
+                    account.Role = UserRole.Customer;
+                    bool success = accountsLogic.EditAccount(account);
+                    if (success)
+                    {
+                        Console.WriteLine("  > Role successfully updated to Customer.");
+                    }
+                }
+                break;
+
+            case "2":
+                if (account.Role == UserRole.Admin)
+                {
+                    Console.WriteLine("  > This account already has the Admin role.");
+                }
+                else
+                {
+                    account.Role = UserRole.Admin;
+                    bool success = accountsLogic.EditAccount(account);
+                    if (success)
+                    {
+                        Console.WriteLine("  > Role successfully updated to Admin.");
+                    }
+                }
+                break;
+
+            case "3":
+                return;
+
+            default:
+                Console.WriteLine("  > Invalid choice. Please choose 1, 2 or 3.");
+                break;
         }
 
+        Console.WriteLine();
+        Console.WriteLine("  Press any key to continue...");
+        Console.ReadKey();
     }
 
     public void EditPhoneNumber(AccountModel account)
     {
-        Console.WriteLine("Enter a new phonenumber: ");
+        Console.Clear();
+        Console.WriteLine();
+        Console.WriteLine("==================================================");
+        Console.WriteLine("                EDIT PHONE NUMBER                 ");
+        Console.WriteLine("==================================================");
+        Console.WriteLine();
+        Console.WriteLine($"  Account:               {account.FirstName} {account.LastName}");
+        Console.WriteLine($"  Current phone number:  {account.PhoneNumber}");
+        Console.WriteLine();
+        Console.WriteLine("--------------------------------------------------");
+        Console.Write("  Enter new phone number: ");
         string newPhoneNumber = Console.ReadLine() ?? "";
 
-        bool EditSucces = accountsLogic.EditPhoneNumber(account, newPhoneNumber);
-        
-        if(EditSucces)
+        bool success = accountsLogic.EditPhoneNumber(account, newPhoneNumber);
+
+        Console.WriteLine();
+        Console.WriteLine("--------------------------------------------------");
+        if (success)
         {
-            Console.WriteLine($"You changed the phonenumber of this account to {newPhoneNumber}");
+            Console.WriteLine($"  > Phone number successfully updated to: {newPhoneNumber}");
         }
         else
         {
-            Console.WriteLine("Please enter a valid phonenumber");
+            Console.WriteLine("  > Invalid phone number. Please enter digits only (maximum 11 digits).");
         }
+
+        Console.WriteLine();
+        Console.WriteLine("  Press any key to continue...");
+        Console.ReadKey();
     }
 
-    public void BlockorUnblockAcc(AccountModel account)
+    public void EditAccountStatus(AccountModel account)
     {
-        Console.WriteLine("1. Block account");
-        Console.WriteLine("2. Unblock account");
-        Console.WriteLine("3. Return\n");
+        Console.Clear();
+        Console.WriteLine();
+        Console.WriteLine("==================================================");
+        Console.WriteLine("               EDIT ACCOUNT STATUS                ");
+        Console.WriteLine("==================================================");
+        Console.WriteLine();
+        string currentStatus = account.IsBlocked ? "Blocked" : "Active";
+        Console.WriteLine($"  Account:         {account.FirstName} {account.LastName}");
+        Console.WriteLine($"  Current status:  {currentStatus}");
+        Console.WriteLine();
+        Console.WriteLine("--------------------------------------------------");
+        Console.WriteLine("  [1] Block account");
+        Console.WriteLine("  [2] Unblock account");
+        Console.WriteLine("  [3] Back");
+        Console.WriteLine("--------------------------------------------------");
+        Console.Write("  Choose an option (1-3): ");
 
-        int choice = Convert.ToInt32(Console.ReadLine()!);
-        AccountManager accountManager = new();
+        string choice = Console.ReadLine() ?? "";
+        Console.WriteLine();
 
-        switch(choice)
+        switch (choice)
         {
-            case 1:
-                bool BlockSuccess = accountsLogic.BlockAccount(account);
+            case "1":
+                bool blockSuccess = accountsLogic.BlockAccount(account);
+                if (blockSuccess)
+                {
+                    Console.WriteLine("  > Account has been successfully blocked.");
+                }
+                break;
 
-                if(BlockSuccess)
-                {
-                    Console.WriteLine("Succesfully blocked this account");
-                }
-                break;
-            case 2:
+            case "2":
                 bool unblockSuccess = accountsLogic.UnBlockAccount(account);
-                
-                if(unblockSuccess)
+                if (unblockSuccess)
                 {
-                    Console.WriteLine("Succesfully unblocked this account");
+                    Console.WriteLine("  > Account has been successfully unblocked.");
                 }
                 break;
-            case 3:
-                AskAccToManage();
-                break;
+
+            case "3":
+                return;
 
             default:
-                Console.WriteLine("You entered an invalid number");
+                Console.WriteLine("  > Invalid choice. Please choose 1, 2 or 3.");
                 break;
         }
 
-
+        Console.WriteLine();
+        Console.WriteLine("  Press any key to continue...");
+        Console.ReadKey();
     }
-
-
-
-    public static void Start()
-    {
-
-        AccountManager accountManager = new();
-
-        accountManager.AdminMenu();
-    }   
-
 }
