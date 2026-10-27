@@ -1,4 +1,6 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Welcome to this amazing program");
-Menu.Start();
+// See https://aka.ms/new-console-template for more information
 
+Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+
+Console.WriteLine("=== Welcome to the Rotterdam Airlines ===");
+Menu.Start();
