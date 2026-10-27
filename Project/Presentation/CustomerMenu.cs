@@ -20,7 +20,7 @@ public static class CustomerMenu
                     break;
 
                 case "2":
-                    Console.WriteLine("View tickets is not available yet.");
+                    TicketPresentation.ShowMyTickets();
                     break;
 
                 case "3":
