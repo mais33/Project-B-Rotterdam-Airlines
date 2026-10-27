@@ -3,113 +3,159 @@ static class Menu
     private static AccountsAccess accountsAccess = new();
     private static AccountsLogic accountsLogic = new();
 
-    //This method shows the start menu
-    static public void Start()
+    // This method shows the start menu
+    public static void Start()
     {
-        // accountsAccess.ClearAccounts(); //deletes all values from Account table
-        // accountsLogic.CreateAdminAccount("admin"); // creates the admin. can use this line if admin account is deleted from database. (the password sould always be "admin")
-
         while (true)
         {
-            Console.WriteLine("1. Register");
-            Console.WriteLine("2. Log in");
-            Console.WriteLine("3. View flights");
-            Console.WriteLine("4. Exit program");
-            Console.WriteLine("Choose an option:");
-
-            if (int.TryParse(Console.ReadLine(), out int choice))
-            {
-                switch (choice)
-                {
-                    case 1:
-                        UserRegistration.Start();
-                        break;
-
-                    case 2:
-                        UserLogin.Start();
-                        break;
-
-                    case 3:
-                        Console.WriteLine("View flights");
-                        break;
-
-                    case 4:
-                        Console.WriteLine("Exiting program");
-                        return;
-
-                    default:
-                        Console.WriteLine("Invalid choice");
-                        break;
-                }
-            }
-            else
-            {
-                Console.WriteLine("Please enter a number.");
-            }
-
+            Console.Clear();
             Console.WriteLine();
+            Console.WriteLine("==================================================");
+            Console.WriteLine("               ROTTERDAM AIRLINES                 ");
+            Console.WriteLine("==================================================");
+            Console.WriteLine();
+            Console.WriteLine("  [1] Register");
+            Console.WriteLine("  [2] Log in");
+            Console.WriteLine("  [3] View flights");
+            Console.WriteLine("  [4] Exit program");
+            Console.WriteLine();
+            Console.WriteLine("--------------------------------------------------");
+            Console.Write("  Choose an option (1-4): ");
+
+            string choice = Console.ReadLine() ?? "";
+
+            switch (choice)
+            {
+                case "1":
+                    UserRegistration.Start();
+                    break;
+
+                case "2":
+                    UserLogin.Start();
+                    break;
+
+                case "3":
+                    Console.WriteLine();
+                    Console.WriteLine("  > View flights is coming soon.");
+                    Console.WriteLine();
+                    Console.WriteLine("  Press any key to continue...");
+                    Console.ReadKey();
+                    break;
+
+                case "4":
+                    Console.WriteLine();
+                    Console.WriteLine("  > Thank you for visiting Rotterdam Airlines. Goodbye!");
+                    Console.WriteLine();
+                    return;
+
+                default:
+                    Console.WriteLine();
+                    Console.WriteLine("  > Invalid choice. Please choose 1, 2, 3 or 4.");
+                    Console.WriteLine();
+                    Console.WriteLine("  Press any key to continue...");
+                    Console.ReadKey();
+                    break;
+            }
         }
     }
 
     // Menu for a customer after logging in
-    static public void CustomerMenu()
+    public static void CustomerMenu()
     {
         while (true)
         {
+            Console.Clear();
             Console.WriteLine();
-            Console.WriteLine("=== Customer menu ===");
-            Console.WriteLine("1. View flights");
-            Console.WriteLine("2. Log out");
-            Console.WriteLine("Choose an option:");
+            Console.WriteLine("==================================================");
+            Console.WriteLine("                  CUSTOMER MENU                   ");
+            Console.WriteLine("==================================================");
+            Console.WriteLine();
+            Console.WriteLine("  [1] View flights");
+            Console.WriteLine("  [2] Log out");
+            Console.WriteLine();
+            Console.WriteLine("--------------------------------------------------");
+            Console.Write("  Choose an option (1-2): ");
 
-            string input = Console.ReadLine() ?? "";
+            string choice = Console.ReadLine() ?? "";
 
-            if (input == "1")
+            switch (choice)
             {
-                Console.WriteLine("View flights");
-            }
-            else if (input == "2")
-            {
-                Console.WriteLine("You are logged out.");
-                return;
-            }
-            else
-            {
-                Console.WriteLine("Invalid choice");
+                case "1":
+                    Console.WriteLine();
+                    Console.WriteLine("  > View flights is coming soon.");
+                    Console.WriteLine();
+                    Console.WriteLine("  Press any key to continue...");
+                    Console.ReadKey();
+                    break;
+
+                case "2":
+                    Console.WriteLine();
+                    Console.WriteLine("  > You have been logged out.");
+                    Console.WriteLine();
+                    Console.WriteLine("  Press any key to continue...");
+                    Console.ReadKey();
+                    return;
+
+                default:
+                    Console.WriteLine();
+                    Console.WriteLine("  > Invalid choice. Please choose 1 or 2.");
+                    Console.WriteLine();
+                    Console.WriteLine("  Press any key to continue...");
+                    Console.ReadKey();
+                    break;
             }
         }
     }
 
     // Menu for an admin after logging in
-    static public void AdminMenu()
+    public static void AdminMenu()
     {
         while (true)
         {
+            Console.Clear();
             Console.WriteLine();
-            Console.WriteLine("=== Administrator menu ===");
-            Console.WriteLine("1. Manage flights");
-            Console.WriteLine("2. Manage accounts");
-            Console.WriteLine("3. Log out");
-            Console.WriteLine("Choose an option:");
+            Console.WriteLine("==================================================");
+            Console.WriteLine("               ADMINISTRATOR MENU                 ");
+            Console.WriteLine("==================================================");
+            Console.WriteLine();
+            Console.WriteLine("  [1] Manage flights");
+            Console.WriteLine("  [2] Manage accounts");
+            Console.WriteLine("  [3] Log out");
+            Console.WriteLine();
+            Console.WriteLine("--------------------------------------------------");
+            Console.Write("  Choose an option (1-3): ");
 
-            string input = Console.ReadLine() ?? "";
+            string choice = Console.ReadLine() ?? "";
 
-            if (input == "1")
+            switch (choice)
             {
-                Console.WriteLine("Manage flights");
-            }
-            else if (input == "2")
-            {
-                AccountManager.Start();
-            }
-            else if (input == "3")
-            {
-                Console.WriteLine("You are logged out.");
-                return;
-            }
-            else
-            {
-                Console.WriteLine("Invalid choice");
+                case "1":
+                    Console.WriteLine();
+                    Console.WriteLine("  > Manage flights is coming soon.");
+                    Console.WriteLine();
+                    Console.WriteLine("  Press any key to continue...");
+                    Console.ReadKey();
+                    break;
+
+                case "2":
+                    AccountManager.Start();
+                    break;
+
+                case "3":
+                    Console.WriteLine();
+                    Console.WriteLine("  > You have been logged out.");
+                    Console.WriteLine();
+                    Console.WriteLine("  Press any key to continue...");
+                    Console.ReadKey();
+                    return;
+
+                default:
+                    Console.WriteLine();
+                    Console.WriteLine("  > Invalid choice. Please choose 1, 2 or 3.");
+                    Console.WriteLine();
+                    Console.WriteLine("  Press any key to continue...");
+                    Console.ReadKey();
+                    break;
             }
         }
     }

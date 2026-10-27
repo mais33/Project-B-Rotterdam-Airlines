@@ -1,35 +1,56 @@
 static class UserLogin
 {
-    static private AccountsLogic accountsLogic = new AccountsLogic();
-    
+    private static AccountsLogic accountsLogic = new AccountsLogic();
 
     public static void Start()
     {
-
-        Console.WriteLine("Welcome to the login page");
-        Console.WriteLine("Please enter your email address");
+        Console.Clear();
+        Console.WriteLine();
+        Console.WriteLine("==================================================");
+        Console.WriteLine("                     LOG IN                       ");
+        Console.WriteLine("==================================================");
+        Console.WriteLine();
+        Console.WriteLine("  Please enter your account details:");
+        Console.WriteLine();
+        Console.Write("  Email address: ");
         string email = Console.ReadLine() ?? "";
-        Console.WriteLine("Please enter your password");
+
+        Console.Write("  Password:      ");
         string password = accountsLogic.PassWordHider();
+
+        Console.WriteLine();
+        Console.WriteLine("--------------------------------------------------");
+
         AccountModel acc = accountsLogic.CheckLogin(email, password);
-        if(acc != null)
+
+        if (acc != null)
         {
-            // Go to the right menu based on the role
-            if(acc.Role == UserRole.Admin)
+            if (acc.Role == UserRole.Admin)
             {
-                Console.WriteLine($"Welcome back admin");
+                Console.WriteLine();
+                Console.WriteLine("  > Welcome back, Admin!");
+                Console.WriteLine();
+                Console.WriteLine("  Press any key to continue...");
+                Console.ReadKey();
                 Menu.AdminMenu();
             }
             else if (acc.Role == UserRole.Customer)
             {
-                Console.WriteLine($"Welcome back " + acc.FirstName + " " + acc.LastName);
-                Console.WriteLine("Your email is " + acc.Email);
+                Console.WriteLine();
+                Console.WriteLine($"  > Welcome back, {acc.FirstName} {acc.LastName}!");
+                Console.WriteLine();
+                Console.WriteLine("  Press any key to continue...");
+                Console.ReadKey();
                 Menu.CustomerMenu();
             }
         }
         else
         {
-            Console.WriteLine("No account found with that email and password");
+            Console.WriteLine();
+            Console.WriteLine("  > No account found with that email and password.");
+            Console.WriteLine();
+            Console.WriteLine("  Press any key to continue...");
+            Console.ReadKey();
         }
     }
 }
