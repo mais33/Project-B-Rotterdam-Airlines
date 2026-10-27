@@ -20,7 +20,7 @@ public static class CustomerMenu
                     break;
 
                 case "2":
-                    TicketPresentation.ShowMyTickets();
+                    TicketPresentation.ShowMyTickets(account);
                     break;
 
                 case "3":
