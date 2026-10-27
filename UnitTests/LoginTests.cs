@@ -1,4 +1,4 @@
-﻿namespace UnitTests;
+namespace UnitTests;
 
 
 
@@ -17,7 +17,7 @@ public sealed class Test1
         AccountModel result = l.CheckLogin(m, p);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(m, result.EmailAddress);
+        Assert.AreEqual(m, result.Email);
         Assert.AreEqual(p, result.Password);
     }
 

@@ -1,4 +1,4 @@
-﻿
+
 using Microsoft.AspNetCore.Identity;
 
 //This class is not static so later on we can use inheritance and interfaces
@@ -158,7 +158,7 @@ public class AccountsLogic
         
         if(CurrentAccount.Role != UserRole.Admin)
         {
-            Console.WriteLine("You are not allowed to edit an Account");
+            Console.WriteLine("You are not allowed to edit an account.");
             return false;
         }
 
@@ -173,7 +173,7 @@ public class AccountsLogic
     
         if (existingAccount.Role == UserRole.Admin && existingAccount.Id != CurrentAccount.Id) 
         {
-            Console.WriteLine("You cannot change the role of an Admin account");
+            Console.WriteLine("You cannot edit another Admin account.");
             return false;
         }
 
@@ -223,7 +223,7 @@ public class AccountsLogic
 
         if(existingAccount.Id == CurrentAccount.Id) //Admin cannot block his own acc
         {
-            Console.WriteLine("You cannot chnage the status of your own account");
+            Console.WriteLine("You cannot change the status of your own account");
             return false;
         }
 
@@ -267,7 +267,7 @@ public class AccountsLogic
 
         if(existingAccount.Id == CurrentAccount.Id) //Admin cannot change the status of  his own acc
         {
-            Console.WriteLine("You cannot chnage the status of your own account");
+            Console.WriteLine("You cannot change the status of your own account");
             return false;
         }
 
