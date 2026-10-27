@@ -8,9 +8,14 @@ public class FlightLogic
         return _access.GetAll();
     }
 
+    public FlightModel? GetFlightById(Int64 id)
+    {
+        return _access.GetById(id);
+    }
+
     public string GetDestinationCity(FlightModel flight)
     {
         AirportModel airport = _airportAccess.GetById(flight.DestinationId);
-        return airport.City;
+        return airport != null ? airport.City : "Unknown";
     }
 }

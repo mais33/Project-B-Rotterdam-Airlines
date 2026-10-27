@@ -5,8 +5,13 @@ public class UserRegistration
 
     public string AskFirstName()
     {
-        Console.Write("  First name:     ");
+        Console.Write("  First name (or press Enter to return): ");
         string firstName = Console.ReadLine() ?? "";
+
+        if (string.IsNullOrWhiteSpace(firstName))
+        {
+            return "";
+        }
 
         while (!accountsLogic.NameCheck(firstName))
         {
@@ -15,6 +20,11 @@ public class UserRegistration
             Console.WriteLine();
             Console.Write("  First name:     ");
             firstName = Console.ReadLine() ?? "";
+
+            if (string.IsNullOrWhiteSpace(firstName))
+            {
+                return "";
+            }
         }
 
         return firstName;
@@ -145,6 +155,11 @@ public class UserRegistration
         Console.WriteLine();
 
         string firstName = userRegistration.AskFirstName();
+        if (string.IsNullOrWhiteSpace(firstName))
+        {
+            return;
+        }
+
         string lastName = userRegistration.AskLastName();
         string email = userRegistration.AskEmail();
         string phoneNumber = userRegistration.AskPhoneNumber();

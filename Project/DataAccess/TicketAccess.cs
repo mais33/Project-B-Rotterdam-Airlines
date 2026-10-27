@@ -1,7 +1,5 @@
 using Microsoft.Data.Sqlite;
-
 using Dapper;
-
 
 public class TicketAccess
 {
@@ -26,8 +24,9 @@ public class TicketAccess
     public void Write(TicketModel ticket)
     {
         string sql = $@"INSERT INTO {Table} (reservation_id, account_id, flight_id, booking_reference, first_name, last_name, seat)
-            VALUES (@ReservationId, @AccountId, @FlightId, @BookingReference, @FirstName, @LastName, @Seat)";
-        _connection.Execute(sql, ticket);
+            VALUES (@ReservationId, @AccountId, @FlightId, @BookingReference, @FirstName, @LastName, @Seat);
+            SELECT last_insert_rowid();";
+        ticket.Id = _connection.ExecuteScalar<long>(sql, ticket);
     }
 
     public List<TicketModel> GetByAccountId(Int64 accountId)
@@ -49,5 +48,4 @@ public class TicketAccess
         string sql = "SELECT id FROM Reservation WHERE account_id = @AccountId ORDER BY id DESC LIMIT 1";
         return _connection.QueryFirstOrDefault<Int64>(sql, new { AccountId = accountId });
     }
-
 }

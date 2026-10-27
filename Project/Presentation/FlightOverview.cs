@@ -4,19 +4,37 @@ public class FlightOverview
 
     public static void Start()
     {
+        Console.Clear();
         Console.WriteLine();
-        Console.WriteLine("==============================================");
-        Console.WriteLine("              ROTTERDAM AIRLINES");
-        Console.WriteLine("==============================================");
-        Console.WriteLine("Discover our best flights departing from Rotterdam.");
+        Console.WriteLine("==================================================");
+        Console.WriteLine("                 FLIGHT OVERVIEW                  ");
+        Console.WriteLine("==================================================");
         Console.WriteLine();
+        Console.WriteLine("  Discover our flights departing from Rotterdam:\n");
 
-        foreach (FlightModel flight in flightLogic.GetFlights())
+        List<FlightModel> flights = flightLogic.GetFlights();
+
+        if (flights.Count == 0)
         {
-            Console.WriteLine($"  Rotterdam -> {flightLogic.GetDestinationCity(flight)}");
-            Console.WriteLine($"  Departure:  {flight.DepartureDatetime}");
-            Console.WriteLine($"  Price:      EUR {flight.Price:0.00}");
-            Console.WriteLine("----------------------------------------------");
+            Console.WriteLine("  > No flights available at the moment.");
+            Console.WriteLine();
         }
+        else
+        {
+            for (int i = 0; i < flights.Count; i++)
+            {
+                FlightModel flight = flights[i];
+                string destination = flightLogic.GetDestinationCity(flight);
+
+                Console.WriteLine($"  [{i + 1}] Rotterdam -> {destination}");
+                Console.WriteLine($"      Departure:  {flight.DepartureDatetime}");
+                Console.WriteLine($"      Price:      EUR {flight.Price:0.00}");
+                Console.WriteLine();
+            }
+        }
+
+        Console.WriteLine("--------------------------------------------------");
+        Console.WriteLine("  Press any key to return...");
+        Console.ReadKey();
     }
 }
