@@ -29,20 +29,30 @@ static class TicketPresentation
         string destination = flight != null ? flightLogic.GetDestinationCity(flight) : "Unknown";
         string departure = flight != null ? flight.DepartureDatetime : "Unknown";
 
-        Console.WriteLine("  Booking Details:");
+        string flightDate = departure;
+        string departureTime = "";
+        if (departure.Contains(" "))
+        {
+            string[] parts = departure.Split(' ');
+            flightDate = parts[0];
+            departureTime = parts[1];
+        }
+
+        Console.WriteLine("  Flight Details:");
         Console.WriteLine("  ------------------------------------------------");
         Console.WriteLine($"  Booking Reference:  {tickets[0].BookingReference}");
         Console.WriteLine($"  Flight:             Rotterdam -> {destination} (Flight #{tickets[0].FlightId})");
-        Console.WriteLine($"  Departure:          {departure}");
+        Console.WriteLine($"  Date:               {flightDate}");
+        Console.WriteLine($"  Departure Time:     {departureTime}");
         Console.WriteLine("  ------------------------------------------------");
         Console.WriteLine();
-        Console.WriteLine("  Issued Tickets:\n");
+        Console.WriteLine("  Passengers & Tickets:\n");
 
         for (int i = 0; i < tickets.Count; i++)
         {
-            Console.WriteLine($"  [{i + 1}] Ticket Number:    #{tickets[i].Id}");
-            Console.WriteLine($"      Passenger:        {tickets[i].FirstName} {tickets[i].LastName}");
-            Console.WriteLine($"      Seat:             {tickets[i].Seat}");
+            Console.WriteLine($"  Passenger {i + 1}:       {tickets[i].FirstName} {tickets[i].LastName}");
+            Console.WriteLine($"  Ticket Number:     #{tickets[i].Id}");
+            Console.WriteLine($"  Seat:              {tickets[i].Seat}");
             Console.WriteLine();
         }
 
@@ -53,7 +63,7 @@ static class TicketPresentation
         Console.ReadKey();
     }
 
-    public static void ShowMyTickets()
+    public static void ShowMyTickets(AccountModel? account = null)
     {
         Console.Clear();
         Console.WriteLine();
@@ -62,7 +72,10 @@ static class TicketPresentation
         Console.WriteLine("==================================================");
         Console.WriteLine();
 
-        AccountModel? account = AccountsLogic.CurrentAccount;
+        if (account == null)
+        {
+            account = AccountsLogic.CurrentAccount;
+        }
 
         if (account == null)
         {
@@ -92,11 +105,21 @@ static class TicketPresentation
             string destination = flight != null ? flightLogic.GetDestinationCity(flight) : "Unknown";
             string departure = flight != null ? flight.DepartureDatetime : "Unknown";
 
+            string flightDate = departure;
+            string departureTime = "";
+            if (departure.Contains(" "))
+            {
+                string[] parts = departure.Split(' ');
+                flightDate = parts[0];
+                departureTime = parts[1];
+            }
+
             Console.WriteLine($"  [{i + 1}] Ticket Number:    #{tickets[i].Id}");
             Console.WriteLine($"      Booking Ref:      {tickets[i].BookingReference}");
             Console.WriteLine($"      Passenger:        {tickets[i].FirstName} {tickets[i].LastName}");
             Console.WriteLine($"      Flight:           Rotterdam -> {destination} (Flight #{tickets[i].FlightId})");
-            Console.WriteLine($"      Departure:        {departure}");
+            Console.WriteLine($"      Date:             {flightDate}");
+            Console.WriteLine($"      Departure Time:   {departureTime}");
             Console.WriteLine($"      Seat:             {tickets[i].Seat}");
             Console.WriteLine();
         }
