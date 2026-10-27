@@ -27,16 +27,8 @@ static class TicketPresentation
         Console.WriteLine("Thank you for flying with Rotterdam Airlines!");
     }
 
-    public static void ShowMyTickets()
+    public static void ShowMyTickets(AccountModel account)
     {
-        AccountModel? account = AccountsLogic.CurrentAccount;
-
-        if (account == null)
-        {
-            Console.WriteLine("You need to log in first before you can see your tickets.");
-            return;
-        }
-
         List<TicketModel> tickets = ticketLogic.GetTicketsForAccount(account.Id);
 
         Console.WriteLine();
