@@ -7,8 +7,6 @@ public class FlightModel
     public double Price { get; set; }
     public string ArrivalDatetime { get; set; }
     public string DepartureDatetime { get; set; }
-    public string StartCity { get; set; }
-    public string DestinationCity { get; set; }
 
     public FlightModel()
     {

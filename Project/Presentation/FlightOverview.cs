@@ -13,7 +13,7 @@ public class FlightOverview
 
         foreach (FlightModel flight in flightLogic.GetFlights())
         {
-            Console.WriteLine($"  {flight.StartCity} -> {flight.DestinationCity}");
+            Console.WriteLine($"  Rotterdam -> {flightLogic.GetDestinationCity(flight)}");
             Console.WriteLine($"  Departure:  {flight.DepartureDatetime}");
             Console.WriteLine($"  Price:      EUR {flight.Price:0.00}");
             Console.WriteLine("----------------------------------------------");

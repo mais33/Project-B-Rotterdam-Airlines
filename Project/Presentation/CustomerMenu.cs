@@ -7,8 +7,9 @@ public static class CustomerMenu
             Console.WriteLine();
             Console.WriteLine("=== Customer Menu ===");
             Console.WriteLine("1. Make a reservation");
-            Console.WriteLine("2. View tickets");
-            Console.WriteLine("3. Log out");
+            Console.WriteLine("2. View flights");
+            Console.WriteLine("3. View tickets");
+            Console.WriteLine("4. Log out");
 
             Console.Write("Choose an option: ");
             string choice = Console.ReadLine() ?? "";
@@ -20,10 +21,14 @@ public static class CustomerMenu
                     break;
 
                 case "2":
-                    Console.WriteLine("View tickets is not available yet.");
+                    FlightOverview.Start();
                     break;
 
                 case "3":
+                    Console.WriteLine("View tickets is not available yet.");
+                    break;
+
+                case "4":
                     Console.WriteLine("You have been logged out.");
                     return;
 
