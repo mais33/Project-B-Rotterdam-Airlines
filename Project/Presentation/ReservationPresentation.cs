@@ -24,7 +24,7 @@ public static class ReservationPresentation
         for (int i = 0; i < flights.Count; i++)
         {
             Console.WriteLine(
-                $"{i + 1}. Departure: {flights[i].DepartureDatetime} - " +
+                $"{i + 1}. Departure: {DateTimeOffset.FromUnixTimeSeconds(flights[i].DepartureDatetime).DateTime:dd-MM-yyyy HH:mm} - " +
                 $"Price: €{flights[i].Price}"
             );
         }
@@ -154,7 +154,7 @@ public static class ReservationPresentation
 
         Console.WriteLine(
             $"Date and departure time: " +
-            $"{selectedFlight.DepartureDatetime}"
+            $"{DateTimeOffset.FromUnixTimeSeconds(selectedFlight.DepartureDatetime).DateTime:dd-MM-yyyy HH:mm}"
         );
 
         Console.WriteLine();
