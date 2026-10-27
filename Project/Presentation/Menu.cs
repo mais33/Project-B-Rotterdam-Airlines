@@ -35,8 +35,7 @@ static class Menu
                     break;
 
                 case "3":
-                    Console.WriteLine();
-                    Console.WriteLine("  > View flights is coming soon.");
+                    FlightOverview.Start();
                     Console.WriteLine();
                     Console.WriteLine("  Press any key to continue...");
                     Console.ReadKey();
@@ -81,8 +80,7 @@ static class Menu
             switch (choice)
             {
                 case "1":
-                    Console.WriteLine();
-                    Console.WriteLine("  > View flights is coming soon.");
+                    FlightOverview.Start();
                     Console.WriteLine();
                     Console.WriteLine("  Press any key to continue...");
                     Console.ReadKey();
