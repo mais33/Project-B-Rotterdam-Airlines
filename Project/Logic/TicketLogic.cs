@@ -8,7 +8,6 @@ public class TicketLogic
         _access.CreateTable();
     }
 
-    // makes a code like "RA7K2Q"
     public string MakeBookingReference()
     {
         string characters = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -23,7 +22,6 @@ public class TicketLogic
         return reference;
     }
 
-    // seat 0 is 1A, seat 5 is 1F, seat 6 is 2A
     public string GetSeat(int seatNumber)
     {
         string seatLetters = "ABCDEF";
