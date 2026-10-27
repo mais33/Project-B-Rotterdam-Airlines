@@ -16,8 +16,15 @@ static class UserLogin
             Console.WriteLine("Welcome back " + acc.FullName);
             Console.WriteLine("Your email number is " + acc.EmailAddress);
 
-            //Write some code to go back to the menu
-            //Menu.Start();
+            // Go to the right menu based on the role
+            if (acc.Role == "Admin")
+            {
+                Menu.AdminMenu();
+            }
+            else
+            {
+                Menu.CustomerMenu();
+            }
         }
         else
         {
