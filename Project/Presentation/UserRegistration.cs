@@ -5,123 +5,123 @@ public class UserRegistration
     private static AccountsLogic accountsLogic = new AccountsLogic();
     private static AccountsAccess accountsAccess = new AccountsAccess();
 
-    public static string PassWordHider()
-    {
-        string input = "";
+    
 
-        while (true)
-        {
-            ConsoleKeyInfo userInput = Console.ReadKey(true);
-
-            if (userInput.Key == ConsoleKey.Enter)
-            {
-                Console.WriteLine();
-                break;
-            }
-
-            if (userInput.Key == ConsoleKey.Backspace)
-            {
-                if (input.Length > 0)
-                {
-                    input = input.Substring(0, input.Length - 1);
-                    Console.Write("\b \b");
-                }
-            }
-            else if (!char.IsControl(userInput.KeyChar))
-            {
-                input += userInput.KeyChar;
-                Console.Write("*");
-            }
-        }
-
-        return input;
-    }
-
-    public static void Start()
+    public string AskFirstName()
     {
         Console.WriteLine("What is your first name?");
-        string firstName = Console.ReadLine()!;
+        string firstName = Console.ReadLine() ?? "";
 
-        Console.WriteLine("What is your last name?");
-        string lastName = Console.ReadLine()!;
-
-        while(accountsLogic.NameCheck(firstName, lastName) == false)
+        while(!accountsLogic.NameCheck(firstName))
         {
-            Console.WriteLine("Please enter a valid name (a name can't contain anyhting else than letters)");
-            Console.WriteLine("Enter first name: ");
+            Console.WriteLine("Please enter a valid first name (a name can't contain anyhting else than letters)");
             firstName = Console.ReadLine()!;
-            Console.WriteLine("Enter last name: ");
+        }
+
+        return firstName;
+    }
+
+    public string AskLastName()
+    {
+        Console.WriteLine("What is your last name?");
+        string lastName = Console.ReadLine() ?? "";
+
+        while(!accountsLogic.NameCheck(lastName))
+        {
+            Console.WriteLine("Please enter a valid last name (a name can't contain anyhting else than letters)");
             lastName = Console.ReadLine()!;
         }
 
+        return lastName;
+    }
+
+    public string AskEmail()
+    {
         Console.WriteLine("Please enter your email");
         string Email = Console.ReadLine()!;
 
-        while(accountsLogic.CheckEmail(Email) == false)
+        while(!accountsLogic.CheckEmail(Email))
         {
             Console.WriteLine("Please enter a valid email");
             Email = Console.ReadLine()!;
         }
 
+        return Email;
+    }
+
+    public string AskPhoneNumber()
+    {
         Console.WriteLine("Please enter your phonenumber");
         string phoneNumber = Console.ReadLine()!;
 
-        while(accountsLogic.PhoneNumberCheck(phoneNumber) == false)
+        while(accountsLogic.PhoneNumberCheck(phoneNumber) == false) //make a method an can make a do-while loop somewhere in this current method
         {
             Console.WriteLine("Please enter a valid phonenumber (no longer than 11 digits)");
             phoneNumber = Console.ReadLine()!;
         }
 
-        string Password = "";
-        string identicalPassword = "";
-
-        while (true)
-        {
-            while(true)
-            {
-                Console.WriteLine("register your password (password must contain atleast 8 characters)");
-                Password = PassWordHider();
-
-                if(accountsLogic.PasswordCheck(Password!))
-                {
-                    break;
-                }
-
-                Console.WriteLine("Please enter a valid password (at least 8 characters).");
-                
-            }
-
-            bool startOver = false;
-
-            while(true)
-            {
-                Console.WriteLine("Confirm password");
-                identicalPassword = PassWordHider();
-
-                if (identicalPassword == Password)
-                {
-                    break;
-                }
-
-                if(identicalPassword == "B" || identicalPassword == "b")
-                {
-                    Console.WriteLine("Going back to enter a new password");
-                    startOver = true;
-                    break;
-                }
-
-                Console.WriteLine("The passwords didn't match, please try again. or press (B) to enter a new password");
-            }
-            if (!startOver)
-            {
-                break;
-            }
-        }
-        
-
-        accountsLogic.CreateAccount(firstName, lastName, Email, phoneNumber, Password);
-        accountsAccess.ClearAccounts();
-
-        
+        return phoneNumber;
     }
+
+    public string GetValidPassword()
+    {
+        while(true)
+            {
+                Console.WriteLine("register your password (atleast 8 characters, 1 uppercase letter, 1 digit and a symbol)");
+                string password = accountsLogic.PassWordHider() ?? "";
+
+                if(accountsLogic.PasswordCheck(password))
+                {
+                    return password;
+                }
+
+                Console.WriteLine("Please enter a valid password atleast 8 characters, 1 uppercase letter, 1 digit and a symbol");
+            }
+    }
+
+    public string AskPassword()
+    {
+        string Password = "";
+        bool isValid = false;
+
+        do
+        {
+            Password = GetValidPassword();
+
+            Console.WriteLine("Confirm password (or press 'B' to re-enter a new password)");
+            string identicalPassword = accountsLogic.PassWordHider() ?? "";
+
+            if (identicalPassword == Password)
+            {
+                isValid = true;
+            }
+
+            else if(identicalPassword == "B" || identicalPassword == "b")
+            {
+                Console.WriteLine("Going back to enter a new password\n");
+            }
+            else
+            {
+                Console.WriteLine("The passwords didn't match, starting over");
+            }
+
+        }while(!isValid);
+
+        return Password;
+    }
+
+    public static void Start()
+    {
+        UserRegistration userRegistration = new();
+
+        string firstName = userRegistration.AskFirstName();
+        string lastName = userRegistration.AskLastName();
+        string email = userRegistration.AskEmail();
+        string phoneNumber = userRegistration.AskPhoneNumber();
+        string password = userRegistration.AskPassword();
+
+        AccountModel registeredAccount = new(0, firstName, lastName, email, phoneNumber, UserRole.Customer, false, password);
+        accountsLogic.CreateAccount(registeredAccount, password);
+    }
+        
 }
