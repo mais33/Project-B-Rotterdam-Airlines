@@ -16,8 +16,6 @@ static class UserLogin
             Console.WriteLine($"Welcome back " + acc.FirstName + acc.LastName);
             Console.WriteLine("Your email number is " + acc.Email);
 
-            //Write some code to go back to the menu
-            //Menu.Start();
         }
         else
         {

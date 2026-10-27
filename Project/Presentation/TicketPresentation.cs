@@ -3,7 +3,6 @@ static class TicketPresentation
     static private TicketLogic ticketLogic = new TicketLogic();
 
 
-    // shows the confirmation screen after a reservation is made
     public static void ShowConfirmation(List<TicketModel> tickets)
     {
         if (tickets.Count == 0)
@@ -28,7 +27,6 @@ static class TicketPresentation
         Console.WriteLine("Thank you for flying with Rotterdam Airlines!");
     }
 
-    // shows all tickets of the user that is logged in
     public static void ShowMyTickets()
     {
         AccountModel? account = AccountsLogic.CurrentAccount;

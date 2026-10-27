@@ -9,7 +9,6 @@ public class TicketAccess
 
     private readonly string Table = "Ticket";
 
-    // makes the Ticket table if it is not in the database yet
     public void CreateTable()
     {
         string sql = $@"CREATE TABLE IF NOT EXISTS {Table} (
@@ -45,7 +44,6 @@ public class TicketAccess
         return _connection.ExecuteScalar<int>(sql, new { FlightId = flightId });
     }
 
-    // gets the newest reservation of the account, returns 0 if there is none
     public Int64 GetLatestReservationId(Int64 accountId)
     {
         string sql = "SELECT id FROM Reservation WHERE account_id = @AccountId ORDER BY id DESC LIMIT 1";
