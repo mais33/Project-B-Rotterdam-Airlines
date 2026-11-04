@@ -18,4 +18,22 @@ public class FlightLogic
         AirportModel airport = _airportAccess.GetById(flight.DestinationId);
         return airport != null ? airport.City : "Unknown";
     }
+
+    // Departure looks like "2026-11-02 08:30", so the part before the space is the date
+    public string GetDate(string departure)
+    {
+        string[] parts = departure.Split(' ');
+        return parts[0];
+    }
+
+    // The part after the space is the time
+    public string GetTime(string departure)
+    {
+        string[] parts = departure.Split(' ');
+        if (parts.Length > 1)
+        {
+            return parts[1];
+        }
+        return "";
+    }
 }

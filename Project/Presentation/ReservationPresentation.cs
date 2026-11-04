@@ -155,18 +155,10 @@ public static class ReservationPresentation
         Console.WriteLine("==================================================");
         Console.WriteLine("               RESERVATION OVERVIEW               ");
         Console.WriteLine("==================================================");
-        string flightDate = selectedFlight.DepartureDatetime;
-        string departureTime = "";
-        if (selectedFlight.DepartureDatetime.Contains(" "))
-        {
-            string[] parts = selectedFlight.DepartureDatetime.Split(' ');
-            flightDate = parts[0];
-            departureTime = parts[1];
-        }
-
-        Console.WriteLine($"  Flight:         Rotterdam -> {selectedDestination} (Flight #{selectedFlight.Id})");
-        Console.WriteLine($"  Date:           {flightDate}");
-        Console.WriteLine($"  Departure Time: {departureTime}");
+        Console.WriteLine();
+        Console.WriteLine($"  Route:           Rotterdam -> {selectedDestination}");
+        Console.WriteLine($"  Date:            {flightLogic.GetDate(selectedFlight.DepartureDatetime)}");
+        Console.WriteLine($"  Departure time:  {flightLogic.GetTime(selectedFlight.DepartureDatetime)}");
         Console.WriteLine();
         Console.WriteLine("  Passengers:");
 

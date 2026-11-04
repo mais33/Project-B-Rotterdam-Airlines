@@ -14,7 +14,7 @@ public static class CustomerMenu
             Console.WriteLine();
             Console.WriteLine("  [1] Make a reservation");
             Console.WriteLine("  [2] View flights");
-            Console.WriteLine("  [3] View tickets");
+            Console.WriteLine("  [3] Booking confirmations");
             Console.WriteLine("  [4] Log out");
             Console.WriteLine();
             Console.WriteLine("--------------------------------------------------");
