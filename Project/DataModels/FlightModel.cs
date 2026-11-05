@@ -5,8 +5,8 @@ public class FlightModel
     public Int64 DestinationId { get; set; }
     public Int64 StartAirportId { get; set; }
     public double Price { get; set; }
-    public Int64 ArrivalDatetime { get; set; }
-    public Int64 DepartureDatetime { get; set; }
+    public string ArrivalDatetime { get; set; }
+    public string DepartureDatetime { get; set; }
 
     public FlightModel()
     {
@@ -18,8 +18,8 @@ public class FlightModel
         Int64 destinationId,
         Int64 startAirportId,
         double price,
-        Int64 arrivalDatetime,
-        Int64 departureDatetime)
+        string arrivalDatetime,
+        string departureDatetime)
     {
         Id = id;
         PlaneId = planeId;

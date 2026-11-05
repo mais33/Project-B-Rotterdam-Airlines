@@ -10,9 +10,29 @@ public class AdminFlightLogic
     }
 
     // Check if arrival time is after departure time.
-    public bool IsValidDateTime(long departure, long arrival)
+
+    public bool IsValidDateTime(string departure, string arrival)
+
     {
-        return arrival > departure;
+        if (!DateTime.TryParseExact(
+            departure,
+            "dd-MM-yyyy HH:mm",
+            System.Globalization.CultureInfo.InvariantCulture,
+            System.Globalization.DateTimeStyles.None,
+            out DateTime departureDate))
+        {
+            return false;
+        }
+        if (!DateTime.TryParseExact(
+            arrival,
+            "dd-MM-yyyy HH:mm",
+            System.Globalization.CultureInfo.InvariantCulture,
+            System.Globalization.DateTimeStyles.None,
+            out DateTime arrivalDate))
+        {
+            return false;
+        }
+        return arrivalDate > departureDate;
     }
 
     // Check if the date has the correct format.

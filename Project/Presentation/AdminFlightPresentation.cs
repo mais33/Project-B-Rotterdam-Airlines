@@ -213,8 +213,8 @@ public static class AdminFlightPresentation
             StartAirportId = departureAirportId,
             DestinationId = destinationAirportId,
             Price = price,
-            DepartureDatetime = departureTimestamp,
-            ArrivalDatetime = arrivalTimestamp
+            DepartureDatetime = departureDate.ToString("dd-MM-yyyy HH:mm"),
+            ArrivalDatetime = arrivalDate.ToString("dd-MM-yyyy HH:mm")
         };
 
         // Show the flight information before saving.

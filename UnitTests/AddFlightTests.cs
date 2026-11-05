@@ -21,13 +21,13 @@ public class AddFlightTests
     }
 
     [DataTestMethod]
-    [DataRow(1000L, 2000L, true)]
-    [DataRow(2000L, 1000L, false)]
-    [DataRow(1000L, 1000L, false)]
+    [DataRow("15-11-2026 10:30", "15-11-2026 12:30", true)]
+    [DataRow("15-11-2026 12:30", "15-11-2026 10:30", false)]
+    [DataRow("15-11-2026 10:30", "15-11-2026 10:30", false)]
     public void CheckFlightDateTime(
-    long departure,
-    long arrival,
-    bool expected)
+        string departure,
+        string arrival,
+        bool expected)
     {
         // Arrange
         AdminFlightLogic logic = new AdminFlightLogic();
@@ -67,10 +67,10 @@ public class AddFlightTests
         AdminFlightLogic logic = new AdminFlightLogic();
 
         List<AirportModel> airports = new List<AirportModel>
-    {
-        new AirportModel { Id = 1, City = "Rotterdam", Name = "Rotterdam Airport" },
-        new AirportModel { Id = 2, City = "Amsterdam", Name = "Schiphol" }
-    };
+        {
+            new AirportModel { Id = 1, City = "Rotterdam", Name = "Rotterdam Airport" },
+            new AirportModel { Id = 2, City = "Amsterdam", Name = "Schiphol" }
+        };
 
         // Act
         bool result = logic.IsValidAirport(airportId, airports);
@@ -90,10 +90,10 @@ public class AddFlightTests
         AdminFlightLogic logic = new AdminFlightLogic();
 
         List<PlaneModel> planes = new List<PlaneModel>
-    {
-        new PlaneModel { Id = 1, Name = "Plane A", Model = "Boeing 737", Capacity = 180 },
-        new PlaneModel { Id = 2, Name = "Plane B", Model = "Airbus A320", Capacity = 150 }
-    };
+        {
+            new PlaneModel { Id = 1, Name = "Plane A", Model = "Boeing 737", Capacity = 180 },
+            new PlaneModel { Id = 2, Name = "Plane B", Model = "Airbus A320", Capacity = 150 }
+        };
 
         // Act
         bool result = logic.IsValidPlane(planeId, planes);
@@ -114,20 +114,20 @@ public class AddFlightTests
             StartAirportId = 1,
             DestinationId = 2,
             Price = 150,
-            DepartureDatetime = 1800000000,
-            ArrivalDatetime = 1800007200
+            DepartureDatetime = "15-11-2026 10:30",
+            ArrivalDatetime = "15-11-2026 12:30"
         };
 
         List<AirportModel> airports = new List<AirportModel>
-    {
-        new AirportModel { Id = 1, City = "Rotterdam", Name = "Rotterdam Airport" },
-        new AirportModel { Id = 2, City = "Amsterdam", Name = "Schiphol" }
-    };
+        {
+            new AirportModel { Id = 1, City = "Rotterdam", Name = "Rotterdam Airport" },
+            new AirportModel { Id = 2, City = "Amsterdam", Name = "Schiphol" }
+        };
 
         List<PlaneModel> planes = new List<PlaneModel>
-    {
-        new PlaneModel { Id = 1, Name = "Plane A", Model = "Boeing 737", Capacity = 180 }
-    };
+        {
+            new PlaneModel { Id = 1, Name = "Plane A", Model = "Boeing 737", Capacity = 180 }
+        };
 
         // Act
         bool result = logic.IsValidFlight(flight, airports, planes);

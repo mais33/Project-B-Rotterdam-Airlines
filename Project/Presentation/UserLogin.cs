@@ -1,86 +1,61 @@
 static class UserLogin
 {
-    private static UserLoginLogic userLoginLogic = new UserLoginLogic();
+    private static AccountsLogic accountsLogic = new AccountsLogic();
 
     public static void Start()
     {
+        Console.Clear();
         Console.WriteLine();
-        Console.WriteLine("=== Rotterdam Airlines Login ===");
+        Console.WriteLine("==================================================");
+        Console.WriteLine("                     LOG IN                       ");
+        Console.WriteLine("==================================================");
+        Console.WriteLine();
+        Console.WriteLine("  Please enter your account details:");
+        Console.WriteLine();
+        Console.Write("  Email address (or press Enter to return): ");
+        string email = Console.ReadLine() ?? "";
 
-        while (true)
+        if (string.IsNullOrWhiteSpace(email))
         {
-            string email = "";
+            return;
+        }
 
-            while (!userLoginLogic.IsValidEmail(email))
-            {
-                Console.Write("Email address: ");
-                email = Console.ReadLine() ?? "";
+        Console.Write("  Password:      ");
+        string password = accountsLogic.PassWordHider();
 
-                if (!userLoginLogic.IsValidEmail(email))
-                {
-                    Console.WriteLine("Invalid email address. Please try again.");
-                }
-            }
+        Console.WriteLine();
+        Console.WriteLine("--------------------------------------------------");
 
-            string password = "";
+        AccountModel acc = accountsLogic.CheckLogin(email, password);
 
-            while (string.IsNullOrWhiteSpace(password))
-            {
-                Console.Write("Password: ");
-                password = ReadPassword();
-
-                if (string.IsNullOrWhiteSpace(password))
-                {
-                    Console.WriteLine("Password cannot be empty. Please try again.");
-                }
-            }
-
-            AccountModel? account = userLoginLogic.Login(email, password);
-
-            if (account == null)
+        if (acc != null)
+        {
+            if (acc.Role == UserRole.Admin)
             {
                 Console.WriteLine();
-                Console.WriteLine("Incorrect email address or password. Please try again.");
+                Console.WriteLine("  > Welcome back, Admin!");
                 Console.WriteLine();
+                Console.WriteLine("  Press any key to continue...");
+                Console.ReadKey();
+                Menu.AdminMenu();
             }
-            else
+            else if (acc.Role == UserRole.Customer)
             {
                 Console.WriteLine();
-                Console.WriteLine($"Welcome {account.FirstName}!");
-                Console.WriteLine("Login successful.");
-
-                CustomerMenu.Start(account);
-                return;
+                Console.WriteLine($"  > Welcome back, {acc.FirstName} {acc.LastName}!");
+                Console.WriteLine();
+                Console.WriteLine("  Press any key to continue...");
+                Console.ReadKey();
+                CustomerMenu.Start(acc);
             }
         }
-    }
-
-    private static string ReadPassword()
-    {
-        string password = "";
-
-        ConsoleKeyInfo key;
-
-        do
+        else
         {
-            key = Console.ReadKey(true);
-
-            if (key.Key == ConsoleKey.Backspace && password.Length > 0)
-            {
-                password = password[..^1];
-                Console.Write("\b \b");
-            }
-            else if (key.Key != ConsoleKey.Enter &&
-                     key.Key != ConsoleKey.Backspace)
-            {
-                password += key.KeyChar;
-                Console.Write("*");
-            }
-
-        } while (key.Key != ConsoleKey.Enter);
-
-        Console.WriteLine();
-
-        return password;
+            Console.WriteLine();
+            Console.WriteLine("  > Incorrect email address or password.");
+            Console.WriteLine();
+            Console.WriteLine("  Press any key to continue...");
+            Console.ReadKey();
+        }
     }
 }
