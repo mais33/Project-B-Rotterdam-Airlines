@@ -9,8 +9,7 @@ public class AdminFlightAccess
     // Get all airports from the database.
     public List<AirportModel> GetAirports()
     {
-        // Automatically close and dispose of the database connection after use. 
-        using SqliteConnection connection = 
+        using SqliteConnection connection =
             new SqliteConnection(_connectionString);
 
         string sql = @"
@@ -38,6 +37,26 @@ public class AdminFlightAccess
             FROM Plane";
 
         return connection.Query<PlaneModel>(sql).ToList();
+    }
+
+    // Get all existing flights from the database.
+    public List<FlightModel> GetFlights()
+    {
+        using SqliteConnection connection =
+            new SqliteConnection(_connectionString);
+
+        string sql = @"
+            SELECT
+                id AS Id,
+                plane_id AS PlaneId,
+                destination_id AS DestinationId,
+                start_airport_id AS StartAirportId,
+                price AS Price,
+                arrival_datetime AS ArrivalDatetime,
+                departure_datetime AS DepartureDatetime
+            FROM Flight";
+
+        return connection.Query<FlightModel>(sql).ToList();
     }
 
     // Save a new flight in the database.

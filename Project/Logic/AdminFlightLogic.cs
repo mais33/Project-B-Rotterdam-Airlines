@@ -1,18 +1,15 @@
 public class AdminFlightLogic
 {
-    private readonly AdminFlightAccess _access =
-        new AdminFlightAccess();
+    private readonly AdminFlightAccess _access = new AdminFlightAccess();
 
-    // Check if the ticket price is greater than zero.
+    // Validate ticket price.
     public bool IsValidPrice(double price)
     {
         return price > 0;
     }
 
-    // Check if arrival time is after departure time.
-
+    // Validate departure and arrival times.
     public bool IsValidDateTime(string departure, string arrival)
-
     {
         if (!DateTime.TryParseExact(
             departure,
@@ -23,6 +20,7 @@ public class AdminFlightLogic
         {
             return false;
         }
+
         if (!DateTime.TryParseExact(
             arrival,
             "dd-MM-yyyy HH:mm",
@@ -32,14 +30,12 @@ public class AdminFlightLogic
         {
             return false;
         }
+
         return arrivalDate > departureDate;
     }
 
-    // Check if the date has the correct format.
     public bool IsValidDepartureDate(string date)
     {
-        // Try to convert the text to a date.
-        // Return false if the format is incorrect.
         return DateTime.TryParseExact(
             date,
             "dd-MM-yyyy HH:mm",
@@ -50,9 +46,7 @@ public class AdminFlightLogic
     }
 
     // Check if the selected airport exists.
-    public bool IsValidAirport(
-        long airportId,
-        List<AirportModel> airports)
+    public bool IsValidAirport(long airportId, List<AirportModel> airports)
     {
         foreach (AirportModel airport in airports)
         {
@@ -66,9 +60,7 @@ public class AdminFlightLogic
     }
 
     // Check if the selected plane exists.
-    public bool IsValidPlane(
-        long planeId,
-        List<PlaneModel> planes)
+    public bool IsValidPlane(long planeId, List<PlaneModel> planes)
     {
         foreach (PlaneModel plane in planes)
         {
@@ -81,7 +73,7 @@ public class AdminFlightLogic
         return false;
     }
 
-    // Check if all flight information is valid.
+    // Validate all flight information.
     public bool IsValidFlight(
         FlightModel flight,
         List<AirportModel> airports,
@@ -122,25 +114,109 @@ public class AdminFlightLogic
         return true;
     }
 
-    // Get available airports through the DataAccess layer.
+    // Get data through the DataAccess layer.
     public List<AirportModel> GetAirports()
     {
         return _access.GetAirports();
     }
 
-    // Get available planes through the DataAccess layer.
     public List<PlaneModel> GetPlanes()
     {
         return _access.GetPlanes();
     }
 
-    // Validate the flight before saving it.
+    public List<FlightModel> GetFlights()
+    {
+        return _access.GetFlights();
+    }
+
+    // Check if the plane is available during the selected time.
+    public bool IsPlaneAvailable(
+        long planeId,
+        string departure,
+        string arrival,
+        List<FlightModel> existingFlights)
+    {
+        string[] dateFormats =
+        {
+        "dd-MM-yyyy HH:mm",
+        "yyyy-MM-dd HH:mm"
+    };
+
+        DateTime newDeparture = DateTime.ParseExact(
+            departure,
+            dateFormats,
+            System.Globalization.CultureInfo.InvariantCulture,
+            System.Globalization.DateTimeStyles.None
+        );
+
+        DateTime newArrival = DateTime.ParseExact(
+            arrival,
+            dateFormats,
+            System.Globalization.CultureInfo.InvariantCulture,
+            System.Globalization.DateTimeStyles.None
+        );
+
+        foreach (FlightModel flight in existingFlights)
+        {
+            if (flight.PlaneId == planeId)
+            {
+                DateTime existingDeparture;
+                DateTime existingArrival;
+
+                // Read existing flight dates in either supported format.
+                bool validDeparture = DateTime.TryParseExact(
+                    flight.DepartureDatetime,
+                    dateFormats,
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    System.Globalization.DateTimeStyles.None,
+                    out existingDeparture
+                );
+
+                bool validArrival = DateTime.TryParseExact(
+                    flight.ArrivalDatetime,
+                    dateFormats,
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    System.Globalization.DateTimeStyles.None,
+                    out existingArrival
+                );
+
+                // Do not mark a plane as available if its schedule cannot be checked.
+                if (!validDeparture || !validArrival)
+                {
+                    return false;
+                }
+
+                // Prevent overlapping flights for the same plane.
+                if (newDeparture < existingArrival &&
+                    newArrival > existingDeparture)
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    // Validate flight and plane availability before saving.
     public bool AddFlight(FlightModel flight)
     {
         List<AirportModel> airports = GetAirports();
         List<PlaneModel> planes = GetPlanes();
 
         if (!IsValidFlight(flight, airports, planes))
+        {
+            return false;
+        }
+
+        List<FlightModel> existingFlights = GetFlights();
+
+        if (!IsPlaneAvailable(
+            flight.PlaneId,
+            flight.DepartureDatetime,
+            flight.ArrivalDatetime,
+            existingFlights))
         {
             return false;
         }

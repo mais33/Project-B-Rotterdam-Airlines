@@ -1,7 +1,6 @@
 public static class AdminFlightPresentation
 {
-    private static AdminFlightLogic logic =
-        new AdminFlightLogic();
+    private static AdminFlightLogic logic = new AdminFlightLogic();
 
     public static void Start()
     {
@@ -11,10 +10,9 @@ public static class AdminFlightPresentation
         Console.WriteLine("=== Add New Flight ===");
         Console.WriteLine();
 
-        // Get available airports from the Logic layer.
+        // Get airports from the Logic layer.
         List<AirportModel> airports = logic.GetAirports();
 
-        // Return to the menu if no airports are available.
         if (airports.Count == 0)
         {
             Console.WriteLine("No airports available.");
@@ -23,7 +21,7 @@ public static class AdminFlightPresentation
             return;
         }
 
-        // Show all available airports.
+        // Show available airports.
         Console.WriteLine("Available airports:");
 
         foreach (AirportModel airport in airports)
@@ -33,7 +31,7 @@ public static class AdminFlightPresentation
             );
         }
 
-        // Ask the admin to choose a departure airport.
+        // Select departure airport.
         long departureAirportId = 0;
 
         while (true)
@@ -51,7 +49,7 @@ public static class AdminFlightPresentation
             Console.WriteLine("Invalid airport. Please try again.");
         }
 
-        // Ask the admin to choose a different destination airport.
+        // Select a different destination airport.
         long destinationAirportId = 0;
 
         while (true)
@@ -72,48 +70,7 @@ public static class AdminFlightPresentation
             );
         }
 
-        // Get available planes from the Logic layer.
-        List<PlaneModel> planes = logic.GetPlanes();
-
-        // Return to the menu if no planes are available.
-        if (planes.Count == 0)
-        {
-            Console.WriteLine("No planes available.");
-            Console.WriteLine("Press any key to return...");
-            Console.ReadKey();
-            return;
-        }
-
-        // Show all available planes.
-        Console.WriteLine();
-        Console.WriteLine("Available planes:");
-
-        foreach (PlaneModel plane in planes)
-        {
-            Console.WriteLine(
-                $"{plane.Id}. {plane.Name} - {plane.Model} - Capacity: {plane.Capacity}"
-            );
-        }
-
-        // Ask the admin to choose a plane.
-        long planeId = 0;
-
-        while (true)
-        {
-            Console.Write("Choose plane ID: ");
-
-            string input = Console.ReadLine() ?? "";
-
-            if (long.TryParse(input, out planeId) &&
-                logic.IsValidPlane(planeId, planes))
-            {
-                break;
-            }
-
-            Console.WriteLine("Invalid plane. Please try again.");
-        }
-
-        // Ask the admin to enter the departure date and time.
+        // Enter departure date and time.
         DateTime departureDate;
 
         while (true)
@@ -140,7 +97,7 @@ public static class AdminFlightPresentation
             );
         }
 
-        // Ask the admin to enter the arrival date and time.
+        // Enter arrival date and time.
         DateTime arrivalDate;
 
         while (true)
@@ -170,23 +127,67 @@ public static class AdminFlightPresentation
             );
         }
 
-        // Use the Netherlands time zone.
-        TimeZoneInfo dutchTimeZone =
-            TimeZoneInfo.FindSystemTimeZoneById("Europe/Amsterdam");
+        // Get planes and existing flights through the Logic layer.
+        List<PlaneModel> planes = logic.GetPlanes();
+        List<FlightModel> existingFlights = logic.GetFlights();
 
-        // Convert departure date to Unix timestamp.
-        long departureTimestamp = new DateTimeOffset(
-            departureDate,
-            dutchTimeZone.GetUtcOffset(departureDate)
-        ).ToUnixTimeSeconds();
+        // Find available planes for the selected time.
+        List<PlaneModel> availablePlanes = new List<PlaneModel>();
 
-        // Convert arrival date to Unix timestamp.
-        long arrivalTimestamp = new DateTimeOffset(
-            arrivalDate,
-            dutchTimeZone.GetUtcOffset(arrivalDate)
-        ).ToUnixTimeSeconds();
+        foreach (PlaneModel plane in planes)
+        {
+            if (logic.IsPlaneAvailable(
+                plane.Id,
+                departureDate.ToString("dd-MM-yyyy HH:mm"),
+                arrivalDate.ToString("dd-MM-yyyy HH:mm"),
+                existingFlights))
+            {
+                availablePlanes.Add(plane);
+            }
+        }
 
-        // Ask the admin to enter a valid ticket price.
+        // Return if no planes are available.
+        if (availablePlanes.Count == 0)
+        {
+            Console.WriteLine();
+            Console.WriteLine("No planes available for the selected time.");
+            Console.WriteLine("Press any key to return...");
+            Console.ReadKey();
+            return;
+        }
+
+        // Show available planes.
+        Console.WriteLine();
+        Console.WriteLine("Available planes:");
+
+        foreach (PlaneModel plane in availablePlanes)
+        {
+            Console.WriteLine(
+                $"{plane.Id}. {plane.Name} - {plane.Model} - Capacity: {plane.Capacity}"
+            );
+        }
+
+        // Select an available plane.
+        long planeId = 0;
+
+        while (true)
+        {
+            Console.Write("Choose plane ID: ");
+
+            string input = Console.ReadLine() ?? "";
+
+            if (long.TryParse(input, out planeId) &&
+                logic.IsValidPlane(planeId, availablePlanes))
+            {
+                break;
+            }
+
+            Console.WriteLine(
+                "Invalid or unavailable plane. Please try again."
+            );
+        }
+
+        // Enter a valid ticket price.
         double price = 0;
 
         while (true)
@@ -206,7 +207,7 @@ public static class AdminFlightPresentation
             );
         }
 
-        // Create a flight object with the entered information.
+        // Create the new flight.
         FlightModel flight = new FlightModel
         {
             PlaneId = planeId,
@@ -217,7 +218,7 @@ public static class AdminFlightPresentation
             ArrivalDatetime = arrivalDate.ToString("dd-MM-yyyy HH:mm")
         };
 
-        // Show the flight information before saving.
+        // Show flight overview before saving.
         Console.WriteLine();
         Console.WriteLine("=== Flight Overview ===");
         Console.WriteLine($"Departure airport ID: {departureAirportId}");
@@ -227,7 +228,7 @@ public static class AdminFlightPresentation
         Console.WriteLine($"Arrival: {arrivalDate:dd-MM-yyyy HH:mm}");
         Console.WriteLine($"Ticket price: €{price:F2}");
 
-        // Ask the admin to confirm the new flight.
+        // Confirm the new flight.
         Console.WriteLine();
         Console.Write("Do you want to save this flight? (Y/N): ");
 
@@ -235,7 +236,7 @@ public static class AdminFlightPresentation
 
         if (confirmation.ToUpper() == "Y")
         {
-            // Validate and save the flight through the Logic layer.
+            // Validate and save through the Logic layer.
             bool success = logic.AddFlight(flight);
 
             if (success)
@@ -244,7 +245,9 @@ public static class AdminFlightPresentation
             }
             else
             {
-                Console.WriteLine("Failed to add flight. Invalid information.");
+                Console.WriteLine(
+                    "Failed to add flight. Invalid information or plane unavailable."
+                );
             }
         }
         else

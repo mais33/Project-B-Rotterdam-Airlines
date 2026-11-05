@@ -135,4 +135,114 @@ public class AddFlightTests
         // Assert
         Assert.IsTrue(result);
     }
+
+    [DataTestMethod]
+    [DataRow("20-11-2026 08:00", "20-11-2026 09:00", true)]
+    [DataRow("20-11-2026 12:00", "20-11-2026 14:00", true)]
+    [DataRow("20-11-2026 11:00", "20-11-2026 13:00", false)]
+    [DataRow("20-11-2026 09:00", "20-11-2026 11:00", false)]
+    [DataRow("20-11-2026 10:00", "20-11-2026 12:00", false)]
+    [DataRow("20-11-2026 09:00", "20-11-2026 13:00", false)]
+    public void CheckPlaneAvailability(
+    string newDeparture,
+    string newArrival,
+    bool expected)
+    {
+        // Arrange
+        AdminFlightLogic logic = new AdminFlightLogic();
+
+        List<FlightModel> existingFlights = new List<FlightModel>
+    {
+        new FlightModel
+        {
+            PlaneId = 1,
+            DepartureDatetime = "20-11-2026 10:00",
+            ArrivalDatetime = "20-11-2026 12:00"
+        }
+    };
+
+        // Act
+        bool result = logic.IsPlaneAvailable(
+            1,
+            newDeparture,
+            newArrival,
+            existingFlights
+        );
+
+        // Assert
+        Assert.AreEqual(expected, result);
+    }
+
+    [TestMethod]
+    public void DifferentPlaneIsAvailable()
+    {
+        // Arrange
+        AdminFlightLogic logic = new AdminFlightLogic();
+
+        List<FlightModel> existingFlights = new List<FlightModel>
+    {
+        new FlightModel
+        {
+            PlaneId = 1,
+            DepartureDatetime = "20-11-2026 10:00",
+            ArrivalDatetime = "20-11-2026 12:00"
+        }
+    };
+
+        // Act
+        bool result = logic.IsPlaneAvailable(
+            2,
+            "20-11-2026 11:00",
+            "20-11-2026 13:00",
+            existingFlights
+        );
+
+        // Assert
+        Assert.IsTrue(result);
+    }
+
+    [TestMethod]
+    public void PlaneWithoutFlightsIsAvailable()
+    {
+        // Arrange
+        AdminFlightLogic logic = new AdminFlightLogic();
+
+        List<FlightModel> existingFlights = new List<FlightModel>();
+
+        // Act
+        bool result = logic.IsPlaneAvailable(
+            1,
+            "20-11-2026 10:00",
+            "20-11-2026 12:00",
+            existingFlights
+        );
+
+        // Assert
+        Assert.IsTrue(result);
+    }
+
+    [TestMethod]
+    public void PlaneWithOldDateFormatIsUnavailable()
+    {
+        AdminFlightLogic logic = new AdminFlightLogic();
+
+        List<FlightModel> existingFlights = new List<FlightModel>
+    {
+        new FlightModel
+        {
+            PlaneId = 1,
+            DepartureDatetime = "2026-11-10 10:00",
+            ArrivalDatetime = "2026-11-10 12:00"
+        }
+    };
+
+        bool result = logic.IsPlaneAvailable(
+            1,
+            "10-11-2026 11:00",
+            "10-11-2026 13:00",
+            existingFlights
+        );
+
+        Assert.IsFalse(result);
+    }
 }

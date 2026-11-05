@@ -3,7 +3,7 @@ static class Menu
     private static AccountsAccess accountsAccess = new();
     private static AccountsLogic accountsLogic = new();
 
-    // This method shows the start menu
+    // Show the start menu.
     public static void Start()
     {
         while (true)
@@ -55,7 +55,7 @@ static class Menu
         }
     }
 
-    // Menu for a customer after logging in
+    // Show the customer menu after login.
     public static void CustomerMenu()
     {
         while (true)
@@ -99,7 +99,7 @@ static class Menu
         }
     }
 
-    // Menu for an admin after logging in
+    // Show the administrator menu after login.
     public static void AdminMenu()
     {
         while (true)
@@ -110,8 +110,8 @@ static class Menu
             Console.WriteLine("               ADMINISTRATOR MENU                 ");
             Console.WriteLine("==================================================");
             Console.WriteLine();
-            Console.WriteLine("  [1] Manage flights");
-            Console.WriteLine("  [2] Manage accounts");
+            Console.WriteLine("  [1] Add Flight");
+            Console.WriteLine("  [2] Manage Accounts");
             Console.WriteLine("  [3] Log out");
             Console.WriteLine();
             Console.WriteLine("--------------------------------------------------");
