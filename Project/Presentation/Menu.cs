@@ -1,8 +1,10 @@
 static class Menu
 {
     // This method shows the start menu
+    private static AccountsLogic accountsLogic = new();
     public static void Start()
     {
+        // accountsLogic.CreateAdminAccount("admin"); //adds an admin account to the database
         while (true)
         {
             Console.Clear();
