@@ -1,28 +1,103 @@
 static class Menu
 {
-
-    //This shows the menu. You can call back to this method to show the menu again
-    //after another presentation method is completed.
-    //You could edit this to show different menus depending on the user's role
-    static public void Start()
+    // This method shows the start menu
+    public static void Start()
     {
-        Console.WriteLine("Enter 1 to login");
-        Console.WriteLine("Enter 2 to do something else in the future");
+        while (true)
+        {
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine("==================================================");
+            Console.WriteLine("               ROTTERDAM AIRLINES                 ");
+            Console.WriteLine("==================================================");
+            Console.WriteLine();
+            Console.WriteLine("  [1] Register");
+            Console.WriteLine("  [2] Log in");
+            Console.WriteLine("  [3] View flights");
+            Console.WriteLine("  [4] Exit program");
+            Console.WriteLine();
+            Console.WriteLine("--------------------------------------------------");
+            Console.Write("  Choose an option (1-4): ");
 
-        string input = Console.ReadLine();
-        if (input == "1")
-        {
-            UserLogin.Start();
-        }
-        else if (input == "2")
-        {
-            Console.WriteLine("This feature is not yet implemented");
-        }
-        else
-        {
-            Console.WriteLine("Invalid input");
-            Start();
-        }
+            string choice = Console.ReadLine() ?? "";
 
+            switch (choice)
+            {
+                case "1":
+                    UserRegistration.Start();
+                    break;
+
+                case "2":
+                    UserLogin.Start();
+                    break;
+
+                case "3":
+                    FlightOverview.Start();
+                    break;
+
+                case "4":
+                    Console.WriteLine();
+                    Console.WriteLine("  > Thank you for visiting Rotterdam Airlines. Goodbye!");
+                    Console.WriteLine();
+                    return;
+
+                default:
+                    Console.WriteLine();
+                    Console.WriteLine("  > Invalid choice. Please choose 1, 2, 3 or 4.");
+                    Console.WriteLine();
+                    Console.WriteLine("  Press any key to continue...");
+                    Console.ReadKey();
+                    break;
+            }
+        }
+    }
+
+    // Menu for an admin after logging in
+    public static void AdminMenu()
+    {
+        while (true)
+        {
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine("==================================================");
+            Console.WriteLine("               ADMINISTRATOR MENU                 ");
+            Console.WriteLine("==================================================");
+            Console.WriteLine();
+            Console.WriteLine("  [1] View flights");
+            Console.WriteLine("  [2] Manage accounts");
+            Console.WriteLine("  [3] Log out");
+            Console.WriteLine();
+            Console.WriteLine("--------------------------------------------------");
+            Console.Write("  Choose an option (1-3): ");
+
+            string choice = Console.ReadLine() ?? "";
+
+            switch (choice)
+            {
+                case "1":
+                    FlightOverview.Start();
+                    break;
+
+                case "2":
+                    AccountManager.Start();
+                    break;
+
+                case "3":
+                    Console.WriteLine();
+                    Console.WriteLine("  > You have been logged out.");
+                    Console.WriteLine();
+                    Console.WriteLine("  Press any key to continue...");
+                    Console.ReadKey();
+                    return;
+
+                default:
+                    Console.WriteLine();
+                    Console.WriteLine("  > Invalid choice. Please choose 1, 2 or 3.");
+                    Console.WriteLine();
+                    Console.WriteLine("  Press any key to continue...");
+                    Console.ReadKey();
+                    break;
+            }
+        }
     }
 }
