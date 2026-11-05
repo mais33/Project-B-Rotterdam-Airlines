@@ -130,11 +130,7 @@ static class Menu
             switch (choice)
             {
                 case "1":
-                    Console.WriteLine();
-                    Console.WriteLine("  > Manage flights is coming soon.");
-                    Console.WriteLine();
-                    Console.WriteLine("  Press any key to continue...");
-                    Console.ReadKey();
+                    AdminFlightPresentation.Start();
                     break;
 
                 case "2":
