@@ -427,3 +427,20 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+.DS_Store
+
+# JetBrains Rider & macOS
+.idea/
+*.sln.iml
+
+# SQLite temporary files
+*.db-wal
+*.db-shm
+*.db-journal
+
+# Local helper / export files
+All_CSharp_Files.md
+user_stories.json
+.env
+.env.*
+
