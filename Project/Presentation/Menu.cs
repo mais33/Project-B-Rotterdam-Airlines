@@ -1,6 +1,9 @@
 static class Menu
 {
-    // This method shows the start menu
+    private static AccountsAccess accountsAccess = new();
+    private static AccountsLogic accountsLogic = new();
+
+    // Show the start menu.
     public static void Start()
     {
         while (true)
@@ -52,7 +55,51 @@ static class Menu
         }
     }
 
-    // Menu for an admin after logging in
+    // Show the customer menu after login.
+    public static void CustomerMenu()
+    {
+        while (true)
+        {
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine("==================================================");
+            Console.WriteLine("                  CUSTOMER MENU                   ");
+            Console.WriteLine("==================================================");
+            Console.WriteLine();
+            Console.WriteLine("  [1] View flights");
+            Console.WriteLine("  [2] Log out");
+            Console.WriteLine();
+            Console.WriteLine("--------------------------------------------------");
+            Console.Write("  Choose an option (1-2): ");
+
+            string choice = Console.ReadLine() ?? "";
+
+            switch (choice)
+            {
+                case "1":
+                    FlightOverview.Start();
+                    break;
+
+                case "2":
+                    Console.WriteLine();
+                    Console.WriteLine("  > You have been logged out.");
+                    Console.WriteLine();
+                    Console.WriteLine("  Press any key to continue...");
+                    Console.ReadKey();
+                    return;
+
+                default:
+                    Console.WriteLine();
+                    Console.WriteLine("  > Invalid choice. Please choose 1 or 2.");
+                    Console.WriteLine();
+                    Console.WriteLine("  Press any key to continue...");
+                    Console.ReadKey();
+                    break;
+            }
+        }
+    }
+
+    // Show the administrator menu after login.
     public static void AdminMenu()
     {
         while (true)
@@ -63,8 +110,8 @@ static class Menu
             Console.WriteLine("               ADMINISTRATOR MENU                 ");
             Console.WriteLine("==================================================");
             Console.WriteLine();
-            Console.WriteLine("  [1] View flights");
-            Console.WriteLine("  [2] Manage accounts");
+            Console.WriteLine("  [1] Add Flight");
+            Console.WriteLine("  [2] Manage Accounts");
             Console.WriteLine("  [3] Log out");
             Console.WriteLine();
             Console.WriteLine("--------------------------------------------------");
@@ -75,7 +122,7 @@ static class Menu
             switch (choice)
             {
                 case "1":
-                    FlightOverview.Start();
+                    AdminFlightPresentation.Start();
                     break;
 
                 case "2":
