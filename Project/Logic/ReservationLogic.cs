@@ -2,10 +2,17 @@ public class ReservationLogic
 {
     private readonly ReservationAccess _reservationAccess =
         new ReservationAccess();
+    private readonly SeatAccess _seatAccess =
+        new SeatAccess();
 
     public List<FlightModel> GetFlights()
     {
         return _reservationAccess.GetFlights();
+    }
+
+    public int GetAvailableSeatCount(FlightModel flight)
+    {
+        return _seatAccess.CountAvailableSeatsForFlight(flight.Id, flight.PlaneId);
     }
 
     public bool IsValidPassengerCount(int passengerCount)
@@ -57,7 +64,7 @@ public class ReservationLogic
         return flightPrice * passengerCount;
     }
 
-    public void MakeReservation(
+    public Int64 MakeReservation(
         Int64 accountId,
         Int64 flightId,
         double totalPrice)
@@ -70,23 +77,43 @@ public class ReservationLogic
             "Confirmed"
         );
 
-        _reservationAccess.AddReservation(reservation);
+        return _reservationAccess.AddReservation(reservation);
     }
 
-    public void AddPassenger(
-        Int64 accountId,
+    public Int64 AddPassenger(
         string firstName,
         string lastName,
         string dateOfBirth)
     {
         PassengerModel passenger = new PassengerModel(
             0,
-            accountId,
             firstName,
             lastName,
             dateOfBirth
         );
 
-        _reservationAccess.AddPassenger(passenger);
+        return _reservationAccess.AddPassenger(passenger);
+    }
+
+    public Int64 AddPassenger(
+        Int64 accountId,
+        string firstName,
+        string lastName,
+        string dateOfBirth)
+    {
+        return AddPassenger(firstName, lastName, dateOfBirth);
+    }
+
+    public Int64 AddPassengerReservation(
+        Int64 passengerId,
+        Int64 reservationId)
+    {
+        PassengerReservationModel passengerReservation = new PassengerReservationModel(
+            0,
+            passengerId,
+            reservationId
+        );
+
+        return _reservationAccess.AddPassengerReservation(passengerReservation);
     }
 }

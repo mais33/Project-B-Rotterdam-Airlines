@@ -29,8 +29,9 @@ public static class ReservationPresentation
 
         for (int i = 0; i < flights.Count; i++)
         {
+            string startCity = flightLogic.GetStartCity(flights[i]);
             string destination = flightLogic.GetDestinationCity(flights[i]);
-            Console.WriteLine($"  [{i + 1}] Rotterdam -> {destination}");
+            Console.WriteLine($"  [{i + 1}] {startCity} -> {destination}");
             Console.WriteLine($"      Departure:  {flights[i].DepartureDatetime}");
             Console.WriteLine($"      Price:      EUR {flights[i].Price:0.00}");
             Console.WriteLine();
@@ -67,21 +68,40 @@ public static class ReservationPresentation
         }
 
         FlightModel selectedFlight = flights[flightChoice - 1];
+        string selectedStartCity = flightLogic.GetStartCity(selectedFlight);
         string selectedDestination = flightLogic.GetDestinationCity(selectedFlight);
+        int availableSeats = reservationLogic.GetAvailableSeatCount(selectedFlight);
+
+        if (availableSeats <= 0)
+        {
+            Console.WriteLine();
+            Console.WriteLine("  > Sorry, there are no seats available on this flight.");
+            Console.WriteLine();
+            Console.WriteLine("  Press any key to return...");
+            Console.ReadKey();
+            return;
+        }
 
         // Number of passengers
         Console.WriteLine();
         int passengerCount = 0;
 
-        while (!reservationLogic.IsValidPassengerCount(passengerCount))
+        while (!reservationLogic.IsValidPassengerCount(passengerCount) || passengerCount > availableSeats)
         {
             Console.Write("  Number of passengers: ");
             string input = Console.ReadLine() ?? "";
 
             if (!int.TryParse(input, out passengerCount) || !reservationLogic.IsValidPassengerCount(passengerCount))
             {
+                passengerCount = 0;
                 Console.WriteLine();
                 Console.WriteLine("  > Invalid number of passengers (must be at least 1). Please try again.");
+                Console.WriteLine();
+            }
+            else if (passengerCount > availableSeats)
+            {
+                Console.WriteLine();
+                Console.WriteLine($"  > Not enough seats available on this flight (available: {availableSeats}).");
                 Console.WriteLine();
             }
         }
@@ -156,7 +176,7 @@ public static class ReservationPresentation
         Console.WriteLine("               RESERVATION OVERVIEW               ");
         Console.WriteLine("==================================================");
         Console.WriteLine();
-        Console.WriteLine($"  Route:           Rotterdam -> {selectedDestination}");
+        Console.WriteLine($"  Route:           {selectedStartCity} -> {selectedDestination}");
         Console.WriteLine($"  Date:            {flightLogic.GetDate(selectedFlight.DepartureDatetime)}");
         Console.WriteLine($"  Departure time:  {flightLogic.GetTime(selectedFlight.DepartureDatetime)}");
         Console.WriteLine();
@@ -190,24 +210,31 @@ public static class ReservationPresentation
         if (confirmation == "yes")
         {
             // Save reservation
-            reservationLogic.MakeReservation(account.Id, selectedFlight.Id, totalPrice);
+            Int64 reservationId = reservationLogic.MakeReservation(account.Id, selectedFlight.Id, totalPrice);
 
-            // Save passengers
-            for (int i = 0; i < passengerCount; i++)
-            {
-                reservationLogic.AddPassenger(account.Id, passengerFirstNames[i], passengerLastNames[i], passengerDatesOfBirth[i]);
-            }
-
-            // Create tickets with unique ticket number for every passenger
+            // Save passengers, link via PassengerReservation, and assign seats via SeatAssignment
             TicketLogic ticketLogic = new TicketLogic();
-            string bookingReference = ticketLogic.MakeBookingReference();
+            string bookingReference = ticketLogic.MakeBookingReference(reservationId);
             List<TicketModel> tickets = new List<TicketModel>();
 
             for (int i = 0; i < passengerCount; i++)
             {
+                Int64 passengerId = reservationLogic.AddPassenger(
+                    passengerFirstNames[i],
+                    passengerLastNames[i],
+                    passengerDatesOfBirth[i]
+                );
+
+                Int64 passengerReservationId = reservationLogic.AddPassengerReservation(
+                    passengerId,
+                    reservationId
+                );
+
                 TicketModel ticket = ticketLogic.CreateTicket(
+                    reservationId,
+                    passengerReservationId,
                     account.Id,
-                    selectedFlight.Id,
+                    selectedFlight,
                     bookingReference,
                     passengerFirstNames[i],
                     passengerLastNames[i]

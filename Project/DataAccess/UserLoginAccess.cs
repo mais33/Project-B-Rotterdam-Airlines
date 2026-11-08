@@ -13,12 +13,13 @@ public class UserLoginAccess
                 id AS Id,
                 first_name AS FirstName,
                 last_name AS LastName,
-                email AS Email,
+                email_adress AS Email,
                 phone_number AS PhoneNumber,
                 role AS Role,
+                is_blocked AS IsBlocked,
                 password AS Password
             FROM Account
-            WHERE email = @Email";
+            WHERE email_adress = @Email";
 
         return _connection.QueryFirstOrDefault<AccountModel>(
             sql,
