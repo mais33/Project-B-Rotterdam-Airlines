@@ -2,6 +2,7 @@ static class Menu
 {
     // This method shows the start menu
     private static AccountsLogic accountsLogic = new();
+    private static SeatAccess seatAccess = new();
     public static void Start()
     {
         // accountsLogic.CreateAdminAccount("admin"); //adds an admin account to the database
@@ -41,6 +42,10 @@ static class Menu
                     Console.WriteLine();
                     Console.WriteLine("  > Thank you for visiting Rotterdam Airlines. Goodbye!");
                     Console.WriteLine();
+                    return;
+                case "5":
+                    seatAccess.ClearSeats();
+                    SeatManager.Start();
                     return;
 
                 default:

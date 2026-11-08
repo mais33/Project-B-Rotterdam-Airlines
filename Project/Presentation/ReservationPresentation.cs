@@ -171,6 +171,12 @@ public static class ReservationPresentation
         Console.WriteLine($"  Total price:    EUR {totalPrice:0.00}");
         Console.WriteLine("--------------------------------------------------");
 
+        SeatManager.Start();
+        if (SeatManager.UserExited)
+        {
+            return;
+        }
+
         // Confirmation
         string confirmation = "";
 
