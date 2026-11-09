@@ -22,33 +22,8 @@ static class TicketPresentation
             return;
         }
 
-        if (flight == null)
-        {
-            flight = flightLogic.GetFlightById(tickets[0].FlightId);
-        }
+        Console.WriteLine(new TicketTemplate().Create(tickets));
 
-        string destination = flight != null ? flightLogic.GetDestinationCity(flight) : "Unknown";
-        string departure = flight != null ? flight.DepartureDatetime : "Unknown";
-
-        Console.WriteLine($"  Booking reference:  {tickets[0].BookingReference}");
-        Console.WriteLine();
-        Console.WriteLine("  FLIGHT");
-        Console.WriteLine("  ------------------------------------------------");
-        Console.WriteLine($"  Route:           Rotterdam -> {destination}");
-        Console.WriteLine($"  Date:            {flightLogic.GetDate(departure)}");
-        Console.WriteLine($"  Departure time:  {flightLogic.GetTime(departure)}");
-        Console.WriteLine();
-        Console.WriteLine("  PASSENGERS");
-        Console.WriteLine("  ------------------------------------------------");
-
-        for (int i = 0; i < tickets.Count; i++)
-        {
-            Console.WriteLine($"  {i + 1}. {tickets[i].FirstName} {tickets[i].LastName}");
-            Console.WriteLine($"     Ticket number: #{tickets[i].Id}    Seat: {tickets[i].Seat}");
-            Console.WriteLine();
-        }
-
-        Console.WriteLine("--------------------------------------------------");
         Console.WriteLine("  You can see this again under 'Booking confirmations'");
         Console.WriteLine("  in the Customer Menu.");
         Console.WriteLine();
@@ -94,42 +69,25 @@ static class TicketPresentation
 
         Console.WriteLine($"  Bookings of {account.FirstName} {account.LastName}");
         Console.WriteLine();
+        string ticketText = new TicketTemplate().Create(tickets);
+        Console.WriteLine(ticketText);
 
-        // Tickets with the same booking reference belong to the same booking
-        string currentReference = "";
-
-        for (int i = 0; i < tickets.Count; i++)
+        Console.Write("  Preview confirmation email? (yes/no): ");
+        string answer = (Console.ReadLine() ?? "").Trim().ToLower();
+        while (answer != "yes" && answer != "no")
         {
-            if (tickets[i].BookingReference != currentReference)
-            {
-                currentReference = tickets[i].BookingReference;
-
-                FlightModel? flight = flightLogic.GetFlightById(tickets[i].FlightId);
-                string destination = flight != null ? flightLogic.GetDestinationCity(flight) : "Unknown";
-                string departure = flight != null ? flight.DepartureDatetime : "Unknown";
-
-                Console.WriteLine("==================================================");
-                Console.WriteLine($"  Booking reference:  {currentReference}");
-                Console.WriteLine("--------------------------------------------------");
-                Console.WriteLine($"  Route:           Rotterdam -> {destination}");
-                Console.WriteLine($"  Date:            {flightLogic.GetDate(departure)}");
-                Console.WriteLine($"  Departure time:  {flightLogic.GetTime(departure)}");
-                Console.WriteLine();
-                Console.WriteLine("  Passengers:");
-            }
-
-            Console.WriteLine($"   - {tickets[i].FirstName} {tickets[i].LastName}");
-            Console.WriteLine($"     Ticket number: #{tickets[i].Id}    Seat: {tickets[i].Seat}");
-
-            // Add an empty line after the last ticket of this booking
-            bool isLastTicket = i == tickets.Count - 1;
-            if (isLastTicket || tickets[i + 1].BookingReference != currentReference)
-            {
-                Console.WriteLine();
-            }
+            Console.Write("  Please enter yes or no: ");
+            answer = (Console.ReadLine() ?? "").Trim().ToLower();
         }
-
-        Console.WriteLine("==================================================");
+        if (answer == "yes")
+        {
+            Console.WriteLine();
+            Console.WriteLine("  CONFIRMATION EMAIL PREVIEW");
+            Console.WriteLine($"  To: {account.Email}");
+            Console.WriteLine("  Subject: Your flight ticket confirmation");
+            Console.WriteLine();
+            Console.WriteLine(ticketText);
+        }
         Console.WriteLine("  Press any key to return...");
         Console.ReadKey();
     }

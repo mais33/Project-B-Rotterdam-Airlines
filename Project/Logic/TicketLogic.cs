@@ -50,4 +50,10 @@ public class TicketLogic
         return _access.GetByAccountId(accountId);
     }
 
+    public List<TicketModel> SaveBooking(long accountId, long flightId, double price,
+        List<string> firstNames, List<string> lastNames, List<string> birthDates)
+    {
+        return _access.SaveBooking(accountId, flightId, price, MakeBookingReference(), firstNames, lastNames, birthDates);
+    }
+
 }

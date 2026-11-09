@@ -1,0 +1,10 @@
+---------------- FLIGHT TICKET ----------------
+Booking reference: {reference}
+Ticket number: {ticket}
+Flight: {flight}
+Route: {origin} -> {destination}
+Departure: {departure}
+Arrival: {arrival}
+Passenger: {passenger}
+Seat: {seat}
+-----------------------------------------------

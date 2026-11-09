@@ -29,6 +29,44 @@ public class TicketAccess
         ticket.Id = _connection.ExecuteScalar<long>(sql, ticket);
     }
 
+    public List<TicketModel> SaveBooking(long accountId, long flightId, double price,
+        string reference, List<string> firstNames, List<string> lastNames, List<string> birthDates)
+    {
+        _connection.Open();
+        try
+        {
+            using var transaction = _connection.BeginTransaction();
+            long reservationId = _connection.ExecuteScalar<long>(
+                "INSERT INTO Reservation (account_id, flight_id, ticket_price, status) VALUES (@accountId, @flightId, @price, 'Confirmed'); SELECT last_insert_rowid();",
+                new { accountId, flightId, price }, transaction);
+            int seatNumber = _connection.ExecuteScalar<int>(
+                "SELECT COUNT(*) FROM Ticket WHERE flight_id = @flightId", new { flightId }, transaction);
+            List<TicketModel> tickets = new List<TicketModel>();
+            for (int i = 0; i < firstNames.Count; i++)
+            {
+                string firstName = firstNames[i];
+                string lastName = lastNames[i];
+                string dob = birthDates[i];
+                _connection.Execute(
+                    "INSERT INTO Passenger (account_id, first_name, last_name, dob) VALUES (@accountId, @firstName, @lastName, @dob)",
+                    new { accountId, firstName, lastName, dob }, transaction);
+                string seat = (seatNumber / 6 + 1).ToString() + "ABCDEF"[seatNumber % 6];
+                TicketModel ticket = new TicketModel(0, reservationId, accountId, flightId, reference, firstName, lastName, seat);
+                ticket.Id = _connection.ExecuteScalar<long>(
+                    "INSERT INTO Ticket (reservation_id, account_id, flight_id, booking_reference, first_name, last_name, seat) VALUES (@ReservationId, @AccountId, @FlightId, @BookingReference, @FirstName, @LastName, @Seat); SELECT last_insert_rowid();",
+                    ticket, transaction);
+                tickets.Add(ticket);
+                seatNumber++;
+            }
+            transaction.Commit();
+            return tickets;
+        }
+        finally
+        {
+            _connection.Close();
+        }
+    }
+
     public List<TicketModel> GetByAccountId(Int64 accountId)
     {
         string sql = $@"SELECT id AS Id, reservation_id AS ReservationId, account_id AS AccountId, flight_id AS FlightId,
