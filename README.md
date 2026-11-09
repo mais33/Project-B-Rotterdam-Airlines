@@ -5,3 +5,8 @@ Console reservation application for Rotterdam Airlines - Project B
 
 Email: john.smith@gmail.com  
 Password: Test123!
+
+## Test Admin Account 
+
+Email: admin@test.nl 
+Password: Admin123456@
