@@ -13,6 +13,13 @@ public class FlightLogic
         return _access.GetById(id);
     }
 
+    // Get the actual departure city of the flight.
+    public string GetDepartureCity(FlightModel flight)
+    {
+        AirportModel? airport = _airportAccess.GetById(flight.StartAirportId);
+        return airport != null ? airport.City : "Unknown";
+    }
+
     public string GetDestinationCity(FlightModel flight)
     {
         AirportModel airport = _airportAccess.GetById(flight.DestinationId);
@@ -30,10 +37,12 @@ public class FlightLogic
     public string GetTime(string departure)
     {
         string[] parts = departure.Split(' ');
+
         if (parts.Length > 1)
         {
             return parts[1];
         }
+
         return "";
     }
 }

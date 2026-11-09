@@ -10,7 +10,7 @@ public class FlightOverview
         Console.WriteLine("                 FLIGHT OVERVIEW                  ");
         Console.WriteLine("==================================================");
         Console.WriteLine();
-        Console.WriteLine("  Discover our flights departing from Rotterdam:\n");
+        Console.WriteLine("  Discover our available flights:\n");
 
         List<FlightModel> flights = flightLogic.GetFlights();
 
@@ -24,9 +24,11 @@ public class FlightOverview
             for (int i = 0; i < flights.Count; i++)
             {
                 FlightModel flight = flights[i];
+
+                string departure = flightLogic.GetDepartureCity(flight);
                 string destination = flightLogic.GetDestinationCity(flight);
 
-                Console.WriteLine($"  [{i + 1}] Rotterdam -> {destination}");
+                Console.WriteLine($"  [{i + 1}] {departure} -> {destination}");
                 Console.WriteLine($"      Departure:  {flight.DepartureDatetime}");
                 Console.WriteLine($"      Price:      EUR {flight.Price:0.00}");
                 Console.WriteLine();

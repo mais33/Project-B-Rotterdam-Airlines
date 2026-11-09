@@ -20,31 +20,84 @@ public class AddFlightTests
         Assert.AreEqual(expected, result);
     }
 
-    [DataTestMethod]
-    [DataRow("15-11-2026 10:30", "15-11-2026 12:30", true)]
-    [DataRow("15-11-2026 12:30", "15-11-2026 10:30", false)]
-    [DataRow("15-11-2026 10:30", "15-11-2026 10:30", false)]
-    public void CheckFlightDateTime(
-        string departure,
-        string arrival,
-        bool expected)
+    [TestMethod]
+    public void ValidFlightDateTimeIsAccepted()
     {
         // Arrange
         AdminFlightLogic logic = new AdminFlightLogic();
 
+        DateTime departure = DateTime.Now.AddDays(10);
+        DateTime arrival = departure.AddHours(2);
+
         // Act
-        bool result = logic.IsValidDateTime(departure, arrival);
+        bool result = logic.IsValidDateTime(
+            departure.ToString("dd-MM-yyyy HH:mm"),
+            arrival.ToString("dd-MM-yyyy HH:mm")
+        );
 
         // Assert
-        Assert.AreEqual(expected, result);
+        Assert.IsTrue(result);
+    }
+
+    [TestMethod]
+    public void ArrivalBeforeDepartureIsInvalid()
+    {
+        // Arrange
+        AdminFlightLogic logic = new AdminFlightLogic();
+
+        DateTime departure = DateTime.Now.AddDays(10);
+        DateTime arrival = departure.AddHours(-2);
+
+        // Act
+        bool result = logic.IsValidDateTime(
+            departure.ToString("dd-MM-yyyy HH:mm"),
+            arrival.ToString("dd-MM-yyyy HH:mm")
+        );
+
+        // Assert
+        Assert.IsFalse(result);
+    }
+
+    [TestMethod]
+    public void ArrivalEqualToDepartureIsInvalid()
+    {
+        // Arrange
+        AdminFlightLogic logic = new AdminFlightLogic();
+
+        DateTime departure = DateTime.Now.AddDays(10);
+
+        // Act
+        bool result = logic.IsValidDateTime(
+            departure.ToString("dd-MM-yyyy HH:mm"),
+            departure.ToString("dd-MM-yyyy HH:mm")
+        );
+
+        // Assert
+        Assert.IsFalse(result);
+    }
+
+    [TestMethod]
+    public void ValidDepartureDateIsAccepted()
+    {
+        // Arrange
+        AdminFlightLogic logic = new AdminFlightLogic();
+
+        DateTime departure = DateTime.Now.AddDays(10);
+
+        // Act
+        bool result = logic.IsValidDepartureDate(
+            departure.ToString("dd-MM-yyyy HH:mm")
+        );
+
+        // Assert
+        Assert.IsTrue(result);
     }
 
     [DataTestMethod]
-    [DataRow("15-11-2026 10:30", true)]
-    [DataRow("31-02-2026 10:30", false)]
-    [DataRow("abc", false)]
-    [DataRow("", false)]
-    public void CheckDepartureDate(string date, bool expected)
+    [DataRow("31-02-2026 10:30")]
+    [DataRow("abc")]
+    [DataRow("")]
+    public void InvalidDepartureDateIsRejected(string date)
     {
         // Arrange
         AdminFlightLogic logic = new AdminFlightLogic();
@@ -53,7 +106,57 @@ public class AddFlightTests
         bool result = logic.IsValidDepartureDate(date);
 
         // Assert
-        Assert.AreEqual(expected, result);
+        Assert.IsFalse(result);
+    }
+
+    [TestMethod]
+    public void DepartureDateInThePastIsInvalid()
+    {
+        // Arrange
+        AdminFlightLogic logic = new AdminFlightLogic();
+
+        // Act
+        bool result = logic.IsValidDepartureDate(
+            "01-01-2000 10:00"
+        );
+
+        // Assert
+        Assert.IsFalse(result);
+    }
+
+    [TestMethod]
+    public void FlightDateTimeInThePastIsInvalid()
+    {
+        // Arrange
+        AdminFlightLogic logic = new AdminFlightLogic();
+
+        // Act
+        bool result = logic.IsValidDateTime(
+            "01-01-2000 10:00",
+            "01-01-2000 12:00"
+        );
+
+        // Assert
+        Assert.IsFalse(result);
+    }
+
+    [TestMethod]
+    public void FlightDateTimeWithDatabaseFormatIsValid()
+    {
+        // Arrange
+        AdminFlightLogic logic = new AdminFlightLogic();
+
+        DateTime departure = DateTime.Now.AddDays(10);
+        DateTime arrival = departure.AddHours(2);
+
+        // Act
+        bool result = logic.IsValidDateTime(
+            departure.ToString("yyyy-MM-dd HH:mm"),
+            arrival.ToString("yyyy-MM-dd HH:mm")
+        );
+
+        // Assert
+        Assert.IsTrue(result);
     }
 
     [DataTestMethod]
@@ -68,8 +171,18 @@ public class AddFlightTests
 
         List<AirportModel> airports = new List<AirportModel>
         {
-            new AirportModel { Id = 1, City = "Rotterdam", Name = "Rotterdam Airport" },
-            new AirportModel { Id = 2, City = "Amsterdam", Name = "Schiphol" }
+            new AirportModel
+            {
+                Id = 1,
+                City = "Rotterdam",
+                Name = "Rotterdam Airport"
+            },
+            new AirportModel
+            {
+                Id = 2,
+                City = "Amsterdam",
+                Name = "Schiphol"
+            }
         };
 
         // Act
@@ -91,8 +204,20 @@ public class AddFlightTests
 
         List<PlaneModel> planes = new List<PlaneModel>
         {
-            new PlaneModel { Id = 1, Name = "Plane A", Model = "Boeing 737", Capacity = 180 },
-            new PlaneModel { Id = 2, Name = "Plane B", Model = "Airbus A320", Capacity = 150 }
+            new PlaneModel
+            {
+                Id = 1,
+                Name = "Plane A",
+                Model = "Boeing 737",
+                Capacity = 180
+            },
+            new PlaneModel
+            {
+                Id = 2,
+                Name = "Plane B",
+                Model = "Airbus A320",
+                Capacity = 150
+            }
         };
 
         // Act
@@ -108,29 +233,52 @@ public class AddFlightTests
         // Arrange
         AdminFlightLogic logic = new AdminFlightLogic();
 
+        DateTime departure = DateTime.Now.AddDays(10);
+        DateTime arrival = departure.AddHours(2);
+
         FlightModel flight = new FlightModel
         {
             PlaneId = 1,
             StartAirportId = 1,
             DestinationId = 2,
             Price = 150,
-            DepartureDatetime = "15-11-2026 10:30",
-            ArrivalDatetime = "15-11-2026 12:30"
+            DepartureDatetime = departure.ToString("yyyy-MM-dd HH:mm"),
+            ArrivalDatetime = arrival.ToString("yyyy-MM-dd HH:mm")
         };
 
         List<AirportModel> airports = new List<AirportModel>
         {
-            new AirportModel { Id = 1, City = "Rotterdam", Name = "Rotterdam Airport" },
-            new AirportModel { Id = 2, City = "Amsterdam", Name = "Schiphol" }
+            new AirportModel
+            {
+                Id = 1,
+                City = "Rotterdam",
+                Name = "Rotterdam Airport"
+            },
+            new AirportModel
+            {
+                Id = 2,
+                City = "Amsterdam",
+                Name = "Schiphol"
+            }
         };
 
         List<PlaneModel> planes = new List<PlaneModel>
         {
-            new PlaneModel { Id = 1, Name = "Plane A", Model = "Boeing 737", Capacity = 180 }
+            new PlaneModel
+            {
+                Id = 1,
+                Name = "Plane A",
+                Model = "Boeing 737", 
+                Capacity = 180
+            }
         };
 
         // Act
-        bool result = logic.IsValidFlight(flight, airports, planes);
+        bool result = logic.IsValidFlight(
+            flight,
+            airports,
+            planes
+        );
 
         // Assert
         Assert.IsTrue(result);
@@ -144,22 +292,22 @@ public class AddFlightTests
     [DataRow("20-11-2026 10:00", "20-11-2026 12:00", false)]
     [DataRow("20-11-2026 09:00", "20-11-2026 13:00", false)]
     public void CheckPlaneAvailability(
-    string newDeparture,
-    string newArrival,
-    bool expected)
+        string newDeparture,
+        string newArrival,
+        bool expected)
     {
         // Arrange
         AdminFlightLogic logic = new AdminFlightLogic();
 
         List<FlightModel> existingFlights = new List<FlightModel>
-    {
-        new FlightModel
         {
-            PlaneId = 1,
-            DepartureDatetime = "20-11-2026 10:00",
-            ArrivalDatetime = "20-11-2026 12:00"
-        }
-    };
+            new FlightModel
+            {
+                PlaneId = 1,
+                DepartureDatetime = "20-11-2026 10:00",
+                ArrivalDatetime = "20-11-2026 12:00"
+            }
+        };
 
         // Act
         bool result = logic.IsPlaneAvailable(
@@ -180,14 +328,14 @@ public class AddFlightTests
         AdminFlightLogic logic = new AdminFlightLogic();
 
         List<FlightModel> existingFlights = new List<FlightModel>
-    {
-        new FlightModel
         {
-            PlaneId = 1,
-            DepartureDatetime = "20-11-2026 10:00",
-            ArrivalDatetime = "20-11-2026 12:00"
-        }
-    };
+            new FlightModel
+            {
+                PlaneId = 1,
+                DepartureDatetime = "20-11-2026 10:00",
+                ArrivalDatetime = "20-11-2026 12:00"
+            }
+        };
 
         // Act
         bool result = logic.IsPlaneAvailable(
@@ -224,18 +372,20 @@ public class AddFlightTests
     [TestMethod]
     public void PlaneWithOldDateFormatIsUnavailable()
     {
+        // Arrange
         AdminFlightLogic logic = new AdminFlightLogic();
 
         List<FlightModel> existingFlights = new List<FlightModel>
-    {
-        new FlightModel
         {
-            PlaneId = 1,
-            DepartureDatetime = "2026-11-10 10:00",
-            ArrivalDatetime = "2026-11-10 12:00"
-        }
-    };
+            new FlightModel
+            {
+                PlaneId = 1,
+                DepartureDatetime = "2026-11-10 10:00",
+                ArrivalDatetime = "2026-11-10 12:00"
+            }
+        };
 
+        // Act
         bool result = logic.IsPlaneAvailable(
             1,
             "10-11-2026 11:00",
@@ -243,6 +393,7 @@ public class AddFlightTests
             existingFlights
         );
 
+        // Assert
         Assert.IsFalse(result);
     }
 }

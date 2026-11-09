@@ -11,9 +11,15 @@ public class AdminFlightLogic
     // Validate departure and arrival times.
     public bool IsValidDateTime(string departure, string arrival)
     {
+        string[] dateFormats =
+        {
+        "dd-MM-yyyy HH:mm",
+        "yyyy-MM-dd HH:mm"
+    };
+
         if (!DateTime.TryParseExact(
             departure,
-            "dd-MM-yyyy HH:mm",
+            dateFormats,
             System.Globalization.CultureInfo.InvariantCulture,
             System.Globalization.DateTimeStyles.None,
             out DateTime departureDate))
@@ -23,7 +29,7 @@ public class AdminFlightLogic
 
         if (!DateTime.TryParseExact(
             arrival,
-            "dd-MM-yyyy HH:mm",
+            dateFormats,
             System.Globalization.CultureInfo.InvariantCulture,
             System.Globalization.DateTimeStyles.None,
             out DateTime arrivalDate))
@@ -31,18 +37,25 @@ public class AdminFlightLogic
             return false;
         }
 
-        return arrivalDate > departureDate;
+        // Departure must be in the future and arrival must be later.
+        return departureDate > DateTime.Now &&
+               arrivalDate > departureDate;
     }
 
+    // Validate that the departure date is in the future.
     public bool IsValidDepartureDate(string date)
     {
-        return DateTime.TryParseExact(
+        if (!DateTime.TryParseExact(
             date,
             "dd-MM-yyyy HH:mm",
             System.Globalization.CultureInfo.InvariantCulture,
             System.Globalization.DateTimeStyles.None,
-            out _
-        );
+            out DateTime departureDate))
+        {
+            return false;
+        }
+
+        return departureDate > DateTime.Now;
     }
 
     // Check if the selected airport exists.

@@ -110,19 +110,20 @@ static class Menu
             Console.WriteLine("               ADMINISTRATOR MENU                 ");
             Console.WriteLine("==================================================");
             Console.WriteLine();
-            Console.WriteLine("  [1] Add Flight");
-            Console.WriteLine("  [2] Manage Accounts");
-            Console.WriteLine("  [3] Log out");
+            Console.WriteLine("  [1] View flights");
+            Console.WriteLine("  [2] Manage accounts");
+            Console.WriteLine("  [3] Add Flight");
+            Console.WriteLine("  [4] Log out");
             Console.WriteLine();
             Console.WriteLine("--------------------------------------------------");
-            Console.Write("  Choose an option (1-3): ");
+            Console.Write("  Choose an option (1-4): ");
 
             string choice = Console.ReadLine() ?? "";
 
             switch (choice)
             {
                 case "1":
-                    AdminFlightPresentation.Start();
+                    FlightOverview.Start();
                     break;
 
                 case "2":
@@ -130,6 +131,10 @@ static class Menu
                     break;
 
                 case "3":
+                    AdminFlightPresentation.Start();
+                    break;
+
+                case "4":
                     Console.WriteLine();
                     Console.WriteLine("  > You have been logged out.");
                     Console.WriteLine();
@@ -139,7 +144,7 @@ static class Menu
 
                 default:
                     Console.WriteLine();
-                    Console.WriteLine("  > Invalid choice. Please choose 1, 2 or 3.");
+                    Console.WriteLine("  > Invalid choice. Please choose 1, 2, 3 or 4.");
                     Console.WriteLine();
                     Console.WriteLine("  Press any key to continue...");
                     Console.ReadKey();
