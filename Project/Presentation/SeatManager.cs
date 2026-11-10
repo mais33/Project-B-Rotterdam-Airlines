@@ -72,7 +72,7 @@ public class SeatManager
             Console.Clear();
             seatManager.DrawSeatMap(currentMap);
 
-            Console.WriteLine("\nEnter a seat to select (for example: 1A)");
+            Console.WriteLine("\nEnter a seat to select (for example: 1A)  Standard -->[S]  Premium -->[P]  Vip -->[V]");
             Console.WriteLine("type 'confirm' to confirm seat reservation or 'exit' to return to customer menu");
             string choice = Console.ReadLine()?.Trim().ToUpper() ?? "";
 
@@ -120,11 +120,18 @@ public class SeatManager
                     {
                         AmountOfSeatsReservedCount++;
                         Console.WriteLine("\nYou confirmed your seat reservation.");
-                        if(AmountOfSeatsReservedCount >= 6)
+                        int maxSeats = ReservationPresentation.passengerCount;
+                        if(AmountOfSeatsReservedCount >= maxSeats)
                         {
-                            Console.WriteLine("You have reserved the maximum amount of 6 seats. Returning..");
+                            Console.WriteLine($"You have reserved a total of {maxSeats} seats. Returning..");
                             selecting = false;
                         }
+                    }
+                    else
+                    {
+                        seatLogic.UnReserveSeat(selectedSeat);
+                        currentMap = seatLogic.LoadSeatMapFromDatabase();
+                        continue;
                     }
                 }
                 else
