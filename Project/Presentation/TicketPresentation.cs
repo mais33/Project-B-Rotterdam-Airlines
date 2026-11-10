@@ -31,7 +31,7 @@ static class TicketPresentation
             flight = flightLogic.GetFlightById(tickets[0].FlightId);
         }
 
-        string startCity = flight != null ? flightLogic.GetStartCity(flight) : "Rotterdam";
+        string departureCity = flight != null ? flightLogic.GetDepartureCity(flight) : "Rotterdam";
         string destination = flight != null ? flightLogic.GetDestinationCity(flight) : "Unknown";
         string departure = flight != null ? flight.DepartureDatetime : "Unknown";
 
@@ -39,7 +39,7 @@ static class TicketPresentation
         Console.WriteLine();
         Console.WriteLine("  FLIGHT");
         Console.WriteLine("  ------------------------------------------------");
-        Console.WriteLine($"  Route:           {startCity} -> {destination}");
+        Console.WriteLine($"  Route:           {departureCity} -> {destination}");
         Console.WriteLine($"  Date:            {flightLogic.GetDate(departure)}");
         Console.WriteLine($"  Departure time:  {flightLogic.GetTime(departure)}");
         Console.WriteLine();
@@ -135,14 +135,14 @@ static class TicketPresentation
                 currentFlightId = tickets[i].FlightId;
 
                 FlightModel? flight = flightLogic.GetFlightById(tickets[i].FlightId);
-                string startCity = flight != null ? flightLogic.GetStartCity(flight) : "Rotterdam";
+                string departureCity = flight != null ? flightLogic.GetDepartureCity(flight) : "Rotterdam";
                 string destination = flight != null ? flightLogic.GetDestinationCity(flight) : "Unknown";
                 string departure = flight != null ? flight.DepartureDatetime : "Unknown";
 
                 Console.WriteLine("==================================================");
                 Console.WriteLine($"  Booking reference:  {currentReference}");
                 Console.WriteLine("--------------------------------------------------");
-                Console.WriteLine($"  Route:           {startCity} -> {destination}");
+                Console.WriteLine($"  Route:           {departureCity} -> {destination}");
                 Console.WriteLine($"  Date:            {flightLogic.GetDate(departure)}");
                 Console.WriteLine($"  Departure time:  {flightLogic.GetTime(departure)}");
                 Console.WriteLine();

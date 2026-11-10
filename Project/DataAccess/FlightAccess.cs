@@ -11,11 +11,9 @@ public class FlightAccess
         // Get flight information including the departure airport.
         string sql = @"SELECT
                            id AS Id,
-                           plane_id AS PlaneId,
-                           destination_id AS DestinationId,
                            start_airport_id AS StartAirportId,
+                           destination_id AS DestinationId,
                            price AS Price,
-                           arrival_datetime AS ArrivalDatetime,
                            departure_datetime AS DepartureDatetime
                        FROM Flight";
 
@@ -24,18 +22,7 @@ public class FlightAccess
 
     public List<FlightModel> Search(Int64 startAirportId, Int64 destinationId, string date)
     {
-        string sql = @"SELECT
-                           id AS Id,
-                           plane_id AS PlaneId,
-                           destination_id AS DestinationId,
-                           start_airport_id AS StartAirportId,
-                           price AS Price,
-                           arrival_datetime AS ArrivalDatetime,
-                           departure_datetime AS DepartureDatetime
-                       FROM Flight
-                       WHERE start_airport_id = @StartAirportId
-                         AND destination_id = @DestinationId
-                         AND substr(departure_datetime, 1, 10) = @Date";
+        string sql = "SELECT * FROM Flight WHERE start_airport_id = @StartAirportId AND destination_id = @DestinationId AND substr(departure_datetime, 1, 10) = @Date";
 
         return _connection.Query<FlightModel>(sql, new { StartAirportId = startAirportId, DestinationId = destinationId, Date = date }).AsList();
     }
@@ -45,11 +32,9 @@ public class FlightAccess
         // Get a specific flight including the departure airport.
         string sql = @"SELECT
                            id AS Id,
-                           plane_id AS PlaneId,
-                           destination_id AS DestinationId,
                            start_airport_id AS StartAirportId,
+                           destination_id AS DestinationId,
                            price AS Price,
-                           arrival_datetime AS ArrivalDatetime,
                            departure_datetime AS DepartureDatetime
                        FROM Flight
                        WHERE id = @Id";

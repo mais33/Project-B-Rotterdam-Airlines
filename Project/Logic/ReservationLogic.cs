@@ -2,10 +2,6 @@ public class ReservationLogic
 {
     private readonly ReservationAccess _reservationAccess =
         new ReservationAccess();
-    private readonly SeatAccess _seatAccess =
-        new SeatAccess();
-    private readonly TicketAccess _ticketAccess =
-        new TicketAccess();
 
     public List<FlightModel> GetFlights()
     {
@@ -27,11 +23,6 @@ public class ReservationLogic
         }
 
         return returnFlights;
-    }
-
-    public int GetAvailableSeatCount(FlightModel flight)
-    {
-        return _seatAccess.CountAvailableSeatsForFlight(flight.Id, flight.PlaneId);
     }
 
     public bool IsValidPassengerCount(int passengerCount)
@@ -58,13 +49,9 @@ public class ReservationLogic
             return false;
         }
 
-        for (int i = 0; i < trimmed.Length; i++)
+        if (!trimmed.All(char.IsLetter))
         {
-            char c = trimmed[i];
-            if (!char.IsLetter(c) && c != ' ' && c != '-')
-            {
-                return false;
-            }
+            return false;
         }
 
         return true;
@@ -133,57 +120,37 @@ public class ReservationLogic
     }
 
     public Int64 AddPassenger(
-        string firstName,
-        string lastName,
-        string dateOfBirth,
-        string passportNumber = "")
-    {
-        PassengerModel passenger = new PassengerModel(
-            0,
-            firstName,
-            lastName,
-            dateOfBirth,
-            passportNumber
-        );
-
-        return _reservationAccess.AddPassenger(passenger);
-    }
-
-    public Int64 AddPassenger(
         Int64 accountId,
         string firstName,
         string lastName,
         string dateOfBirth)
     {
-        return AddPassenger(firstName, lastName, dateOfBirth);
+        PassengerModel passenger = new PassengerModel(
+            0,
+            accountId,
+            firstName.Trim(),
+            lastName.Trim(),
+            dateOfBirth.Trim()
+        );
+
+        return _reservationAccess.AddPassenger(passenger);
     }
 
     public Int64 LinkPassengerToReservation(
         Int64 passengerId,
-        Int64 reservationId,
-        Int64 seatId = 0)
+        Int64 reservationId)
     {
-        if (seatId <= 0)
-        {
-            SeatModel? seat = _seatAccess.GetNextAvailableSeatForFlight(1, 1);
-            if (seat != null)
-            {
-                seatId = seat.Id;
-            }
-        }
-
-        TicketModel ticket = new TicketModel(
+        PassengerReservationModel passengerReservation = new PassengerReservationModel(
             0,
             passengerId,
-            reservationId,
-            seatId
+            reservationId
         );
 
-        return _ticketAccess.AddTicket(ticket);
+        return _reservationAccess.AddPassengerReservation(passengerReservation);
     }
 
-    public List<TicketModel> GetTicketsForReservation(Int64 reservationId)
+    public List<PassengerReservationModel> GetPassengersForReservation(Int64 reservationId)
     {
-        return _ticketAccess.GetByReservationId(reservationId);
+        return _reservationAccess.GetByReservationId(reservationId);
     }
 }

@@ -4,11 +4,7 @@ public class ReservationModel
     public Int64 AccountId { get; set; }
     public Int64 FlightId { get; set; }
     public double TicketPrice { get; set; }
-    public string Status { get; set; } = "";
-
-    public ReservationModel()
-    {
-    }
+    public string Status { get; set; }
 
     public ReservationModel(
         Int64 id,
