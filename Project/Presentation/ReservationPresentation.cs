@@ -179,60 +179,60 @@ public static class ReservationPresentation
         }
 
         // Confirmation
-        string confirmation = "";
+        // string confirmation = "";
 
-        while (confirmation != "yes" && confirmation != "no")
-        {
-            Console.Write("  Confirm reservation? (yes/no): ");
-            confirmation = (Console.ReadLine() ?? "").Trim().ToLower();
+        // while (confirmation != "yes" && confirmation != "no")
+        // {
+        //     Console.Write("  Confirm reservation? (yes/no): ");
+        //     confirmation = (Console.ReadLine() ?? "").Trim().ToLower();
 
-            if (confirmation != "yes" && confirmation != "no")
-            {
-                Console.WriteLine();
-                Console.WriteLine("  > Invalid input. Please enter 'yes' or 'no'.");
-                Console.WriteLine();
-            }
-        }
+        //     if (confirmation != "yes" && confirmation != "no")
+        //     {
+        //         Console.WriteLine();
+        //         Console.WriteLine("  > Invalid input. Please enter 'yes' or 'no'.");
+        //         Console.WriteLine();
+        //     }
+        // }
 
-        if (confirmation == "yes")
-        {
-            // Save reservation
-            reservationLogic.MakeReservation(account.Id, selectedFlight.Id, totalPrice);
+        // if (confirmation == "yes")
+        // {
+        //     // Save reservation
+        //     reservationLogic.MakeReservation(account.Id, selectedFlight.Id, totalPrice);
 
-            // Save passengers
-            for (int i = 0; i < passengerCount; i++)
-            {
-                reservationLogic.AddPassenger(account.Id, passengerFirstNames[i], passengerLastNames[i], passengerDatesOfBirth[i]);
-            }
+        //     // Save passengers
+        //     for (int i = 0; i < passengerCount; i++)
+        //     {
+        //         reservationLogic.AddPassenger(account.Id, passengerFirstNames[i], passengerLastNames[i], passengerDatesOfBirth[i]);
+        //     }
 
-            // Create tickets with unique ticket number for every passenger
-            TicketLogic ticketLogic = new TicketLogic();
-            string bookingReference = ticketLogic.MakeBookingReference();
-            List<TicketModel> tickets = new List<TicketModel>();
+        //     // Create tickets with unique ticket number for every passenger
+        //     TicketLogic ticketLogic = new TicketLogic();
+        //     string bookingReference = ticketLogic.MakeBookingReference();
+        //     List<TicketModel> tickets = new List<TicketModel>();
 
-            for (int i = 0; i < passengerCount; i++)
-            {
-                TicketModel ticket = ticketLogic.CreateTicket(
-                    account.Id,
-                    selectedFlight.Id,
-                    bookingReference,
-                    passengerFirstNames[i],
-                    passengerLastNames[i]
-                );
-                tickets.Add(ticket);
-            }
+        //     for (int i = 0; i < passengerCount; i++)
+        //     {
+        //         TicketModel ticket = ticketLogic.CreateTicket(
+        //             account.Id,
+        //             selectedFlight.Id,
+        //             bookingReference,
+        //             passengerFirstNames[i],
+        //             passengerLastNames[i]
+        //         );
+        //         tickets.Add(ticket);
+        //     }
 
-            // Show confirmation with flight, date, departure time, and passengers
-            TicketPresentation.ShowConfirmation(tickets, selectedFlight);
-        }
-        else
-        {
-            Console.WriteLine();
-            Console.WriteLine("--------------------------------------------------");
-            Console.WriteLine("  > Reservation cancelled.");
-            Console.WriteLine();
-            Console.WriteLine("  Press any key to continue...");
-            Console.ReadKey();
-        }
+        //     // Show confirmation with flight, date, departure time, and passengers
+        //     TicketPresentation.ShowConfirmation(tickets, selectedFlight);
+        // }
+        // else
+        // {
+        //     Console.WriteLine();
+        //     Console.WriteLine("--------------------------------------------------");
+        //     Console.WriteLine("  > Reservation cancelled.");
+        //     Console.WriteLine();
+        //     Console.WriteLine("  Press any key to continue...");
+        //     Console.ReadKey();
+        // }
     }
 }
