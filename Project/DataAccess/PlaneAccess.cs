@@ -8,13 +8,26 @@ public class PlaneAccess
 
     public List<PlaneModel> GetAll()
     {
-        string sql = "SELECT id AS Id, name AS Name, model AS Model, capacity AS Capacity FROM Plane";
+        string sql = @"
+            SELECT
+                id AS Id,
+                name AS Name,
+                model AS Model,
+                (SELECT COUNT(*) FROM Seat WHERE plane_id = Plane.id) AS Capacity
+            FROM Plane";
         return _connection.Query<PlaneModel>(sql).ToList();
     }
 
     public PlaneModel? GetById(Int64 id)
     {
-        string sql = "SELECT id AS Id, name AS Name, model AS Model, capacity AS Capacity FROM Plane WHERE id = @Id";
+        string sql = @"
+            SELECT
+                id AS Id,
+                name AS Name,
+                model AS Model,
+                (SELECT COUNT(*) FROM Seat WHERE plane_id = Plane.id) AS Capacity
+            FROM Plane
+            WHERE id = @Id";
         return _connection.QueryFirstOrDefault<PlaneModel>(sql, new { Id = id });
     }
 }

@@ -3,7 +3,14 @@ public class PassengerModel
     public Int64 Id { get; set; }
     public string FirstName { get; set; } = "";
     public string LastName { get; set; } = "";
-    public string Dob { get; set; } = "";
+    public string DateOfBirth { get; set; } = "";
+    public string PassportNumber { get; set; } = "";
+
+    public string Dob
+    {
+        get => DateOfBirth;
+        set => DateOfBirth = value;
+    }
 
     public PassengerModel()
     {
@@ -13,11 +20,13 @@ public class PassengerModel
         Int64 id,
         string firstName,
         string lastName,
-        string dob)
+        string dateOfBirth,
+        string passportNumber = "")
     {
         Id = id;
         FirstName = firstName;
         LastName = lastName;
-        Dob = dob;
+        DateOfBirth = dateOfBirth;
+        PassportNumber = passportNumber;
     }
 }

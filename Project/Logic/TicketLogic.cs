@@ -52,7 +52,7 @@ public class TicketLogic
 
     public TicketModel CreateTicket(
         Int64 reservationId,
-        Int64 passengerReservationId,
+        Int64 passengerId,
         Int64 accountId,
         FlightModel flight,
         string bookingReference,
@@ -61,12 +61,11 @@ public class TicketLogic
     {
         SeatModel? assignedSeat = _seatAccess.GetNextAvailableSeatForFlight(flight.Id, flight.PlaneId);
         string seatNumber;
+        Int64 seatId = 0;
 
         if (assignedSeat != null)
         {
-            _seatAccess.SetSeatReserved(assignedSeat.Id, true);
-            SeatAssignmentModel assignment = new SeatAssignmentModel(0, passengerReservationId, assignedSeat.Id);
-            _seatAccess.AddSeatAssignment(assignment);
+            seatId = assignedSeat.Id;
             seatNumber = assignedSeat.SeatNumber;
         }
         else
@@ -75,8 +74,11 @@ public class TicketLogic
             seatNumber = GetSeat(Math.Max(0, ticketsOnFlight - 1));
         }
 
-        return new TicketModel(
-            passengerReservationId,
+        TicketModel ticketRow = new TicketModel(0, passengerId, reservationId, seatId);
+        Int64 ticketId = _access.AddTicket(ticketRow);
+
+        TicketModel ticket = new TicketModel(
+            ticketId,
             reservationId,
             accountId,
             flight.Id,
@@ -85,6 +87,10 @@ public class TicketLogic
             lastName,
             seatNumber
         );
+        ticket.PassengerId = passengerId;
+        ticket.SeatId = seatId;
+
+        return ticket;
     }
 
     public TicketModel CreateTicket(
@@ -99,9 +105,6 @@ public class TicketLogic
             ?? new FlightModel(flightId, 0, 0, 1, 0, "", "");
 
         Int64 passengerId = _reservationAccess.AddPassenger(new PassengerModel(0, firstName, lastName, ""));
-        Int64 passengerReservationId = _reservationAccess.AddPassengerReservation(
-            new PassengerReservationModel(0, passengerId, reservationId)
-        );
 
         string resolvedReference = reservationId > 0
             ? MakeBookingReference(reservationId)
@@ -109,7 +112,7 @@ public class TicketLogic
 
         return CreateTicket(
             reservationId,
-            passengerReservationId,
+            passengerId,
             accountId,
             flight,
             resolvedReference,

@@ -212,7 +212,7 @@ public static class ReservationPresentation
             // Save reservation
             Int64 reservationId = reservationLogic.MakeReservation(account.Id, selectedFlight.Id, totalPrice);
 
-            // Save passengers, link via PassengerReservation, and assign seats via SeatAssignment
+            // Save passengers and create tickets
             TicketLogic ticketLogic = new TicketLogic();
             string bookingReference = ticketLogic.MakeBookingReference(reservationId);
             List<TicketModel> tickets = new List<TicketModel>();
@@ -225,14 +225,9 @@ public static class ReservationPresentation
                     passengerDatesOfBirth[i]
                 );
 
-                Int64 passengerReservationId = reservationLogic.AddPassengerReservation(
-                    passengerId,
-                    reservationId
-                );
-
                 TicketModel ticket = ticketLogic.CreateTicket(
                     reservationId,
-                    passengerReservationId,
+                    passengerId,
                     account.Id,
                     selectedFlight,
                     bookingReference,

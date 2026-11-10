@@ -60,13 +60,11 @@ public sealed class Test1
 
         string reference = ticketLogic.MakeBookingReference(reservationId);
 
-        Int64 p1 = reservationLogic.AddPassenger("Alice", "Jansen", "1999-04-12");
-        Int64 pr1 = reservationLogic.AddPassengerReservation(p1, reservationId);
-        TicketModel t1 = ticketLogic.CreateTicket(reservationId, pr1, 11, flight, reference, "Alice", "Jansen");
+        Int64 p1 = reservationLogic.AddPassenger("Alice", "Jansen", "1999-04-12", "NL2000001");
+        TicketModel t1 = ticketLogic.CreateTicket(reservationId, p1, 11, flight, reference, "Alice", "Jansen");
 
-        Int64 p2 = reservationLogic.AddPassenger("Bob", "DeVries", "1998-09-21");
-        Int64 pr2 = reservationLogic.AddPassengerReservation(p2, reservationId);
-        TicketModel t2 = ticketLogic.CreateTicket(reservationId, pr2, 11, flight, reference, "Bob", "DeVries");
+        Int64 p2 = reservationLogic.AddPassenger("Bob", "DeVries", "1998-09-21", "NL2000002");
+        TicketModel t2 = ticketLogic.CreateTicket(reservationId, p2, 11, flight, reference, "Bob", "DeVries");
 
         Assert.AreEqual("1A", t1.Seat);
         Assert.AreEqual("1B", t2.Seat);

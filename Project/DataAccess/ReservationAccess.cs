@@ -39,26 +39,13 @@ public class ReservationAccess
     {
         string sql = @"
             INSERT INTO Passenger
-            (first_name, last_name, dob)
+            (first_name, last_name, date_of_birth, passport_number)
             VALUES
-            (@FirstName, @LastName, @Dob);
+            (@FirstName, @LastName, @DateOfBirth, @PassportNumber);
             SELECT last_insert_rowid();";
 
         passenger.Id = _connection.ExecuteScalar<Int64>(sql, passenger);
         return passenger.Id;
-    }
-
-    public Int64 AddPassengerReservation(PassengerReservationModel passengerReservation)
-    {
-        string sql = @"
-            INSERT INTO PassengerReservation
-            (passenger_id, reservation_id)
-            VALUES
-            (@PassengerId, @ReservationId);
-            SELECT last_insert_rowid();";
-
-        passengerReservation.Id = _connection.ExecuteScalar<Int64>(sql, passengerReservation);
-        return passengerReservation.Id;
     }
 
     public List<ReservationModel> GetReservationsByAccountId(Int64 accountId)

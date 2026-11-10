@@ -83,13 +83,15 @@ public class ReservationLogic
     public Int64 AddPassenger(
         string firstName,
         string lastName,
-        string dateOfBirth)
+        string dateOfBirth,
+        string passportNumber = "")
     {
         PassengerModel passenger = new PassengerModel(
             0,
             firstName,
             lastName,
-            dateOfBirth
+            dateOfBirth,
+            passportNumber
         );
 
         return _reservationAccess.AddPassenger(passenger);
@@ -102,18 +104,5 @@ public class ReservationLogic
         string dateOfBirth)
     {
         return AddPassenger(firstName, lastName, dateOfBirth);
-    }
-
-    public Int64 AddPassengerReservation(
-        Int64 passengerId,
-        Int64 reservationId)
-    {
-        PassengerReservationModel passengerReservation = new PassengerReservationModel(
-            0,
-            passengerId,
-            reservationId
-        );
-
-        return _reservationAccess.AddPassengerReservation(passengerReservation);
     }
 }

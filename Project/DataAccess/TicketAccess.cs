@@ -6,24 +6,38 @@ public class TicketAccess
     private readonly SqliteConnection _connection =
         new SqliteConnection("Data Source=DataSources/database.db");
 
+    public Int64 AddTicket(TicketModel ticket)
+    {
+        string sql = @"
+            INSERT INTO Ticket
+            (passenger_id, reservation_id, seat_id)
+            VALUES
+            (@PassengerId, @ReservationId, @SeatId);
+            SELECT last_insert_rowid();";
+
+        ticket.Id = _connection.ExecuteScalar<Int64>(sql, ticket);
+        return ticket.Id;
+    }
+
     public List<TicketModel> GetByAccountId(Int64 accountId)
     {
         string sql = @"
             SELECT
-                pr.id AS Id,
-                r.id AS ReservationId,
+                t.id AS Id,
+                t.passenger_id AS PassengerId,
+                t.reservation_id AS ReservationId,
+                t.seat_id AS SeatId,
                 r.account_id AS AccountId,
                 r.flight_id AS FlightId,
                 p.first_name AS FirstName,
                 p.last_name AS LastName,
                 COALESCE(s.seat_number, 'Unassigned') AS Seat
-            FROM Reservation r
-            INNER JOIN PassengerReservation pr ON pr.reservation_id = r.id
-            INNER JOIN Passenger p ON p.id = pr.passenger_id
-            LEFT JOIN SeatAssignment sa ON sa.passenger_reservation_id = pr.id
-            LEFT JOIN Seat s ON s.id = sa.seat_id
+            FROM Ticket t
+            INNER JOIN Reservation r ON r.id = t.reservation_id
+            INNER JOIN Passenger p ON p.id = t.passenger_id
+            LEFT JOIN Seat s ON s.id = t.seat_id
             WHERE r.account_id = @AccountId
-            ORDER BY r.id ASC, pr.id ASC";
+            ORDER BY r.id ASC, t.id ASC";
 
         return _connection.Query<TicketModel>(sql, new { AccountId = accountId }).ToList();
     }
@@ -32,20 +46,21 @@ public class TicketAccess
     {
         string sql = @"
             SELECT
-                pr.id AS Id,
-                r.id AS ReservationId,
+                t.id AS Id,
+                t.passenger_id AS PassengerId,
+                t.reservation_id AS ReservationId,
+                t.seat_id AS SeatId,
                 r.account_id AS AccountId,
                 r.flight_id AS FlightId,
                 p.first_name AS FirstName,
                 p.last_name AS LastName,
                 COALESCE(s.seat_number, 'Unassigned') AS Seat
-            FROM Reservation r
-            INNER JOIN PassengerReservation pr ON pr.reservation_id = r.id
-            INNER JOIN Passenger p ON p.id = pr.passenger_id
-            LEFT JOIN SeatAssignment sa ON sa.passenger_reservation_id = pr.id
-            LEFT JOIN Seat s ON s.id = sa.seat_id
-            WHERE r.id = @ReservationId
-            ORDER BY pr.id ASC";
+            FROM Ticket t
+            INNER JOIN Reservation r ON r.id = t.reservation_id
+            INNER JOIN Passenger p ON p.id = t.passenger_id
+            LEFT JOIN Seat s ON s.id = t.seat_id
+            WHERE t.reservation_id = @ReservationId
+            ORDER BY t.id ASC";
 
         return _connection.Query<TicketModel>(sql, new { ReservationId = reservationId }).ToList();
     }
@@ -54,8 +69,8 @@ public class TicketAccess
     {
         string sql = @"
             SELECT COUNT(*)
-            FROM PassengerReservation pr
-            INNER JOIN Reservation r ON r.id = pr.reservation_id
+            FROM Ticket t
+            INNER JOIN Reservation r ON r.id = t.reservation_id
             WHERE r.flight_id = @FlightId";
 
         return _connection.ExecuteScalar<int>(sql, new { FlightId = flightId });

@@ -5,7 +5,7 @@ public class SeatModel
     public string SeatNumber { get; set; } = "";
     public int RowNumber { get; set; }
     public double Price { get; set; }
-    public bool IsReserved { get; set; }
+    public int Tier { get; set; }
 
     public SeatModel()
     {
@@ -17,13 +17,13 @@ public class SeatModel
         string seatNumber,
         int rowNumber,
         double price,
-        bool isReserved)
+        int tier)
     {
         Id = id;
         PlaneId = planeId;
         SeatNumber = seatNumber;
         RowNumber = rowNumber;
         Price = price;
-        IsReserved = isReserved;
+        Tier = tier;
     }
 }

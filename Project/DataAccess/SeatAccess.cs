@@ -15,7 +15,7 @@ public class SeatAccess
                 seat_number AS SeatNumber,
                 row_number AS RowNumber,
                 price AS Price,
-                is_reserved AS IsReserved
+                tier AS Tier
             FROM Seat
             WHERE plane_id = @PlaneId
             ORDER BY row_number ASC, seat_number ASC";
@@ -32,7 +32,7 @@ public class SeatAccess
                 seat_number AS SeatNumber,
                 row_number AS RowNumber,
                 price AS Price,
-                is_reserved AS IsReserved
+                tier AS Tier
             FROM Seat
             WHERE id = @Id";
 
@@ -50,8 +50,8 @@ public class SeatAccess
             if (planeId <= 0)
             {
                 planeId = _connection.ExecuteScalar<Int64>(@"
-                    INSERT INTO Plane (name, model, capacity)
-                    VALUES ('Rotterdam Airlines 01', 'Boeing 737-800', 96);
+                    INSERT INTO Plane (name, model)
+                    VALUES ('Rotterdam Airlines 01', 'Boeing 737-800');
                     SELECT last_insert_rowid();");
             }
         }
@@ -67,18 +67,21 @@ public class SeatAccess
             for (int row = 1; row <= 16; row++)
             {
                 double price = row <= 2 ? 25.0 : (row <= 5 ? 15.0 : 0.0);
+                int tier = row <= 2 ? 3 : (row <= 5 ? 2 : 1);
+
                 for (int col = 0; col < seatLetters.Length; col++)
                 {
                     string seatNumber = $"{row}{seatLetters[col]}";
                     _connection.Execute(
-                        @"INSERT INTO Seat (plane_id, seat_number, row_number, price, is_reserved)
-                          VALUES (@PlaneId, @SeatNumber, @RowNumber, @Price, 0)",
+                        @"INSERT INTO Seat (plane_id, seat_number, row_number, price, tier)
+                          VALUES (@PlaneId, @SeatNumber, @RowNumber, @Price, @Tier)",
                         new
                         {
                             PlaneId = planeId,
                             SeatNumber = seatNumber,
                             RowNumber = row,
-                            Price = price
+                            Price = price,
+                            Tier = tier
                         }
                     );
                 }
@@ -99,15 +102,15 @@ public class SeatAccess
                 s.seat_number AS SeatNumber,
                 s.row_number AS RowNumber,
                 s.price AS Price,
-                s.is_reserved AS IsReserved
+                s.tier AS Tier
             FROM Seat s
             WHERE s.plane_id = @PlaneId
               AND s.id NOT IN (
-                  SELECT sa.seat_id
-                  FROM SeatAssignment sa
-                  INNER JOIN PassengerReservation pr ON pr.id = sa.passenger_reservation_id
-                  INNER JOIN Reservation r ON r.id = pr.reservation_id
+                  SELECT t.seat_id
+                  FROM Ticket t
+                  INNER JOIN Reservation r ON r.id = t.reservation_id
                   WHERE r.flight_id = @FlightId
+                    AND t.seat_id IS NOT NULL
               )
             ORDER BY s.row_number ASC, s.seat_number ASC
             LIMIT 1";
@@ -127,33 +130,16 @@ public class SeatAccess
             FROM Seat s
             WHERE s.plane_id = @PlaneId
               AND s.id NOT IN (
-                  SELECT sa.seat_id
-                  FROM SeatAssignment sa
-                  INNER JOIN PassengerReservation pr ON pr.id = sa.passenger_reservation_id
-                  INNER JOIN Reservation r ON r.id = pr.reservation_id
+                  SELECT t.seat_id
+                  FROM Ticket t
+                  INNER JOIN Reservation r ON r.id = t.reservation_id
                   WHERE r.flight_id = @FlightId
+                    AND t.seat_id IS NOT NULL
               )";
 
         return _connection.ExecuteScalar<int>(
             sql,
             new { PlaneId = planeId, FlightId = flightId }
         );
-    }
-
-    public void SetSeatReserved(Int64 seatId, bool isReserved)
-    {
-        string sql = "UPDATE Seat SET is_reserved = @IsReserved WHERE id = @Id";
-        _connection.Execute(sql, new { IsReserved = isReserved ? 1 : 0, Id = seatId });
-    }
-
-    public Int64 AddSeatAssignment(SeatAssignmentModel assignment)
-    {
-        string sql = @"
-            INSERT INTO SeatAssignment (passenger_reservation_id, seat_id)
-            VALUES (@PassengerReservationId, @SeatId);
-            SELECT last_insert_rowid();";
-
-        assignment.Id = _connection.ExecuteScalar<Int64>(sql, assignment);
-        return assignment.Id;
     }
 }
