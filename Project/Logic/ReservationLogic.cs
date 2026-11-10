@@ -2,6 +2,10 @@ public class ReservationLogic
 {
     private readonly ReservationAccess _reservationAccess =
         new ReservationAccess();
+    private readonly SeatAccess _seatAccess =
+        new SeatAccess();
+    private readonly TicketAccess _ticketAccess =
+        new TicketAccess();
 
     public List<FlightModel> GetFlights()
     {
@@ -23,6 +27,11 @@ public class ReservationLogic
         }
 
         return returnFlights;
+    }
+
+    public int GetAvailableSeatCount(FlightModel flight)
+    {
+        return _seatAccess.CountAvailableSeatsForFlight(flight.Id, flight.PlaneId);
     }
 
     public bool IsValidPassengerCount(int passengerCount)
@@ -49,9 +58,13 @@ public class ReservationLogic
             return false;
         }
 
-        if (!trimmed.All(char.IsLetter))
+        for (int i = 0; i < trimmed.Length; i++)
         {
-            return false;
+            char c = trimmed[i];
+            if (!char.IsLetter(c) && c != ' ' && c != '-')
+            {
+                return false;
+            }
         }
 
         return true;
@@ -120,37 +133,57 @@ public class ReservationLogic
     }
 
     public Int64 AddPassenger(
-        Int64 accountId,
         string firstName,
         string lastName,
-        string dateOfBirth)
+        string dateOfBirth,
+        string passportNumber = "")
     {
         PassengerModel passenger = new PassengerModel(
             0,
-            accountId,
-            firstName.Trim(),
-            lastName.Trim(),
-            dateOfBirth.Trim()
+            firstName,
+            lastName,
+            dateOfBirth,
+            passportNumber
         );
 
         return _reservationAccess.AddPassenger(passenger);
     }
 
-    public Int64 LinkPassengerToReservation(
-        Int64 passengerId,
-        Int64 reservationId)
+    public Int64 AddPassenger(
+        Int64 accountId,
+        string firstName,
+        string lastName,
+        string dateOfBirth)
     {
-        PassengerReservationModel passengerReservation = new PassengerReservationModel(
-            0,
-            passengerId,
-            reservationId
-        );
-
-        return _reservationAccess.AddPassengerReservation(passengerReservation);
+        return AddPassenger(firstName, lastName, dateOfBirth);
     }
 
-    public List<PassengerReservationModel> GetPassengersForReservation(Int64 reservationId)
+    public Int64 LinkPassengerToReservation(
+        Int64 passengerId,
+        Int64 reservationId,
+        Int64 seatId = 0)
     {
-        return _reservationAccess.GetByReservationId(reservationId);
+        if (seatId <= 0)
+        {
+            SeatModel? seat = _seatAccess.GetNextAvailableSeatForFlight(1, 1);
+            if (seat != null)
+            {
+                seatId = seat.Id;
+            }
+        }
+
+        TicketModel ticket = new TicketModel(
+            0,
+            passengerId,
+            reservationId,
+            seatId
+        );
+
+        return _ticketAccess.AddTicket(ticket);
+    }
+
+    public List<TicketModel> GetTicketsForReservation(Int64 reservationId)
+    {
+        return _ticketAccess.GetByReservationId(reservationId);
     }
 }

@@ -65,9 +65,9 @@ public static class ReservationPresentation
 
         for (int i = 0; i < flights.Count; i++)
         {
-            string departureCity = flightLogic.GetDepartureCity(flights[i]);
+            string startCity = flightLogic.GetStartCity(flights[i]);
             string destination = flightLogic.GetDestinationCity(flights[i]);
-            Console.WriteLine($"  [{i + 1}] {departureCity} -> {destination}");
+            Console.WriteLine($"  [{i + 1}] {startCity} -> {destination}");
             Console.WriteLine($"      Departure:  {flights[i].DepartureDatetime}");
             Console.WriteLine($"      Price:      EUR {flights[i].Price:0.00}");
             Console.WriteLine();
@@ -104,8 +104,19 @@ public static class ReservationPresentation
         }
 
         FlightModel selectedFlight = flights[flightChoice - 1];
-        string selectedDepartureCity = flightLogic.GetDepartureCity(selectedFlight);
+        string selectedStartCity = flightLogic.GetStartCity(selectedFlight);
         string selectedDestination = flightLogic.GetDestinationCity(selectedFlight);
+        int availableSeats = reservationLogic.GetAvailableSeatCount(selectedFlight);
+
+        if (availableSeats <= 0)
+        {
+            Console.WriteLine();
+            Console.WriteLine("  > Sorry, there are no seats available on this flight.");
+            Console.WriteLine();
+            Console.WriteLine("  Press any key to return...");
+            Console.ReadKey();
+            return;
+        }
 
         // Select return flight if round trip
         FlightModel? returnFlight = null;
@@ -173,15 +184,22 @@ public static class ReservationPresentation
         Console.WriteLine();
         int passengerCount = 0;
 
-        while (!reservationLogic.IsValidPassengerCount(passengerCount))
+        while (!reservationLogic.IsValidPassengerCount(passengerCount) || passengerCount > availableSeats)
         {
             Console.Write("  Number of passengers: ");
             string input = Console.ReadLine() ?? "";
 
             if (!int.TryParse(input, out passengerCount) || !reservationLogic.IsValidPassengerCount(passengerCount))
             {
+                passengerCount = 0;
                 Console.WriteLine();
                 Console.WriteLine("  > Invalid number of passengers (must be at least 1). Please try again.");
+                Console.WriteLine();
+            }
+            else if (passengerCount > availableSeats)
+            {
+                Console.WriteLine();
+                Console.WriteLine($"  > Not enough seats available on this flight (available: {availableSeats}).");
                 Console.WriteLine();
             }
         }
@@ -276,7 +294,7 @@ public static class ReservationPresentation
         Console.WriteLine("               RESERVATION OVERVIEW               ");
         Console.WriteLine("==================================================");
         Console.WriteLine();
-        Console.WriteLine($"  Route:           {selectedDepartureCity} -> {selectedDestination}");
+        Console.WriteLine($"  Route:           {selectedStartCity} -> {selectedDestination}");
         Console.WriteLine($"  Date:            {flightLogic.GetDate(selectedFlight.DepartureDatetime)}");
         Console.WriteLine($"  Departure time:  {flightLogic.GetTime(selectedFlight.DepartureDatetime)}");
 
@@ -320,32 +338,30 @@ public static class ReservationPresentation
 
         if (confirmation == "yes")
         {
-            TicketLogic ticketLogic = new TicketLogic();
-            string bookingReference = ticketLogic.MakeBookingReference();
-
             // Save outbound reservation
             double outboundTotal = reservationLogic.CalculateTotalPrice(selectedFlight.Price, passengerCount);
-            Int64 outboundReservationId = reservationLogic.MakeReservation(account.Id, selectedFlight.Id, outboundTotal);
+            Int64 reservationId = reservationLogic.MakeReservation(account.Id, selectedFlight.Id, outboundTotal);
 
-            // Save passengers and link each passenger to the outbound reservation
-            List<Int64> passengerIds = new List<Int64>();
+            // Save passengers and create outbound tickets
+            TicketLogic ticketLogic = new TicketLogic();
+            string bookingReference = ticketLogic.MakeBookingReference(reservationId);
             List<TicketModel> tickets = new List<TicketModel>();
+            List<Int64> passengerIds = new List<Int64>();
 
             for (int i = 0; i < passengerCount; i++)
             {
                 Int64 passengerId = reservationLogic.AddPassenger(
-                    account.Id,
                     passengerFirstNames[i],
                     passengerLastNames[i],
                     passengerDatesOfBirth[i]
                 );
                 passengerIds.Add(passengerId);
 
-                reservationLogic.LinkPassengerToReservation(passengerId, outboundReservationId);
-
                 TicketModel ticket = ticketLogic.CreateTicket(
+                    reservationId,
+                    passengerId,
                     account.Id,
-                    selectedFlight.Id,
+                    selectedFlight,
                     bookingReference,
                     passengerFirstNames[i],
                     passengerLastNames[i]
@@ -364,11 +380,11 @@ public static class ReservationPresentation
 
                 for (int i = 0; i < passengerCount; i++)
                 {
-                    reservationLogic.LinkPassengerToReservation(passengerIds[i], returnReservationId);
-
                     TicketModel returnTicket = ticketLogic.CreateTicket(
+                        returnReservationId,
+                        passengerIds[i],
                         account.Id,
-                        returnFlight.Id,
+                        returnFlight,
                         bookingReference,
                         passengerFirstNames[i],
                         passengerLastNames[i]

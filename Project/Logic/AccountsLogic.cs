@@ -16,8 +16,12 @@ public class AccountsLogic
 
     public AccountModel CheckLogin(string email, string password)
     {
+        if (string.IsNullOrEmpty(email) || password == null)
+        {
+            return null!;
+        }
 
-        AccountModel acc = _access.GetByEmail(email);
+        AccountModel? acc = _access.GetByEmail(email);
         if (acc != null)
         {
             var verification = _hasher.VerifyHashedPassword(acc, acc.Password, password);

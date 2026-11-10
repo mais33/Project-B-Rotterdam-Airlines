@@ -11,21 +11,23 @@ public class AccountsAccess
 
     public void Write(AccountModel account)
     {
-        string sql = $@"INSERT INTO {Table} (first_name, last_name, email, phone_number, role, is_blocked, password)
+        string sql = $@"INSERT INTO {Table} (first_name, last_name, email_adress, phone_number, role, is_blocked, password)
             VALUES (@FirstName, @LastName, @Email, @PhoneNumber, @Role, @IsBlocked, @Password)";
         _connection.Execute(sql, account);
     }
 
     public AccountModel? GetByEmail(string email)
     {
-        string sql = $"SELECT * FROM {Table} WHERE email = @Email";
+        string sql = $@"SELECT id AS Id, first_name AS FirstName, last_name AS LastName, email_adress AS Email,
+            phone_number AS PhoneNumber, role AS Role, is_blocked AS IsBlocked, password AS Password
+            FROM {Table} WHERE email_adress = @Email";
         return _connection.QueryFirstOrDefault<AccountModel>(sql, new { Email = email });
     }
 
     public void Update(AccountModel account)
     {
         string sql = $@"UPDATE {Table} SET first_name = @FirstName, last_name = @LastName,
-            email = @Email, phone_number = @PhoneNumber, role = @Role, is_blocked = @IsBlocked, password = @Password WHERE id = @Id";
+            email_adress = @Email, phone_number = @PhoneNumber, role = @Role, is_blocked = @IsBlocked, password = @Password WHERE id = @Id";
         _connection.Execute(sql, account);
     }
     public void UpdatePhoneNumber(AccountModel account)
@@ -68,13 +70,17 @@ public class AccountsAccess
 
     public AccountModel? GetAccountById(Int64 id)
     {
-        string sql = $@"SELECT * FROM {Table} WHERE id = @Id";
+        string sql = $@"SELECT id AS Id, first_name AS FirstName, last_name AS LastName, email_adress AS Email,
+            phone_number AS PhoneNumber, role AS Role, is_blocked AS IsBlocked, password AS Password
+            FROM {Table} WHERE id = @Id";
         return _connection.QueryFirstOrDefault<AccountModel>(sql, new { Id = id });
     }
 
     public List<AccountModel> GetAllAccounts()
     {
-        string sql = $"SELECT * FROM {Table}";
+        string sql = $@"SELECT id AS Id, first_name AS FirstName, last_name AS LastName, email_adress AS Email,
+            phone_number AS PhoneNumber, role AS Role, is_blocked AS IsBlocked, password AS Password
+            FROM {Table}";
         List<AccountModel> accounts = _connection.Query<AccountModel>(sql).ToList();
 
         return accounts;
