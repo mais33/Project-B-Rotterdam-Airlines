@@ -4,7 +4,11 @@ static class TicketPresentation
     private static FlightLogic flightLogic = new FlightLogic();
 
     // Shown right after the customer confirms a reservation
-    public static void ShowConfirmation(List<TicketModel> tickets, FlightModel? flight = null)
+    public static void ShowConfirmation(
+        List<TicketModel> tickets,
+        FlightModel? flight = null,
+        List<TicketModel>? returnTickets = null,
+        FlightModel? returnFlight = null)
     {
         Console.Clear();
         Console.WriteLine();
@@ -27,6 +31,7 @@ static class TicketPresentation
             flight = flightLogic.GetFlightById(tickets[0].FlightId);
         }
 
+        string departureCity = flight != null ? flightLogic.GetDepartureCity(flight) : "Rotterdam";
         string destination = flight != null ? flightLogic.GetDestinationCity(flight) : "Unknown";
         string departure = flight != null ? flight.DepartureDatetime : "Unknown";
 
@@ -34,7 +39,7 @@ static class TicketPresentation
         Console.WriteLine();
         Console.WriteLine("  FLIGHT");
         Console.WriteLine("  ------------------------------------------------");
-        Console.WriteLine($"  Route:           Rotterdam -> {destination}");
+        Console.WriteLine($"  Route:           {departureCity} -> {destination}");
         Console.WriteLine($"  Date:            {flightLogic.GetDate(departure)}");
         Console.WriteLine($"  Departure time:  {flightLogic.GetTime(departure)}");
         Console.WriteLine();
@@ -46,6 +51,29 @@ static class TicketPresentation
             Console.WriteLine($"  {i + 1}. {tickets[i].FirstName} {tickets[i].LastName}");
             Console.WriteLine($"     Ticket number: #{tickets[i].Id}    Seat: {tickets[i].Seat}");
             Console.WriteLine();
+        }
+
+        if (returnFlight != null && returnTickets != null && returnTickets.Count > 0)
+        {
+            string returnDepartureCity = flightLogic.GetDepartureCity(returnFlight);
+            string returnDestination = flightLogic.GetDestinationCity(returnFlight);
+            string returnDeparture = returnFlight.DepartureDatetime;
+
+            Console.WriteLine("  RETURN FLIGHT");
+            Console.WriteLine("  ------------------------------------------------");
+            Console.WriteLine($"  Route:           {returnDepartureCity} -> {returnDestination}");
+            Console.WriteLine($"  Date:            {flightLogic.GetDate(returnDeparture)}");
+            Console.WriteLine($"  Departure time:  {flightLogic.GetTime(returnDeparture)}");
+            Console.WriteLine();
+            Console.WriteLine("  PASSENGERS (RETURN)");
+            Console.WriteLine("  ------------------------------------------------");
+
+            for (int i = 0; i < returnTickets.Count; i++)
+            {
+                Console.WriteLine($"  {i + 1}. {returnTickets[i].FirstName} {returnTickets[i].LastName}");
+                Console.WriteLine($"     Ticket number: #{returnTickets[i].Id}    Seat: {returnTickets[i].Seat}");
+                Console.WriteLine();
+            }
         }
 
         Console.WriteLine("--------------------------------------------------");
@@ -95,23 +123,26 @@ static class TicketPresentation
         Console.WriteLine($"  Bookings of {account.FirstName} {account.LastName}");
         Console.WriteLine();
 
-        // Tickets with the same booking reference belong to the same booking
+        // Tickets with the same booking reference and flight belong to the same flight section
         string currentReference = "";
+        Int64 currentFlightId = -1;
 
         for (int i = 0; i < tickets.Count; i++)
         {
-            if (tickets[i].BookingReference != currentReference)
+            if (tickets[i].BookingReference != currentReference || tickets[i].FlightId != currentFlightId)
             {
                 currentReference = tickets[i].BookingReference;
+                currentFlightId = tickets[i].FlightId;
 
                 FlightModel? flight = flightLogic.GetFlightById(tickets[i].FlightId);
+                string departureCity = flight != null ? flightLogic.GetDepartureCity(flight) : "Rotterdam";
                 string destination = flight != null ? flightLogic.GetDestinationCity(flight) : "Unknown";
                 string departure = flight != null ? flight.DepartureDatetime : "Unknown";
 
                 Console.WriteLine("==================================================");
                 Console.WriteLine($"  Booking reference:  {currentReference}");
                 Console.WriteLine("--------------------------------------------------");
-                Console.WriteLine($"  Route:           Rotterdam -> {destination}");
+                Console.WriteLine($"  Route:           {departureCity} -> {destination}");
                 Console.WriteLine($"  Date:            {flightLogic.GetDate(departure)}");
                 Console.WriteLine($"  Departure time:  {flightLogic.GetTime(departure)}");
                 Console.WriteLine();
@@ -121,9 +152,9 @@ static class TicketPresentation
             Console.WriteLine($"   - {tickets[i].FirstName} {tickets[i].LastName}");
             Console.WriteLine($"     Ticket number: #{tickets[i].Id}    Seat: {tickets[i].Seat}");
 
-            // Add an empty line after the last ticket of this booking
+            // Add an empty line after the last ticket of this flight section
             bool isLastTicket = i == tickets.Count - 1;
-            if (isLastTicket || tickets[i + 1].BookingReference != currentReference)
+            if (isLastTicket || tickets[i + 1].BookingReference != currentReference || tickets[i + 1].FlightId != currentFlightId)
             {
                 Console.WriteLine();
             }

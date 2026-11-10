@@ -8,6 +8,23 @@ public class ReservationLogic
         return _reservationAccess.GetFlights();
     }
 
+    public List<FlightModel> GetReturnFlights(FlightModel outboundFlight)
+    {
+        List<FlightModel> allFlights = _reservationAccess.GetFlights();
+        List<FlightModel> returnFlights = new List<FlightModel>();
+
+        for (int i = 0; i < allFlights.Count; i++)
+        {
+            if (allFlights[i].StartAirportId == outboundFlight.DestinationId &&
+                allFlights[i].DestinationId == outboundFlight.StartAirportId)
+            {
+                returnFlights.Add(allFlights[i]);
+            }
+        }
+
+        return returnFlights;
+    }
+
     public bool IsValidPassengerCount(int passengerCount)
     {
         if (passengerCount <= 0)
@@ -25,7 +42,14 @@ public class ReservationLogic
             return false;
         }
 
-        if (name.Length < 3)
+        string trimmed = name.Trim();
+
+        if (trimmed.Length < 3)
+        {
+            return false;
+        }
+
+        if (!trimmed.All(char.IsLetter))
         {
             return false;
         }
@@ -40,9 +64,23 @@ public class ReservationLogic
             return false;
         }
 
+        string[] formats = { "dd-MM-yyyy", "yyyy-MM-dd", "d-M-yyyy", "dd/MM/yyyy", "yyyy/MM/dd" };
         DateTime birthDate;
 
-        if (!DateTime.TryParse(dateOfBirth, out birthDate))
+        bool parsed = DateTime.TryParseExact(
+            dateOfBirth.Trim(),
+            formats,
+            System.Globalization.CultureInfo.InvariantCulture,
+            System.Globalization.DateTimeStyles.None,
+            out birthDate
+        );
+
+        if (!parsed && !DateTime.TryParse(dateOfBirth, out birthDate))
+        {
+            return false;
+        }
+
+        if (birthDate > DateTime.Today || birthDate.Year < 1900)
         {
             return false;
         }
@@ -57,7 +95,15 @@ public class ReservationLogic
         return flightPrice * passengerCount;
     }
 
-    public void MakeReservation(
+    public double CalculateTotalPrice(
+        double outboundPrice,
+        double returnPrice,
+        int passengerCount)
+    {
+        return (outboundPrice + returnPrice) * passengerCount;
+    }
+
+    public Int64 MakeReservation(
         Int64 accountId,
         Int64 flightId,
         double totalPrice)
@@ -70,10 +116,10 @@ public class ReservationLogic
             "Confirmed"
         );
 
-        _reservationAccess.AddReservation(reservation);
+        return _reservationAccess.AddReservation(reservation);
     }
 
-    public void AddPassenger(
+    public Int64 AddPassenger(
         Int64 accountId,
         string firstName,
         string lastName,
@@ -82,11 +128,29 @@ public class ReservationLogic
         PassengerModel passenger = new PassengerModel(
             0,
             accountId,
-            firstName,
-            lastName,
-            dateOfBirth
+            firstName.Trim(),
+            lastName.Trim(),
+            dateOfBirth.Trim()
         );
 
-        _reservationAccess.AddPassenger(passenger);
+        return _reservationAccess.AddPassenger(passenger);
+    }
+
+    public Int64 LinkPassengerToReservation(
+        Int64 passengerId,
+        Int64 reservationId)
+    {
+        PassengerReservationModel passengerReservation = new PassengerReservationModel(
+            0,
+            passengerId,
+            reservationId
+        );
+
+        return _reservationAccess.AddPassengerReservation(passengerReservation);
+    }
+
+    public List<PassengerReservationModel> GetPassengersForReservation(Int64 reservationId)
+    {
+        return _reservationAccess.GetByReservationId(reservationId);
     }
 }
