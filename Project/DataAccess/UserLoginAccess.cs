@@ -16,6 +16,7 @@ public class UserLoginAccess
                 email AS Email,
                 phone_number AS PhoneNumber,
                 role AS Role,
+                is_blocked AS IsBlocked,
                 password AS Password
             FROM Account
             WHERE email = @Email";

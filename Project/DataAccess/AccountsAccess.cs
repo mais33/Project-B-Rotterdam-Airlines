@@ -18,7 +18,9 @@ public class AccountsAccess
 
     public AccountModel? GetByEmail(string email)
     {
-        string sql = $"SELECT * FROM {Table} WHERE email = @Email";
+        string sql = $@"SELECT id AS Id, first_name AS FirstName, last_name AS LastName, email AS Email,
+            phone_number AS PhoneNumber, role AS Role, is_blocked AS IsBlocked, password AS Password
+            FROM {Table} WHERE email = @Email";
         return _connection.QueryFirstOrDefault<AccountModel>(sql, new { Email = email });
     }
 
@@ -68,13 +70,17 @@ public class AccountsAccess
 
     public AccountModel? GetAccountById(Int64 id)
     {
-        string sql = $@"SELECT * FROM {Table} WHERE id = @Id";
+        string sql = $@"SELECT id AS Id, first_name AS FirstName, last_name AS LastName, email AS Email,
+            phone_number AS PhoneNumber, role AS Role, is_blocked AS IsBlocked, password AS Password
+            FROM {Table} WHERE id = @Id";
         return _connection.QueryFirstOrDefault<AccountModel>(sql, new { Id = id });
     }
 
     public List<AccountModel> GetAllAccounts()
     {
-        string sql = $"SELECT * FROM {Table}";
+        string sql = $@"SELECT id AS Id, first_name AS FirstName, last_name AS LastName, email AS Email,
+            phone_number AS PhoneNumber, role AS Role, is_blocked AS IsBlocked, password AS Password
+            FROM {Table}";
         List<AccountModel> accounts = _connection.Query<AccountModel>(sql).ToList();
 
         return accounts;
