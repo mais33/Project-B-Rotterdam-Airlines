@@ -20,6 +20,13 @@ public class FlightAccess
         return _connection.Query<FlightModel>(sql).ToList();
     }
 
+    public List<FlightModel> Search(Int64 startAirportId, Int64 destinationId, string date)
+    {
+        string sql = "SELECT * FROM Flight WHERE start_airport_id = @StartAirportId AND destination_id = @DestinationId AND substr(departure_datetime, 1, 10) = @Date";
+
+        return _connection.Query<FlightModel>(sql, new { StartAirportId = startAirportId, DestinationId = destinationId, Date = date }).AsList();
+    }
+
     public FlightModel? GetById(Int64 id)
     {
         // Get a specific flight including the departure airport.
