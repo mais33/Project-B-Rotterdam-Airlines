@@ -6,6 +6,71 @@ public class SeatAccess
     private readonly SqliteConnection _connection =
         new SqliteConnection("Data Source=DataSources/database.db");
 
+    private const string Table = "Seat";
+    private static readonly HashSet<Int64> _reservedSeatIds = new HashSet<Int64>();
+
+    public void Write(SeatModel seat)
+    {
+        if (seat.PlaneId <= 0)
+        {
+            seat.PlaneId = 1;
+        }
+
+        string sql = $@"INSERT INTO {Table} (plane_id, seat_number, row_number, price, tier)
+            VALUES (@PlaneId, @SeatNumber, @RowNumber, @Price, @Tier)";
+        _connection.Execute(sql, seat);
+    }
+
+    public SeatModel? GetSeatById(Int64 id)
+    {
+        string sql = $@"
+            SELECT
+                id AS Id,
+                plane_id AS PlaneId,
+                seat_number AS SeatNumber,
+                row_number AS RowNumber,
+                price AS Price,
+                tier AS Tier,
+                CASE WHEN id IN (SELECT seat_id FROM Ticket WHERE seat_id IS NOT NULL) THEN 1 ELSE 0 END AS IsReserved
+            FROM {Table}
+            WHERE id = @Id";
+
+        SeatModel? seat = _connection.QueryFirstOrDefault<SeatModel>(sql, new { Id = id });
+        if (seat != null && _reservedSeatIds.Contains(seat.Id))
+        {
+            seat.IsReserved = true;
+        }
+
+        return seat;
+    }
+
+    public List<SeatModel> GetAllSeats()
+    {
+        string sql = $@"
+            SELECT
+                id AS Id,
+                plane_id AS PlaneId,
+                seat_number AS SeatNumber,
+                row_number AS RowNumber,
+                price AS Price,
+                tier AS Tier,
+                CASE WHEN id IN (SELECT seat_id FROM Ticket WHERE seat_id IS NOT NULL) THEN 1 ELSE 0 END AS IsReserved
+            FROM {Table}
+            WHERE plane_id = 1
+            ORDER BY row_number ASC, seat_number ASC";
+
+        List<SeatModel> seats = _connection.Query<SeatModel>(sql).ToList();
+        for (int i = 0; i < seats.Count; i++)
+        {
+            if (_reservedSeatIds.Contains(seats[i].Id))
+            {
+                seats[i].IsReserved = true;
+            }
+        }
+
+        return seats;
+    }
+
     public List<SeatModel> GetSeatsByPlaneId(Int64 planeId)
     {
         string sql = @"
@@ -23,20 +88,24 @@ public class SeatAccess
         return _connection.Query<SeatModel>(sql, new { PlaneId = planeId }).ToList();
     }
 
-    public SeatModel? GetSeatById(Int64 id)
+    public void ClearSeats()
     {
-        string sql = @"
-            SELECT
-                id AS Id,
-                plane_id AS PlaneId,
-                seat_number AS SeatNumber,
-                row_number AS RowNumber,
-                price AS Price,
-                tier AS Tier
-            FROM Seat
-            WHERE id = @Id";
+        _connection.Execute("PRAGMA foreign_keys = OFF;");
+        _connection.Execute("DELETE FROM Seat");
+        _connection.Execute("PRAGMA foreign_keys = ON;");
+        _reservedSeatIds.Clear();
+    }
 
-        return _connection.QueryFirstOrDefault<SeatModel>(sql, new { Id = id });
+    public void SetSeatAsReserved(SeatModel seat)
+    {
+        _reservedSeatIds.Add(seat.Id);
+        seat.IsReserved = true;
+    }
+
+    public void SetSeatAsUnReserved(SeatModel seat)
+    {
+        _reservedSeatIds.Remove(seat.Id);
+        seat.IsReserved = false;
     }
 
     public Int64 EnsureSeatsForPlane(Int64 planeId)

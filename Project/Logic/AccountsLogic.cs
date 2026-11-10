@@ -114,7 +114,31 @@ public class AccountsLogic
 
     public bool PhoneNumberCheck(string phoneNumber)
     {
-        if(string.IsNullOrWhiteSpace(phoneNumber) || !phoneNumber.All(char.IsDigit) || phoneNumber.Length > 11)
+        if (string.IsNullOrWhiteSpace(phoneNumber))
+        {
+            return false;
+        }
+
+        string trimmed = phoneNumber.Trim();
+
+        if (trimmed.StartsWith("-") || trimmed.EndsWith("-"))
+        {
+            return false;
+        }
+
+        string cleaned = trimmed.Replace(" ", "").Replace("-", "");
+
+        if (cleaned.StartsWith("+"))
+        {
+            cleaned = cleaned.Substring(1);
+        }
+
+        if (!cleaned.All(char.IsDigit))
+        {
+            return false;
+        }
+
+        if (cleaned.Length < 8 || cleaned.Length > 15)
         {
             return false;
         }
@@ -129,7 +153,7 @@ public class AccountsLogic
             return false;
         }
 
-        account.PhoneNumber = newPhoneNumber;
+        account.PhoneNumber = newPhoneNumber.Trim();
 
         _access.UpdatePhoneNumber(account); 
         return true;
