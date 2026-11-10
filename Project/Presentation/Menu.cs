@@ -1,8 +1,12 @@
 static class Menu
 {
     // This method shows the start menu
+    private static AccountsLogic accountsLogic = new();
+    private static SeatAccess seatAccess = new();
+    private static AccountsAccess accountsAccess = new();
     public static void Start()
     {
+        // accountsLogic.CreateAdminAccount("admin"); //adds an admin account to the database
         while (true)
         {
             Console.Clear();
@@ -40,6 +44,10 @@ static class Menu
                     Console.WriteLine("  > Thank you for visiting Rotterdam Airlines. Goodbye!");
                     Console.WriteLine();
                     return;
+                case "5":
+                    seatAccess.ClearSeats();
+                    SeatManager.Start();
+                    return;
 
                 default:
                     Console.WriteLine();
@@ -52,7 +60,51 @@ static class Menu
         }
     }
 
-    // Menu for an admin after logging in
+    // Show the customer menu after login.
+    public static void CustomerMenu()
+    {
+        while (true)
+        {
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine("==================================================");
+            Console.WriteLine("                  CUSTOMER MENU                   ");
+            Console.WriteLine("==================================================");
+            Console.WriteLine();
+            Console.WriteLine("  [1] View flights");
+            Console.WriteLine("  [2] Log out");
+            Console.WriteLine();
+            Console.WriteLine("--------------------------------------------------");
+            Console.Write("  Choose an option (1-2): ");
+
+            string choice = Console.ReadLine() ?? "";
+
+            switch (choice)
+            {
+                case "1":
+                    FlightOverview.Start();
+                    break;
+
+                case "2":
+                    Console.WriteLine();
+                    Console.WriteLine("  > You have been logged out.");
+                    Console.WriteLine();
+                    Console.WriteLine("  Press any key to continue...");
+                    Console.ReadKey();
+                    return;
+
+                default:
+                    Console.WriteLine();
+                    Console.WriteLine("  > Invalid choice. Please choose 1 or 2.");
+                    Console.WriteLine();
+                    Console.WriteLine("  Press any key to continue...");
+                    Console.ReadKey();
+                    break;
+            }
+        }
+    }
+
+    // Show the administrator menu after login.
     public static void AdminMenu()
     {
         while (true)
@@ -65,10 +117,11 @@ static class Menu
             Console.WriteLine();
             Console.WriteLine("  [1] View flights");
             Console.WriteLine("  [2] Manage accounts");
-            Console.WriteLine("  [3] Log out");
+            Console.WriteLine("  [3] Add Flight");
+            Console.WriteLine("  [4] Log out");
             Console.WriteLine();
             Console.WriteLine("--------------------------------------------------");
-            Console.Write("  Choose an option (1-3): ");
+            Console.Write("  Choose an option (1-4): ");
 
             string choice = Console.ReadLine() ?? "";
 
@@ -83,6 +136,10 @@ static class Menu
                     break;
 
                 case "3":
+                    AdminFlightPresentation.Start();
+                    break;
+
+                case "4":
                     Console.WriteLine();
                     Console.WriteLine("  > You have been logged out.");
                     Console.WriteLine();
@@ -92,7 +149,7 @@ static class Menu
 
                 default:
                     Console.WriteLine();
-                    Console.WriteLine("  > Invalid choice. Please choose 1, 2 or 3.");
+                    Console.WriteLine("  > Invalid choice. Please choose 1, 2, 3 or 4.");
                     Console.WriteLine();
                     Console.WriteLine("  Press any key to continue...");
                     Console.ReadKey();

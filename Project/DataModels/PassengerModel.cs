@@ -1,22 +1,32 @@
 public class PassengerModel
 {
     public Int64 Id { get; set; }
-    public Int64 AccountId { get; set; }
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public string Dob { get; set; }
+    public string FirstName { get; set; } = "";
+    public string LastName { get; set; } = "";
+    public string DateOfBirth { get; set; } = "";
+    public string PassportNumber { get; set; } = "";
+
+    public string Dob
+    {
+        get => DateOfBirth;
+        set => DateOfBirth = value;
+    }
+
+    public PassengerModel()
+    {
+    }
 
     public PassengerModel(
         Int64 id,
-        Int64 accountId,
         string firstName,
         string lastName,
-        string dob)
+        string dateOfBirth,
+        string passportNumber = "")
     {
         Id = id;
-        AccountId = accountId;
         FirstName = firstName;
         LastName = lastName;
-        Dob = dob;
+        DateOfBirth = dateOfBirth;
+        PassportNumber = passportNumber;
     }
 }
