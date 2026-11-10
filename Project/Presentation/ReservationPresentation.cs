@@ -3,6 +3,8 @@ public static class ReservationPresentation
     private static ReservationLogic reservationLogic = new ReservationLogic();
     private static FlightLogic flightLogic = new FlightLogic();
 
+    public static int passengerCount = 0;
+
     public static void Start(AccountModel account)
     {
         Console.Clear();
@@ -71,7 +73,6 @@ public static class ReservationPresentation
 
         // Number of passengers
         Console.WriteLine();
-        int passengerCount = 0;
 
         while (!reservationLogic.IsValidPassengerCount(passengerCount))
         {
@@ -170,6 +171,12 @@ public static class ReservationPresentation
         Console.WriteLine();
         Console.WriteLine($"  Total price:    EUR {totalPrice:0.00}");
         Console.WriteLine("--------------------------------------------------");
+
+        SeatManager.Start();
+        if (SeatManager.UserExited)
+        {
+            return;
+        }
 
         // Confirmation
         string confirmation = "";
