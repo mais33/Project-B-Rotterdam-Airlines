@@ -5,80 +5,79 @@ public class UserRegistration
 
     public string AskFirstName()
     {
-        Console.Write("  First name (or press Enter to return): ");
-        string firstName = Console.ReadLine() ?? "";
-
-        if (string.IsNullOrWhiteSpace(firstName))
+        while (true)
         {
-            return "";
-        }
-
-        while (!accountsLogic.NameCheck(firstName))
-        {
-            Console.WriteLine();
-            Console.WriteLine("  > A name can only contain letters. Please try again.");
-            Console.WriteLine();
-            Console.Write("  First name:     ");
-            firstName = Console.ReadLine() ?? "";
+            Console.Write("  First name (or press Enter to return): ");
+            string firstName = (Console.ReadLine() ?? "").Trim();
 
             if (string.IsNullOrWhiteSpace(firstName))
             {
                 return "";
             }
-        }
 
-        return firstName;
+            if (accountsLogic.NameCheck(firstName))
+            {
+                return firstName;
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("  > A name can only contain letters. Please try again.");
+            Console.WriteLine();
+        }
     }
 
     public string AskLastName()
     {
-        Console.Write("  Last name:      ");
-        string lastName = Console.ReadLine() ?? "";
-
-        while (!accountsLogic.NameCheck(lastName))
+        while (true)
         {
+            Console.Write("  Last name:      ");
+            string lastName = (Console.ReadLine() ?? "").Trim();
+
+            if (accountsLogic.NameCheck(lastName))
+            {
+                return lastName;
+            }
+
             Console.WriteLine();
             Console.WriteLine("  > A name can only contain letters. Please try again.");
             Console.WriteLine();
-            Console.Write("  Last name:      ");
-            lastName = Console.ReadLine() ?? "";
         }
-
-        return lastName;
     }
 
     public string AskEmail()
     {
-        Console.Write("  Email address:  ");
-        string email = Console.ReadLine() ?? "";
-
-        while (!accountsLogic.CheckEmail(email))
+        while (true)
         {
+            Console.Write("  Email address:  ");
+            string email = (Console.ReadLine() ?? "").Trim();
+
+            if (accountsLogic.CheckEmail(email))
+            {
+                return email;
+            }
+
             Console.WriteLine();
             Console.WriteLine("  > Please enter a valid email address. Please try again.");
             Console.WriteLine();
-            Console.Write("  Email address:  ");
-            email = Console.ReadLine() ?? "";
         }
-
-        return email;
     }
 
     public string AskPhoneNumber()
     {
-        Console.Write("  Phone number:   ");
-        string phoneNumber = Console.ReadLine() ?? "";
-
-        while (!accountsLogic.PhoneNumberCheck(phoneNumber))
+        while (true)
         {
-            Console.WriteLine();
-            Console.WriteLine("  > Invalid phone number (digits only, maximum 11 digits).");
-            Console.WriteLine();
             Console.Write("  Phone number:   ");
-            phoneNumber = Console.ReadLine() ?? "";
-        }
+            string phoneNumber = (Console.ReadLine() ?? "").Trim();
 
-        return phoneNumber;
+            if (accountsLogic.PhoneNumberCheck(phoneNumber))
+            {
+                return phoneNumber;
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("  > Invalid phone number (e.g. 0612345678 or +353 87 123 4567).");
+            Console.WriteLine();
+        }
     }
 
     public string GetValidPassword()
