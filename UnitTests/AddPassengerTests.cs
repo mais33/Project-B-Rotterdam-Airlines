@@ -49,6 +49,19 @@ public sealed class AddPassengerTests
         Assert.AreEqual(expected, result);
     }
 
+    [DataTestMethod]
+    [DataRow("2099-01-01", true)]
+    [DataRow("1999-05-20", false)]
+    [DataRow("20-05-1999", false)]
+    public void CheckIsFutureDate(string dob, bool expected)
+    {
+        ReservationLogic logic = new ReservationLogic();
+
+        bool result = logic.IsFutureDate(dob);
+
+        Assert.AreEqual(expected, result);
+    }
+
     [TestMethod]
     public void CalculateRoundTripTotalPrice()
     {

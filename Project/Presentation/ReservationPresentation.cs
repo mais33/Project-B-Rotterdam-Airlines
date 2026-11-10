@@ -7,6 +7,7 @@ public static class ReservationPresentation
 
     public static void Start(AccountModel account)
     {
+        passengerCount = 0;
         Console.Clear();
         Console.WriteLine();
         Console.WriteLine("==================================================");
@@ -253,6 +254,12 @@ public static class ReservationPresentation
                     Console.WriteLine("  > Date of birth is required. Please enter a date of birth.");
                     Console.WriteLine();
                 }
+                else if (reservationLogic.IsFutureDate(dateOfBirth))
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("  > Date of birth cannot be in the future.");
+                    Console.WriteLine();
+                }
                 else if (!reservationLogic.IsValidDateOfBirth(dateOfBirth))
                 {
                     Console.WriteLine();
@@ -271,7 +278,14 @@ public static class ReservationPresentation
             ? reservationLogic.CalculateTotalPrice(selectedFlight.Price, returnFlight.Price, passengerCount)
             : reservationLogic.CalculateTotalPrice(selectedFlight.Price, passengerCount);
 
+        SeatManager.Start();
+        if (SeatManager.UserExited)
+        {
+            return;
+        }
+
         // Reservation overview
+        Console.Clear();
         Console.WriteLine();
         Console.WriteLine("==================================================");
         Console.WriteLine("               RESERVATION OVERVIEW               ");
@@ -303,10 +317,92 @@ public static class ReservationPresentation
         Console.WriteLine($"  Total price:    EUR {totalPrice:0.00}");
         Console.WriteLine("--------------------------------------------------");
 
-        SeatManager.Start();
-        if (SeatManager.UserExited)
+        // Confirmation
+        string confirmation = "";
+
+        while (confirmation != "yes" && confirmation != "no")
         {
-            return;
+            Console.Write("  Confirm reservation? (yes/no): ");
+            confirmation = (Console.ReadLine() ?? "").Trim().ToLower();
+
+            if (confirmation != "yes" && confirmation != "no")
+            {
+                Console.WriteLine();
+                Console.WriteLine("  > Invalid input. Please enter 'yes' or 'no'.");
+                Console.WriteLine();
+            }
+        }
+
+        if (confirmation == "yes")
+        {
+            TicketLogic ticketLogic = new TicketLogic();
+            string bookingReference = ticketLogic.MakeBookingReference();
+
+            // Save outbound reservation
+            double outboundTotal = reservationLogic.CalculateTotalPrice(selectedFlight.Price, passengerCount);
+            Int64 outboundReservationId = reservationLogic.MakeReservation(account.Id, selectedFlight.Id, outboundTotal);
+
+            // Save passengers and link each passenger to the outbound reservation
+            List<Int64> passengerIds = new List<Int64>();
+            List<TicketModel> tickets = new List<TicketModel>();
+
+            for (int i = 0; i < passengerCount; i++)
+            {
+                Int64 passengerId = reservationLogic.AddPassenger(
+                    account.Id,
+                    passengerFirstNames[i],
+                    passengerLastNames[i],
+                    passengerDatesOfBirth[i]
+                );
+                passengerIds.Add(passengerId);
+
+                reservationLogic.LinkPassengerToReservation(passengerId, outboundReservationId);
+
+                TicketModel ticket = ticketLogic.CreateTicket(
+                    account.Id,
+                    selectedFlight.Id,
+                    bookingReference,
+                    passengerFirstNames[i],
+                    passengerLastNames[i]
+                );
+                tickets.Add(ticket);
+            }
+
+            // If round trip, use the same passengers for the return flight reservation
+            List<TicketModel>? returnTickets = null;
+
+            if (returnFlight != null)
+            {
+                double returnTotal = reservationLogic.CalculateTotalPrice(returnFlight.Price, passengerCount);
+                Int64 returnReservationId = reservationLogic.MakeReservation(account.Id, returnFlight.Id, returnTotal);
+                returnTickets = new List<TicketModel>();
+
+                for (int i = 0; i < passengerCount; i++)
+                {
+                    reservationLogic.LinkPassengerToReservation(passengerIds[i], returnReservationId);
+
+                    TicketModel returnTicket = ticketLogic.CreateTicket(
+                        account.Id,
+                        returnFlight.Id,
+                        bookingReference,
+                        passengerFirstNames[i],
+                        passengerLastNames[i]
+                    );
+                    returnTickets.Add(returnTicket);
+                }
+            }
+
+            // Show confirmation with flight, date, departure time, and passengers
+            TicketPresentation.ShowConfirmation(tickets, selectedFlight, returnTickets, returnFlight);
+        }
+        else
+        {
+            Console.WriteLine();
+            Console.WriteLine("--------------------------------------------------");
+            Console.WriteLine("  > Reservation cancelled.");
+            Console.WriteLine();
+            Console.WriteLine("  Press any key to continue...");
+            Console.ReadKey();
         }
     }
 }
