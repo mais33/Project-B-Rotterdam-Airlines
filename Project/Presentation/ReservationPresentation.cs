@@ -7,8 +7,6 @@ public static class ReservationPresentation
 
     public static void Start(AccountModel account)
     {
-        passengerCount = 0;
-
         Console.Clear();
         Console.WriteLine();
         Console.WriteLine("==================================================");
@@ -69,9 +67,9 @@ public static class ReservationPresentation
 
         for (int i = 0; i < flights.Count; i++)
         {
-            string startCity = flightLogic.GetStartCity(flights[i]);
+            string departureCity = flightLogic.GetDepartureCity(flights[i]);
             string destination = flightLogic.GetDestinationCity(flights[i]);
-            Console.WriteLine($"  [{i + 1}] {startCity} -> {destination}");
+            Console.WriteLine($"  [{i + 1}] {departureCity} -> {destination}");
             Console.WriteLine($"      Departure:  {flights[i].DepartureDatetime}");
             Console.WriteLine($"      Price:      EUR {flights[i].Price:0.00}");
             Console.WriteLine();
@@ -94,11 +92,11 @@ public static class ReservationPresentation
             {
                 if (flightChoice == backOption)
                 {
-                    return; // Go back to customer menu
+                    return;
                 }
                 else if (flightChoice >= 1 && flightChoice <= flights.Count)
                 {
-                    break; // Valid flight selected
+                    break;
                 }
             }
 
@@ -108,19 +106,8 @@ public static class ReservationPresentation
         }
 
         FlightModel selectedFlight = flights[flightChoice - 1];
-        string selectedStartCity = flightLogic.GetStartCity(selectedFlight);
+        string selectedDepartureCity = flightLogic.GetDepartureCity(selectedFlight);
         string selectedDestination = flightLogic.GetDestinationCity(selectedFlight);
-        int availableSeats = reservationLogic.GetAvailableSeatCount(selectedFlight);
-
-        if (availableSeats <= 0)
-        {
-            Console.WriteLine();
-            Console.WriteLine("  > Sorry, there are no seats available on this flight.");
-            Console.WriteLine();
-            Console.WriteLine("  Press any key to return...");
-            Console.ReadKey();
-            return;
-        }
 
         // Select return flight if round trip
         FlightModel? returnFlight = null;
@@ -187,22 +174,15 @@ public static class ReservationPresentation
         // Number of passengers
         Console.WriteLine();
 
-        while (!reservationLogic.IsValidPassengerCount(passengerCount) || passengerCount > availableSeats)
+        while (!reservationLogic.IsValidPassengerCount(passengerCount))
         {
             Console.Write("  Number of passengers: ");
             string input = Console.ReadLine() ?? "";
 
             if (!int.TryParse(input, out passengerCount) || !reservationLogic.IsValidPassengerCount(passengerCount))
             {
-                passengerCount = 0;
                 Console.WriteLine();
                 Console.WriteLine("  > Invalid number of passengers (must be at least 1). Please try again.");
-                Console.WriteLine();
-            }
-            else if (passengerCount > availableSeats)
-            {
-                Console.WriteLine();
-                Console.WriteLine($"  > Not enough seats available on this flight (available: {availableSeats}).");
                 Console.WriteLine();
             }
         }
@@ -297,7 +277,7 @@ public static class ReservationPresentation
         Console.WriteLine("               RESERVATION OVERVIEW               ");
         Console.WriteLine("==================================================");
         Console.WriteLine();
-        Console.WriteLine($"  Route:           {selectedStartCity} -> {selectedDestination}");
+        Console.WriteLine($"  Route:           {selectedDepartureCity} -> {selectedDestination}");
         Console.WriteLine($"  Date:            {flightLogic.GetDate(selectedFlight.DepartureDatetime)}");
         Console.WriteLine($"  Departure time:  {flightLogic.GetTime(selectedFlight.DepartureDatetime)}");
 

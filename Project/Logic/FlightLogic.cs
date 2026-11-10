@@ -20,14 +20,9 @@ public class FlightLogic
         return airport != null ? airport.City : "Unknown";
     }
 
-    public string GetStartCity(FlightModel flight)
-    {
-        return GetDepartureCity(flight);
-    }
-
     public string GetDestinationCity(FlightModel flight)
     {
-        AirportModel? airport = _airportAccess.GetById(flight.DestinationId);
+        AirportModel airport = _airportAccess.GetById(flight.DestinationId);
         return airport != null ? airport.City : "Unknown";
     }
 
@@ -73,11 +68,6 @@ public class FlightLogic
     // Departure looks like "2026-11-02 08:30", so the part before the space is the date
     public string GetDate(string departure)
     {
-        if (string.IsNullOrWhiteSpace(departure))
-        {
-            return "Unknown";
-        }
-
         string[] parts = departure.Split(' ');
         return parts[0];
     }
@@ -85,11 +75,6 @@ public class FlightLogic
     // The part after the space is the time
     public string GetTime(string departure)
     {
-        if (string.IsNullOrWhiteSpace(departure))
-        {
-            return "";
-        }
-
         string[] parts = departure.Split(' ');
 
         if (parts.Length > 1)

@@ -1,11 +1,10 @@
 public class SeatModel
 {
-    public Int64 Id { get; set; }
-    public Int64 PlaneId { get; set; } = 1;
-    public string SeatNumber { get; set; } = "";
-    public int RowNumber { get; set; }
+    public Int64 Id {get;set;}
+    public string SeatNumber {get;set;}
+    public int RowNumber {get;set;}
     private double _price;
-    public double Price
+    public double Price 
     {
         get => _price;
         set
@@ -13,17 +12,13 @@ public class SeatModel
             _price = value < 0 ? 0 : value;
         }
     }
-    public bool IsReserved { get; set; }
-    public SeatTier Tier { get; set; }
+    public bool IsReserved {get;set;}
+    public SeatTier Tier {get;set;}
 
-    public SeatModel()
-    {
-    }
-
+    public SeatModel() {}
     public SeatModel(Int64 id, string seatNumber, int rowNumber, double price, bool status, SeatTier tier)
     {
         Id = id;
-        PlaneId = 1;
         SeatNumber = seatNumber;
         RowNumber = rowNumber;
         Price = price;
@@ -31,21 +26,6 @@ public class SeatModel
         Tier = tier;
     }
 
-    public SeatModel(
-        Int64 id,
-        Int64 planeId,
-        string seatNumber,
-        int rowNumber,
-        double price,
-        SeatTier tier)
-    {
-        Id = id;
-        PlaneId = planeId;
-        SeatNumber = seatNumber;
-        RowNumber = rowNumber;
-        Price = price;
-        Tier = tier;
-    }
 }
 
 public enum SeatTier

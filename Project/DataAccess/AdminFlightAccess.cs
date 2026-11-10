@@ -33,7 +33,7 @@ public class AdminFlightAccess
                 id AS Id,
                 name AS Name,
                 model AS Model,
-                (SELECT COUNT(*) FROM Seat WHERE plane_id = Plane.id) AS Capacity
+                capacity AS Capacity
             FROM Plane";
 
         return connection.Query<PlaneModel>(sql).ToList();

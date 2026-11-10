@@ -64,10 +64,6 @@ public class FlightOverview
 
                 Console.WriteLine($"  [{i + 1}] {departure} -> {destination}");
                 Console.WriteLine($"      Departure:  {flight.DepartureDatetime}");
-                if (!string.IsNullOrWhiteSpace(flight.ArrivalDatetime))
-                {
-                    Console.WriteLine($"      Arrival:    {flight.ArrivalDatetime}");
-                }
                 Console.WriteLine($"      Price:      EUR {flight.Price:0.00}");
                 Console.WriteLine();
             }
