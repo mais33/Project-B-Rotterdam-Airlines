@@ -292,7 +292,7 @@ public class AccountManager
         }
         else
         {
-            Console.WriteLine("  > Invalid phone number. Please enter digits only (maximum 11 digits).");
+            Console.WriteLine("  > Invalid phone number (e.g. 0612345678 or +353 87 123 4567).");
         }
 
         Console.WriteLine();
