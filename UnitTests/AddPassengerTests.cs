@@ -40,6 +40,7 @@ public sealed class AddPassengerTests
     [DataRow("", false)]
     [DataRow("invalid", false)]
     [DataRow("2099-01-01", false)]
+    [DataRow("1850-01-01", false)]
     public void CheckDateOfBirth(string dob, bool expected)
     {
         ReservationLogic logic = new ReservationLogic();

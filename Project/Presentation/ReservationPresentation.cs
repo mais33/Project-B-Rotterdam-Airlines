@@ -215,7 +215,7 @@ public static class ReservationPresentation
                 else if (!reservationLogic.IsValidName(firstName))
                 {
                     Console.WriteLine();
-                    Console.WriteLine("  > Invalid first name (must contain at least 3 letters).");
+                    Console.WriteLine("  > Invalid first name (only letters, at least 3 characters).");
                     Console.WriteLine();
                 }
             }
@@ -236,7 +236,7 @@ public static class ReservationPresentation
                 else if (!reservationLogic.IsValidName(lastName))
                 {
                     Console.WriteLine();
-                    Console.WriteLine("  > Invalid last name (must contain at least 3 letters).");
+                    Console.WriteLine("  > Invalid last name (only letters, at least 3 characters).");
                     Console.WriteLine();
                 }
             }
