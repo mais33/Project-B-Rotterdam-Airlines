@@ -88,6 +88,32 @@ public class ReservationLogic
         return true;
     }
 
+    public bool IsFutureDate(string dateOfBirth)
+    {
+        if (string.IsNullOrWhiteSpace(dateOfBirth))
+        {
+            return false;
+        }
+
+        string[] formats = { "dd-MM-yyyy", "yyyy-MM-dd", "d-M-yyyy", "dd/MM/yyyy", "yyyy/MM/dd" };
+        DateTime birthDate;
+
+        bool parsed = DateTime.TryParseExact(
+            dateOfBirth.Trim(),
+            formats,
+            System.Globalization.CultureInfo.InvariantCulture,
+            System.Globalization.DateTimeStyles.None,
+            out birthDate
+        );
+
+        if (!parsed && !DateTime.TryParse(dateOfBirth, out birthDate))
+        {
+            return false;
+        }
+
+        return birthDate > DateTime.Today;
+    }
+
     public double CalculateTotalPrice(
         double flightPrice,
         int passengerCount)
