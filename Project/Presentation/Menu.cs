@@ -2,8 +2,8 @@ static class Menu
 {
     // This method shows the start menu
     private static AccountsLogic accountsLogic = new();
-    private static SeatAccess seatAccess = new();
-    private static AccountsAccess accountsAccess = new();
+    // private static SeatAccess seatAccess = new();
+    // private static AccountsAccess accountsAccess = new();
     private static TicketLogic ticketLogic = new();
     public static void Start()
     {
@@ -46,7 +46,7 @@ static class Menu
                     Console.WriteLine();
                     return;
                 case "5":
-                    seatAccess.ClearSeats();
+                    // seatAccess.ClearSeats();
                     SeatManager.Start();
                     return;
                 case "6":
