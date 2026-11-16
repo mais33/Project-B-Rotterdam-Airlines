@@ -1,6 +1,7 @@
 public class FlightOverview
 {
     private static FlightLogic flightLogic = new FlightLogic();
+    private static AirportLogic airportLogic = new AirportLogic();
 
     public static void Start()
     {
@@ -59,8 +60,8 @@ public class FlightOverview
             {
                 FlightModel flight = flights[i];
 
-                string departure = flightLogic.GetDepartureCity(flight);
-                string destination = flightLogic.GetDestinationCity(flight);
+                string departure = airportLogic.GetDepartureCity(flight);
+                string destination = airportLogic.GetDestinationCity(flight);
 
                 Console.WriteLine($"  [{i + 1}] {departure} -> {destination}");
                 Console.WriteLine($"      Departure:  {flight.DepartureDatetime}");

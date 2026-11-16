@@ -2,6 +2,7 @@ public static class ReservationPresentation
 {
     private static ReservationLogic reservationLogic = new ReservationLogic();
     private static FlightLogic flightLogic = new FlightLogic();
+    private static AirportLogic airportLogic = new AirportLogic();
     private static TicketLogic ticketLogic = new();
 
     public static int passengerCount = 0;
@@ -69,8 +70,8 @@ public static class ReservationPresentation
 
         for (int i = 0; i < flights.Count; i++)
         {
-            string departureCity = flightLogic.GetDepartureCity(flights[i]);
-            string destination = flightLogic.GetDestinationCity(flights[i]);
+            string departureCity = airportLogic.GetDepartureCity(flights[i]);
+            string destination = airportLogic.GetDestinationCity(flights[i]);
             Console.WriteLine($"  [{i + 1}] {departureCity} -> {destination}");
             Console.WriteLine($"      Departure:  {flights[i].DepartureDatetime}");
             Console.WriteLine($"      Price:      EUR {flights[i].Price:0.00}");
@@ -108,8 +109,8 @@ public static class ReservationPresentation
         }
 
         FlightModel selectedFlight = flights[flightChoice - 1];
-        string selectedDepartureCity = flightLogic.GetDepartureCity(selectedFlight);
-        string selectedDestination = flightLogic.GetDestinationCity(selectedFlight);
+        string selectedDepartureCity = airportLogic.GetDepartureCity(selectedFlight);
+        string selectedDestination = airportLogic.GetDestinationCity(selectedFlight);
 
         // Select return flight if round trip
         FlightModel? returnFlight = null;
@@ -133,8 +134,8 @@ public static class ReservationPresentation
 
             for (int i = 0; i < returnFlights.Count; i++)
             {
-                string returnDeparture = flightLogic.GetDepartureCity(returnFlights[i]);
-                string returnDestination = flightLogic.GetDestinationCity(returnFlights[i]);
+                string returnDeparture = airportLogic.GetDepartureCity(returnFlights[i]);
+                string returnDestination = airportLogic.GetDestinationCity(returnFlights[i]);
                 Console.WriteLine($"  [{i + 1}] {returnDeparture} -> {returnDestination}");
                 Console.WriteLine($"      Departure:  {returnFlights[i].DepartureDatetime}");
                 Console.WriteLine($"      Price:      EUR {returnFlights[i].Price:0.00}");
@@ -291,8 +292,8 @@ public static class ReservationPresentation
 
         if (returnFlight != null)
         {
-            string returnDepartureCity = flightLogic.GetDepartureCity(returnFlight);
-            string returnDestinationCity = flightLogic.GetDestinationCity(returnFlight);
+            string returnDepartureCity = airportLogic.GetDepartureCity(returnFlight);
+            string returnDestinationCity = airportLogic.GetDestinationCity(returnFlight);
             Console.WriteLine();
             Console.WriteLine($"  Return route:    {returnDepartureCity} -> {returnDestinationCity}");
             Console.WriteLine($"  Return date:     {flightLogic.GetDate(returnFlight.DepartureDatetime)}");
@@ -319,7 +320,7 @@ public static class ReservationPresentation
 
         
 
-        TicketDisplayModel ticket = ticketLogic.DisplayTicket(createdTicket);
-        Console.Write(ticket.ToString());
+        // TicketDisplayModel ticket = ticketLogic.DisplayTicket(createdTicket);
+        // Console.Write(ticket.ToString());
     }
 }
