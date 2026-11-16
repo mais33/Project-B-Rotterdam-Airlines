@@ -4,12 +4,13 @@ static class Menu
     private static AccountsLogic accountsLogic = new();
     private static SeatAccess seatAccess = new();
     private static AccountsAccess accountsAccess = new();
+    private static TicketLogic ticketLogic = new();
     public static void Start()
     {
         // accountsLogic.CreateAdminAccount("admin"); //adds an admin account to the database
         while (true)
         {
-            Console.Clear();
+            // Console.Clear();
             Console.WriteLine();
             Console.WriteLine("==================================================");
             Console.WriteLine("               ROTTERDAM AIRLINES                 ");
@@ -48,7 +49,10 @@ static class Menu
                     seatAccess.ClearSeats();
                     SeatManager.Start();
                     return;
-
+                case "6":
+                    TicketDisplayModel ticket = ticketLogic.DisplayTicket(1);
+                    Console.WriteLine(ticket.ToString());
+                    break;
                 default:
                     Console.WriteLine();
                     Console.WriteLine("  > Invalid choice. Please choose 1, 2, 3 or 4.");

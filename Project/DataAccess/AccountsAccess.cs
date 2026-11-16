@@ -22,6 +22,7 @@ public class AccountsAccess
         return _connection.QueryFirstOrDefault<AccountModel>(sql, new { Email = email });
     }
 
+
     public void Update(AccountModel account)
     {
         string sql = $@"UPDATE {Table} SET first_name = @FirstName, last_name = @LastName,

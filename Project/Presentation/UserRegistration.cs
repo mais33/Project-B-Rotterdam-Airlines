@@ -1,7 +1,6 @@
 public class UserRegistration
 {
     private static AccountsLogic accountsLogic = new AccountsLogic();
-    private static AccountsAccess accountsAccess = new AccountsAccess();
 
     public string AskFirstName()
     {
@@ -51,14 +50,23 @@ public class UserRegistration
             Console.Write("  Email address:  ");
             string email = (Console.ReadLine() ?? "").Trim();
 
-            if (accountsLogic.CheckEmail(email))
+            if (!accountsLogic.CheckEmail(email))
             {
-                return email;
+                Console.WriteLine();
+                Console.WriteLine("  > Please enter a valid email address. Please try again.");
+                Console.WriteLine();
+                continue;
             }
 
-            Console.WriteLine();
-            Console.WriteLine("  > Please enter a valid email address. Please try again.");
-            Console.WriteLine();
+            if (accountsLogic.IsEmailTaken(email))
+            {
+                Console.WriteLine();
+                Console.WriteLine("  > There already exists an account with this email. Please try again.");
+                Console.WriteLine();
+                continue;
+            }
+
+            return email;
         }
     }
 
@@ -165,7 +173,7 @@ public class UserRegistration
         string password = userRegistration.AskPassword();
 
         AccountModel registeredAccount = new(0, firstName, lastName, email, phoneNumber, UserRole.Customer, false, password);
-        accountsLogic.CreateAccount(registeredAccount, password);
+        accountsLogic.CreateAccount(registeredAccount, password, email);
 
         Console.WriteLine();
         Console.WriteLine("--------------------------------------------------");

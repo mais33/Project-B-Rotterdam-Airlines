@@ -33,7 +33,6 @@ public static class CustomerMenu
                     break;
 
                 case "3":
-                    TicketPresentation.ShowMyTickets(account);
                     break;
 
                 case "4":

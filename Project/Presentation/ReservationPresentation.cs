@@ -2,6 +2,7 @@ public static class ReservationPresentation
 {
     private static ReservationLogic reservationLogic = new ReservationLogic();
     private static FlightLogic flightLogic = new FlightLogic();
+    private static TicketLogic ticketLogic = new();
 
     public static int passengerCount = 0;
 
@@ -315,5 +316,10 @@ public static class ReservationPresentation
         {
             return;
         }
+
+        
+
+        TicketDisplayModel ticket = ticketLogic.DisplayTicket(createdTicket);
+        Console.Write(ticket.ToString());
     }
 }

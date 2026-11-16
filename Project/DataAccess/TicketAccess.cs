@@ -5,47 +5,47 @@ public class TicketAccess
 {
     private SqliteConnection _connection = new SqliteConnection($"Data Source=DataSources/database.db");
 
-    private readonly string Table = "Ticket";
+    private const string TicketTable = "Ticket";
+    private const string SeatTable = "Seat";
+    private const string PassengerTable = "Passenger";
+    private const string ReservationTable = "Reservation";
+    private const string AccountTable = "Account";
+    private const string FlightTable = "Flight";
 
-    public void CreateTable()
+
+    public TicketDisplayModel? DisplayTicket(Int64 ticketId)
     {
-        string sql = $@"CREATE TABLE IF NOT EXISTS {Table} (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            reservation_id INTEGER,
-            account_id INTEGER,
-            flight_id INTEGER,
-            booking_reference TEXT,
-            first_name TEXT,
-            last_name TEXT,
-            seat TEXT)";
-        _connection.Execute(sql);
+        string sql = $@"
+            SELECT 
+                {TicketTable}.id AS Id, 
+                {SeatTable}.seat_number AS SeatNumber, 
+                {SeatTable}.row_number AS RowNumber, 
+                {SeatTable}.price AS Price,
+                {PassengerTable}.first_name AS FirstName, 
+                {PassengerTable}.last_name AS LastName, 
+                {PassengerTable}.dob AS Dob,
+                {ReservationTable}.ticket_price AS TicketPrice, 
+                {ReservationTable}.status AS Status,
+                {AccountTable}.email AS Email,
+                {FlightTable}.id AS FlightId, 
+                {FlightTable}.arrival_datetime AS ArrivalDatetime, 
+                {FlightTable}.departure_datetime AS DepartureDatetime
+            FROM {TicketTable}
+            INNER JOIN {SeatTable}        ON {TicketTable}.seat_id        = {SeatTable}.id
+            INNER JOIN {PassengerTable}   ON {TicketTable}.passenger_id   = {PassengerTable}.id
+            INNER JOIN {ReservationTable} ON {TicketTable}.reservation_id = {ReservationTable}.id
+            INNER JOIN {AccountTable}     ON {ReservationTable}.account_id = {AccountTable}.id
+            INNER JOIN {FlightTable} ON {ReservationTable}.flight_id = {FlightTable}.id
+            WHERE {TicketTable}.id = @TicketId;";
+
+        return _connection.QueryFirstOrDefault<TicketDisplayModel>(sql, new { TicketId = ticketId });
     }
 
-    public void Write(TicketModel ticket)
-    {
-        string sql = $@"INSERT INTO {Table} (reservation_id, account_id, flight_id, booking_reference, first_name, last_name, seat)
-            VALUES (@ReservationId, @AccountId, @FlightId, @BookingReference, @FirstName, @LastName, @Seat);
-            SELECT last_insert_rowid();";
-        ticket.Id = _connection.ExecuteScalar<long>(sql, ticket);
-    }
 
-    public List<TicketModel> GetByAccountId(Int64 accountId)
-    {
-        string sql = $@"SELECT id AS Id, reservation_id AS ReservationId, account_id AS AccountId, flight_id AS FlightId,
-            booking_reference AS BookingReference, first_name AS FirstName, last_name AS LastName, seat AS Seat
-            FROM {Table} WHERE account_id = @AccountId";
-        return _connection.Query<TicketModel>(sql, new { AccountId = accountId }).ToList();
-    }
 
     public int CountTicketsForFlight(Int64 flightId)
     {
-        string sql = $"SELECT COUNT(*) FROM {Table} WHERE flight_id = @FlightId";
-        return _connection.ExecuteScalar<int>(sql, new { FlightId = flightId });
+        return 1;
     }
 
-    public Int64 GetLatestReservationId(Int64 accountId)
-    {
-        string sql = "SELECT id FROM Reservation WHERE account_id = @AccountId ORDER BY id DESC LIMIT 1";
-        return _connection.QueryFirstOrDefault<Int64>(sql, new { AccountId = accountId });
-    }
 }
