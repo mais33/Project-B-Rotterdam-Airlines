@@ -3,7 +3,7 @@ using Dapper;
 
 public class TicketAccess
 {
-    private readonly string _connection = "Data Source=DataSources/database.db";
+    private readonly SqliteConnection _connection = new SqliteConnection($"Data Source=DataSources/database.db");
 
     private const string TicketTable = "Ticket";
     private const string SeatTable = "Seat";
@@ -42,8 +42,7 @@ public class TicketAccess
             INNER JOIN {AirPortTable} dest ON f.destination_id = dest.id
             WHERE t.reservation_id = @ReservationId;";
 
-        using var connection = new SqliteConnection(_connection);
-        return connection.Query<TicketDisplayModel>(sql, new { ReservationId = reservationId }).ToList();
+        return _connection.Query<TicketDisplayModel>(sql, new { ReservationId = reservationId }).ToList();
     }
 
     public List<TicketDisplayModel> GetTicketsByAccountId(Int64 accountId)
@@ -76,8 +75,7 @@ public class TicketAccess
             WHERE r.account_id = @AccountId
             ORDER BY r.id DESC, t.id ASC;";
 
-        using var connection = new SqliteConnection(_connection);
-        return connection.Query<TicketDisplayModel>(sql, new { AccountId = accountId }).ToList();
+        return _connection.Query<TicketDisplayModel>(sql, new { AccountId = accountId }).ToList();
     }
 
     public Int64 AddTicket(TicketModel ticket)
@@ -87,8 +85,7 @@ public class TicketAccess
             VALUES (@PassengerId, @ReservationId, @SeatId);
             SELECT last_insert_rowid();";
 
-        using var connection = new SqliteConnection(_connection);
-        ticket.Id = connection.ExecuteScalar<Int64>(sql, ticket);
+        ticket.Id = _connection.ExecuteScalar<Int64>(sql, ticket);
         return ticket.Id;
     }
 
