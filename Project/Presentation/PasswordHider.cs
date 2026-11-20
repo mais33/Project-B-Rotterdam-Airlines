@@ -1,4 +1,4 @@
-public  class PasswordHider
+public class PasswordHider
 {
     public string PassWordHider()
     {

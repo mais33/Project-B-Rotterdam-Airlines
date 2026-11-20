@@ -4,6 +4,7 @@ using SQLitePCL;
 public class SeatManager
 {
     public static bool UserExited = false;
+    public static List<SeatModel> SelectedSeats = new();
 
     public void DrawSeatMap(SeatModel[,] seatMap)
     {
@@ -58,7 +59,9 @@ public class SeatManager
     }
     public static void Start()
     {
-        UserExited = false;
+        
+        UserExited = false; 
+        SelectedSeats.Clear();
         bool selecting = true;
         SeatManager seatManager = new();
         SeatLogic seatLogic = new();
@@ -81,6 +84,7 @@ public class SeatManager
                 UserExited = true;
                 return;
             }
+            
             if(choice == "CONFIRM")
             {
                 if(AmountOfSeatsReservedCount == 0)
@@ -118,12 +122,18 @@ public class SeatManager
 
                     if(action.Key == ConsoleKey.Enter)
                     {
+                        SelectedSeats.Add(selectedSeat);
                         AmountOfSeatsReservedCount++;
                         Console.WriteLine("\nYou confirmed your seat reservation.");
                         int maxSeats = ReservationPresentation.passengerCount;
                         if(AmountOfSeatsReservedCount >= maxSeats)
                         {
-                            Console.WriteLine($"You have reserved a total of {maxSeats} seats. Returning..");
+                            currentMap = seatLogic.LoadSeatMapFromDatabase();
+                            Console.Clear();
+                            seatManager.DrawSeatMap(currentMap);
+                            Console.WriteLine($"\nYou have reserved a total of {maxSeats} seats.");
+                            Console.WriteLine("\nPress any key to view your ticket(s).");
+                            Console.ReadKey(true);
                             selecting = false;
                         }
                     }

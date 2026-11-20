@@ -6,13 +6,15 @@ public class TicketDisplayModel
     public decimal Price { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
-    public DateTime Dob { get; set; }
+    public string Dob { get; set; }
     public decimal TicketPrice { get; set; }
     public string Status { get; set; }
     public string Email { get; set; }
     public Int64 FlightId { get; set; }
     public string ArrivalDatetime { get; set; }
     public string DepartureDatetime { get; set; }
+    public string Destination { get; set;}
+    public string Origin { get; set;}
 
     public override string ToString()
     {
@@ -20,6 +22,7 @@ public class TicketDisplayModel
 ========================================
             BOARDING PASS #{Id}
 ========================================
+Flight    : {Origin} -> {Destination}
 Passenger : {FirstName} {LastName} (DOB: {Dob:yyyy-MM-dd})
 Email     : {Email}
 Flight ID : {FlightId}

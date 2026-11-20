@@ -174,7 +174,7 @@ public class UserRegistration
         string password = userRegistration.AskPassword();
 
         AccountModel registeredAccount = new(0, firstName, lastName, email, phoneNumber, UserRole.Customer, false, password);
-        accountsLogic.CreateAccount(registeredAccount, password, email);
+        accountsLogic.CreateAccount(registeredAccount, password);
 
         Console.WriteLine();
         Console.WriteLine("--------------------------------------------------");

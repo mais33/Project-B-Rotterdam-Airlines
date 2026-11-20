@@ -1,5 +1,6 @@
 public static class CustomerMenu
 {
+
     public static void Start(AccountModel account)
     {
         while (true)
@@ -33,6 +34,7 @@ public static class CustomerMenu
                     break;
 
                 case "3":
+                    TicketPresentation.Start(account);
                     break;
 
                 case "4":

@@ -6,6 +6,7 @@ public static class ReservationPresentation
     private static TicketLogic ticketLogic = new();
 
     public static int passengerCount = 0;
+    public static Int64 reservationId = 0;
 
     public static void Start(AccountModel account)
     {
@@ -318,9 +319,25 @@ public static class ReservationPresentation
             return;
         }
 
-        
+        double TicketPrice = selectedFlight.Price;
+        reservationId = reservationLogic.MakeReservation(account.Id, selectedFlight.Id, TicketPrice);
 
-        // TicketDisplayModel ticket = ticketLogic.DisplayTicket(createdTicket);
-        // Console.Write(ticket.ToString());
+        for (int i = 0; i < passengerCount; i++)
+        {
+            Int64 passengerId = reservationLogic.AddPassenger(account.Id, passengerFirstNames[i], passengerLastNames[i], passengerDatesOfBirth[i]);
+            reservationLogic.LinkPassengerToReservation(passengerId, reservationId);
+            Int64 seatId = SeatManager.SelectedSeats[i].Id;
+            ticketLogic.AddTicket(passengerId, reservationId, seatId);
+        }
+
+        var createdTickets = ticketLogic.GetTicketsByReservationId(reservationId);
+        foreach (var ticket in createdTickets)
+        {
+            Console.WriteLine(ticket);
+        }
+
+        Console.WriteLine("\nPress any key to return...");
+        Console.ReadKey(true);
     }
+    
 }

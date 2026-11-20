@@ -28,21 +28,6 @@ public class SeatAccess
         return _connection.Query<SeatModel>(sql).ToList();
     }
 
-    public void ClearSeats()
-    {
-        // string sql = @"DELETE FROM Account;
-        //     DELETE FROM sqlite_sequence WHERE name = 'Seat';";
-        // _connection.Execute(sql);
-
-        // 1. Temporarily disable foreign key constraints for this operation
-    _connection.Execute("PRAGMA foreign_keys = OFF;");
-
-    // 2. Perform your clear/delete operation on the Seat table
-    _connection.Execute("DELETE FROM Seat");
-
-    // 3. Re-enable foreign key constraints to keep your database secure
-    _connection.Execute("PRAGMA foreign_keys = ON;");
-    }
 
     public void SetSeatAsReserved(SeatModel seat)
     {
@@ -55,4 +40,19 @@ public class SeatAccess
         string sql = $@"Update {Table} Set is_reserved = 0 WHERE id = @Id";
         _connection.Execute(sql, new { Id = seat.Id });
     }
+    public void ClearSeats()
+    {
+        // string sql = @"DELETE FROM Account;
+        //     DELETE FROM sqlite_sequence WHERE name = 'Seat';";
+        // _connection.Execute(sql);
+
+        // 1. Temporarily disable foreign key constraints for this operation
+        _connection.Execute("PRAGMA foreign_keys = OFF;");
+
+        // 2. Perform your clear/delete operation on the Seat table
+        _connection.Execute("DELETE FROM Seat");
+
+        // 3. Re-enable foreign key constraints to keep your database secure
+        _connection.Execute("PRAGMA foreign_keys = ON;");
+        }
 }

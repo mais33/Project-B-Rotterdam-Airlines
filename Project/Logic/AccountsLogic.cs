@@ -128,7 +128,7 @@ public class AccountsLogic
         return _access.GetByEmail(email) != null;
     }
     
-    public OperationResult CreateAccount(AccountModel account, string password, string email)
+    public OperationResult CreateAccount(AccountModel account, string password)
     {
         if(account is null)
         {

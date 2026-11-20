@@ -50,8 +50,6 @@ static class Menu
                     SeatManager.Start();
                     return;
                 case "6":
-                    TicketDisplayModel ticket = ticketLogic.DisplayTicket(1);
-                    Console.WriteLine(ticket.ToString());
                     break;
                 default:
                     Console.WriteLine();
