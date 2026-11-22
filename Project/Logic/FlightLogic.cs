@@ -68,20 +68,31 @@ public class FlightLogic
         return returnDate.Date >= departureDate.Date;
     }
 
-    public List<FlightModel> SearchFlights(AirportModel start, AirportModel destination, DateTime date)
+    public List<FlightModel> SearchFlights(
+     AirportModel start,
+     AirportModel destination,
+     DateTime date)
     {
-        string searchDate = date.ToString("dd-MM-yyyy");
-        return _access.Search(start.Id, destination.Id, searchDate);
+        string searchDate = date.ToString(
+            "dd-MM-yyyy",
+            CultureInfo.InvariantCulture
+        );
+
+        return _access.Search(
+            start.Id,
+            destination.Id,
+            searchDate
+        );
     }
 
-    // Departure looks like "2026-11-02 08:30", so the part before the space is the date
+    // Get the date from the departure datetime.
     public string GetDate(string departure)
     {
         string[] parts = departure.Split(' ');
         return parts[0];
     }
-
-    // The part after the space is the time
+    
+    // The part after the space is the time.
     public string GetTime(string departure)
     {
         string[] parts = departure.Split(' ');
