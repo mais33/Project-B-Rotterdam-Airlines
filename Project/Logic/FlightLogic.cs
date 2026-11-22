@@ -1,3 +1,6 @@
+
+using System.Globalization;
+
 public class FlightLogic
 {
     private FlightAccess _access = new();
@@ -46,7 +49,13 @@ public class FlightLogic
 
     public bool TryParseDate(string input, out DateTime date)
     {
-        return DateTime.TryParse(input, out date);
+        return DateTime.TryParseExact(
+            input,
+            "dd-MM-yyyy",
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.None,
+            out date
+        );
     }
 
     public bool IsDateInPast(DateTime date)
@@ -61,7 +70,7 @@ public class FlightLogic
 
     public List<FlightModel> SearchFlights(AirportModel start, AirportModel destination, DateTime date)
     {
-        string searchDate = date.ToString("yyyy-MM-dd");
+        string searchDate = date.ToString("dd-MM-yyyy");
         return _access.Search(start.Id, destination.Id, searchDate);
     }
 
