@@ -1,3 +1,6 @@
+
+using System.Globalization;
+
 public class FlightLogic
 {
     private FlightAccess _access = new();
@@ -20,14 +23,9 @@ public class FlightLogic
         return airport != null ? airport.City : "Unknown";
     }
 
-    public string GetStartCity(FlightModel flight)
-    {
-        return GetDepartureCity(flight);
-    }
-
     public string GetDestinationCity(FlightModel flight)
     {
-        AirportModel? airport = _airportAccess.GetById(flight.DestinationId);
+        AirportModel airport = _airportAccess.GetById(flight.DestinationId);
         return airport != null ? airport.City : "Unknown";
     }
 
@@ -51,7 +49,13 @@ public class FlightLogic
 
     public bool TryParseDate(string input, out DateTime date)
     {
-        return DateTime.TryParse(input, out date);
+        return DateTime.TryParseExact(
+            input,
+            "dd-MM-yyyy",
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.None,
+            out date
+        );
     }
 
     public bool IsDateInPast(DateTime date)
@@ -66,18 +70,13 @@ public class FlightLogic
 
     public List<FlightModel> SearchFlights(AirportModel start, AirportModel destination, DateTime date)
     {
-        string searchDate = date.ToString("yyyy-MM-dd");
+        string searchDate = date.ToString("dd-MM-yyyy");
         return _access.Search(start.Id, destination.Id, searchDate);
     }
 
     // Departure looks like "2026-11-02 08:30", so the part before the space is the date
     public string GetDate(string departure)
     {
-        if (string.IsNullOrWhiteSpace(departure))
-        {
-            return "Unknown";
-        }
-
         string[] parts = departure.Split(' ');
         return parts[0];
     }
@@ -85,11 +84,6 @@ public class FlightLogic
     // The part after the space is the time
     public string GetTime(string departure)
     {
-        if (string.IsNullOrWhiteSpace(departure))
-        {
-            return "";
-        }
-
         string[] parts = departure.Split(' ');
 
         if (parts.Length > 1)

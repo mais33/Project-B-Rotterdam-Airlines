@@ -1,3 +1,4 @@
+
 public static class AdminFlightPresentation
 {
     private static AdminFlightLogic logic = new AdminFlightLogic();
@@ -163,7 +164,7 @@ public static class AdminFlightPresentation
         foreach (PlaneModel plane in availablePlanes)
         {
             Console.WriteLine(
-                $"{plane.Id}. {plane.Name} - {plane.Model} - Capacity: {plane.Capacity}"
+                $"{plane.Id}. {plane.Name} - {plane.Model}"
             );
         }
 
@@ -220,9 +221,9 @@ public static class AdminFlightPresentation
             DestinationId = destinationAirportId,
             Price = price,
 
-            // Store dates in the same format as existing flights.
-            DepartureDatetime = departureDate.ToString("yyyy-MM-dd HH:mm"),
-            ArrivalDatetime = arrivalDate.ToString("yyyy-MM-dd HH:mm")
+            // Store dates in day-month-year format.
+            DepartureDatetime = departureDate.ToString("dd-MM-yyyy HH:mm"),
+            ArrivalDatetime = arrivalDate.ToString("dd-MM-yyyy HH:mm")
         };
 
         // Show flight overview before saving.

@@ -40,11 +40,25 @@ public sealed class AddPassengerTests
     [DataRow("", false)]
     [DataRow("invalid", false)]
     [DataRow("2099-01-01", false)]
+    [DataRow("1850-01-01", false)]
     public void CheckDateOfBirth(string dob, bool expected)
     {
         ReservationLogic logic = new ReservationLogic();
 
         bool result = logic.IsValidDateOfBirth(dob);
+
+        Assert.AreEqual(expected, result);
+    }
+
+    [DataTestMethod]
+    [DataRow("2099-01-01", true)]
+    [DataRow("1999-05-20", false)]
+    [DataRow("20-05-1999", false)]
+    public void CheckIsFutureDate(string dob, bool expected)
+    {
+        ReservationLogic logic = new ReservationLogic();
+
+        bool result = logic.IsFutureDate(dob);
 
         Assert.AreEqual(expected, result);
     }
@@ -64,11 +78,11 @@ public sealed class AddPassengerTests
     {
         ReservationLogic logic = new ReservationLogic();
 
-        Int64 outboundResId = logic.MakeReservation(10, 1, 259.98);
-        Int64 returnResId = logic.MakeReservation(10, 6, 300.0);
+        Int64 outboundResId = logic.MakeReservation(9, 1, 259.98);
+        Int64 returnResId = logic.MakeReservation(9, 2, 300.0);
 
-        Int64 p1 = logic.AddPassenger(10, "Omid", "Fayzi", "29-01-2000");
-        Int64 p2 = logic.AddPassenger(10, "Jan", "Hagel", "05-05-2000");
+        Int64 p1 = logic.AddPassenger(9, "Omid", "Fayzi", "29-01-2000");
+        Int64 p2 = logic.AddPassenger(9, "Jan", "Hagel", "05-05-2000");
 
         logic.LinkPassengerToReservation(p1, outboundResId);
         logic.LinkPassengerToReservation(p2, outboundResId);
@@ -76,12 +90,12 @@ public sealed class AddPassengerTests
         logic.LinkPassengerToReservation(p1, returnResId);
         logic.LinkPassengerToReservation(p2, returnResId);
 
-        List<TicketModel> outboundTickets = logic.GetTicketsForReservation(outboundResId);
-        List<TicketModel> returnTickets = logic.GetTicketsForReservation(returnResId);
+        List<PassengerReservationModel> outboundPassengers = logic.GetPassengersForReservation(outboundResId);
+        List<PassengerReservationModel> returnPassengers = logic.GetPassengersForReservation(returnResId);
 
-        Assert.AreEqual(2, outboundTickets.Count);
-        Assert.AreEqual(2, returnTickets.Count);
-        Assert.AreEqual(outboundTickets[0].PassengerId, returnTickets[0].PassengerId);
-        Assert.AreEqual(outboundTickets[1].PassengerId, returnTickets[1].PassengerId);
+        Assert.AreEqual(2, outboundPassengers.Count);
+        Assert.AreEqual(2, returnPassengers.Count);
+        Assert.AreEqual(outboundPassengers[0].PassengerId, returnPassengers[0].PassengerId);
+        Assert.AreEqual(outboundPassengers[1].PassengerId, returnPassengers[1].PassengerId);
     }
 }

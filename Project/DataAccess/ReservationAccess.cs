@@ -53,28 +53,45 @@ public class ReservationAccess
     {
         string sql = @"
             INSERT INTO Passenger
-            (first_name, last_name, date_of_birth, passport_number)
+            (first_name, last_name, dob)
             VALUES
-            (@FirstName, @LastName, @DateOfBirth, @PassportNumber);
+            (@FirstName, @LastName, @Dob);
             SELECT last_insert_rowid();";
 
         passenger.Id = _connection.ExecuteScalar<Int64>(sql, passenger);
         return passenger.Id;
     }
 
-    public List<ReservationModel> GetReservationsByAccountId(Int64 accountId)
+    public Int64 AddPassengerReservation(PassengerReservationModel passengerReservation)
     {
+        CreatePassengerReservationTable();
+
+        string sql = @"
+            INSERT INTO PassengerReservation
+            (passenger_id, reservation_id)
+            VALUES
+            (@PassengerId, @ReservationId);
+            SELECT last_insert_rowid();";
+
+        passengerReservation.Id = _connection.ExecuteScalar<Int64>(sql, passengerReservation);
+        return passengerReservation.Id;
+    }
+
+    public List<PassengerReservationModel> GetByReservationId(Int64 reservationId)
+    {
+        CreatePassengerReservationTable();
+
         string sql = @"
             SELECT
                 id AS Id,
-                account_id AS AccountId,
-                flight_id AS FlightId,
-                ticket_price AS TicketPrice,
-                status AS Status
-            FROM Reservation
-            WHERE account_id = @AccountId
-            ORDER BY id ASC";
+                passenger_id AS PassengerId,
+                reservation_id AS ReservationId
+            FROM PassengerReservation
+            WHERE reservation_id = @ReservationId";
 
-        return _connection.Query<ReservationModel>(sql, new { AccountId = accountId }).ToList();
+        return _connection.Query<PassengerReservationModel>(
+            sql,
+            new { ReservationId = reservationId }
+        ).ToList();
     }
 }

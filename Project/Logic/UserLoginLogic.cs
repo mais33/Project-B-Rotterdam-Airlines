@@ -21,11 +21,6 @@ public class UserLoginLogic
 
     public AccountModel? Login(string email, string password)
     {
-        if (string.IsNullOrEmpty(email) || password == null)
-        {
-            return null;
-        }
-
         AccountModel? account = _userLoginAccess.GetAccountByEmail(email);
 
         if (account == null)
