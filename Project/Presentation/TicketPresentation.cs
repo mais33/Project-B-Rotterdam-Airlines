@@ -34,10 +34,6 @@ public class TicketPresentation
                 Console.ReadKey(true);
                 return;
 
-            // case "2":
-            //     RemoveTicketForCustomer(account);
-            //     break;
-
             default:
                 Console.WriteLine("  > Invalid option. Please choose 1, 2, 3 or 4.");
                 Console.WriteLine();
