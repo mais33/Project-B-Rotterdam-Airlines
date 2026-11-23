@@ -1,4 +1,3 @@
-
 public static class ViewReservationPresentation
 {
     private static readonly ReservationLogic _logic = new ReservationLogic();
@@ -14,8 +13,8 @@ public static class ViewReservationPresentation
 
         try
         {
-            List<ReservationModel> reservations =
-                _logic.GetReservationsForAccount(account.Id);
+            List<ReservationDetailsModel> reservations =
+                _logic.GetReservationDetailsForAccount(account.Id);
 
             Console.Clear();
             Console.WriteLine("=== MY RESERVATIONS ===");
@@ -34,10 +33,10 @@ public static class ViewReservationPresentation
     public static void ShowAllReservations(AccountModel account)
     {
         if (account == null ||
-            !string.Equals(account.Role.ToString(), "Admin",
+            (!string.Equals(account.Role.ToString(), "Admin",
                 StringComparison.OrdinalIgnoreCase) &&
-            !string.Equals(account.Role.ToString(), "Administrator",
-                StringComparison.OrdinalIgnoreCase))
+             !string.Equals(account.Role.ToString(), "Administrator",
+                StringComparison.OrdinalIgnoreCase)))
         {
             Console.WriteLine("Access denied. Admin only.");
             Pause();
@@ -46,8 +45,8 @@ public static class ViewReservationPresentation
 
         try
         {
-            List<ReservationModel> reservations =
-                _logic.GetAllReservations();
+            List<ReservationDetailsModel> reservations =
+                _logic.GetAllReservationDetails();
 
             Console.Clear();
             Console.WriteLine("=== ALL CUSTOMER RESERVATIONS ===");
@@ -64,7 +63,7 @@ public static class ViewReservationPresentation
     }
 
     private static void DisplayReservations(
-        List<ReservationModel> reservations)
+        List<ReservationDetailsModel> reservations)
     {
         if (reservations.Count == 0)
         {
@@ -72,14 +71,38 @@ public static class ViewReservationPresentation
             return;
         }
 
-        foreach (ReservationModel reservation in reservations)
+        foreach (ReservationDetailsModel reservation in reservations)
         {
             Console.WriteLine("--------------------------------");
-            Console.WriteLine($"Reservation ID : {reservation.Id}");
-            Console.WriteLine($"Account ID     : {reservation.AccountId}");
-            Console.WriteLine($"Flight ID      : {reservation.FlightId}");
-            Console.WriteLine($"Total price    : EUR {reservation.TicketPrice:F2}");
+            Console.WriteLine($"Reservation ID : {reservation.ReservationId}");
+            Console.WriteLine($"Customer       : {reservation.CustomerName}");
+            Console.WriteLine($"Route          : {reservation.DepartureCity} -> {reservation.DestinationCity}");
+            Console.WriteLine($"Departure      : {reservation.DepartureDateTime}");
+
+            Console.WriteLine("Passengers:");
+
+            if (reservation.Passengers.Count == 0)
+            {
+                Console.WriteLine("  No passenger details found.");
+            }
+            else
+            {
+                foreach (ReservationPassengerDetailsModel passenger
+                    in reservation.Passengers)
+                {
+                    Console.WriteLine(
+                        $"  - {passenger.FirstName} {passenger.LastName} | Seat: {passenger.SeatNumber}");
+                }
+            }
+
+            Console.WriteLine($"Total price    : EUR {reservation.TotalPrice:F2}");
             Console.WriteLine($"Status         : {reservation.Status}");
+
+            if (reservation.BookingGroupId.HasValue)
+            {
+                Console.WriteLine(
+                    $"Booking Group  : {reservation.BookingGroupId.Value}");
+            }
         }
 
         Console.WriteLine("--------------------------------");

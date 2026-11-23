@@ -445,4 +445,76 @@ public class ReservationAccess
                 transaction);
         }
     }
+
+    public List<ReservationDetailsModel> GetReservationDetails(long? accountId = null)
+    {
+        const string sql = @"
+            SELECT
+                r.id AS ReservationId,
+                r.account_id AS AccountId,
+                a.first_name || ' ' || a.last_name AS CustomerName,
+                r.flight_id AS FlightId,
+                departure.city AS DepartureCity,
+                destination.city AS DestinationCity,
+                f.departure_datetime AS DepartureDateTime,
+                r.ticket_price AS TotalPrice,
+                r.status AS Status,
+                r.booking_group_id AS BookingGroupId,
+                p.first_name AS FirstName,
+                p.last_name AS LastName,
+                s.seat_number AS SeatNumber
+            FROM Reservation r
+            LEFT JOIN Account a ON a.id = r.account_id
+            LEFT JOIN Flight f ON f.id = r.flight_id
+            LEFT JOIN Airport departure ON departure.id = f.start_airport_id
+            LEFT JOIN Airport destination ON destination.id = f.destination_id
+            LEFT JOIN Ticket t ON t.reservation_id = r.id
+            LEFT JOIN Passenger p ON p.id = t.passenger_id
+            LEFT JOIN Seat s ON s.id = t.seat_id
+            WHERE (@AccountId IS NULL OR r.account_id = @AccountId)
+            ORDER BY r.id DESC, t.id";
+
+        var rows = _connection.Query(sql, new { AccountId = accountId });
+        var reservations = new Dictionary<long, ReservationDetailsModel>();
+
+        foreach (var row in rows)
+        {
+            long reservationId = (long)row.ReservationId;
+
+            if (!reservations.TryGetValue(reservationId, out var reservation))
+            {
+                reservation = new ReservationDetailsModel
+                {
+                    ReservationId = reservationId,
+                    AccountId = (long)row.AccountId,
+                    CustomerName = (string?)row.CustomerName ?? "",
+                    FlightId = (long)row.FlightId,
+                    DepartureCity = (string?)row.DepartureCity ?? "",
+                    DestinationCity = (string?)row.DestinationCity ?? "",
+                    DepartureDateTime = (string?)row.DepartureDateTime ?? "",
+                    TotalPrice = Convert.ToDouble(row.TotalPrice),
+                    Status = (string?)row.Status ?? "",
+                    BookingGroupId = row.BookingGroupId == null
+                        ? null
+                        : (long?)row.BookingGroupId
+                };
+
+                reservations.Add(reservationId, reservation);
+            }
+
+            if (row.FirstName != null || row.LastName != null)
+            {
+                reservation.Passengers.Add(
+                    new ReservationPassengerDetailsModel
+                    {
+                        FirstName = (string?)row.FirstName ?? "",
+                        LastName = (string?)row.LastName ?? "",
+                        SeatNumber = (string?)row.SeatNumber ?? ""
+                    });
+            }
+        }
+
+        return reservations.Values.ToList();
+    }
+
 }

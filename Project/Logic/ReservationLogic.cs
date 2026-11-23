@@ -197,6 +197,23 @@ public class ReservationLogic
     }
 
 
+
+    public List<ReservationDetailsModel> GetReservationDetailsForAccount(
+        long accountId)
+    {
+        if (accountId <= 0)
+        {
+            throw new ArgumentException("Invalid account ID.");
+        }
+
+        return _reservationAccess.GetReservationDetails(accountId);
+    }
+
+    public List<ReservationDetailsModel> GetAllReservationDetails()
+    {
+        return _reservationAccess.GetReservationDetails();
+    }
+
     public List<Int64> ConfirmReservation(
         Int64 accountId,
         FlightModel outboundFlight,
