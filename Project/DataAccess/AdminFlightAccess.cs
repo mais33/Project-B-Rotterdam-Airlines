@@ -1,3 +1,4 @@
+
 using Microsoft.Data.Sqlite;
 using Dapper;
 
@@ -32,8 +33,7 @@ public class AdminFlightAccess
             SELECT
                 id AS Id,
                 name AS Name,
-                model AS Model,
-                capacity AS Capacity
+                model AS Model
             FROM Plane";
 
         return connection.Query<PlaneModel>(sql).ToList();

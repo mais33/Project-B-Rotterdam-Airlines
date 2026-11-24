@@ -8,26 +8,21 @@ public class FlightOverview
         {
             ShowOverview();
 
-            Console.WriteLine("  [1] Search flights");
-            Console.WriteLine("  [2] Back");
+            Console.WriteLine("  [1] Back");
             Console.WriteLine();
             Console.WriteLine("--------------------------------------------------");
-            Console.Write("  Choose an option (1-2): ");
+            Console.Write("  Choose an option (1): ");
 
             string choice = Console.ReadLine() ?? "";
 
             switch (choice)
             {
                 case "1":
-                    FlightSearch.Start();
-                    break;
-
-                case "2":
                     return;
 
                 default:
                     Console.WriteLine();
-                    Console.WriteLine("  > Invalid choice. Please choose 1 or 2.");
+                    Console.WriteLine("  > Invalid choice. Please choose 1.");
                     Console.WriteLine();
                     Console.WriteLine("  Press any key to continue...");
                     Console.ReadKey();

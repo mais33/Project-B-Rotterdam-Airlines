@@ -1,3 +1,4 @@
+
 public static class ReservationPresentation
 {
     private static ReservationLogic reservationLogic = new ReservationLogic();
@@ -49,13 +50,68 @@ public static class ReservationPresentation
             Console.WriteLine();
         }
 
-        // Get flights
-        List<FlightModel> flights = reservationLogic.GetFlights();
+        // Search flights
+        Console.WriteLine();
+        Console.WriteLine("==================================================");
+        Console.WriteLine("                  SEARCH FLIGHTS                  ");
+        Console.WriteLine("==================================================");
+        Console.WriteLine();
+
+        List<AirportModel> airports = flightLogic.GetAirports();
+        List<string> cities = new List<string>();
+
+        foreach (AirportModel airport in airports)
+        {
+            cities.Add(airport.City);
+        }
+
+        Console.WriteLine($"  Cities: {string.Join(", ", cities)}");
+        Console.WriteLine();
+
+        AirportModel startAirport;
+        AirportModel destinationAirport;
+
+        while (true)
+        {
+            startAirport = AskCity("  Coming from:     ");
+            destinationAirport = AskCity("  Going to:        ");
+
+            if (startAirport.Id != destinationAirport.Id)
+            {
+                break;
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("  > Departure and destination cannot be the same.");
+            Console.WriteLine();
+        }
+
+        DateTime departureDate = AskDate(
+            "  Departure date (dd-MM-yyyy): ",
+            null
+        );
+
+        DateTime returnDate = departureDate;
+
+        if (isRoundTrip)
+        {
+            returnDate = AskDate(
+                "  Return date (dd-MM-yyyy):    ",
+                departureDate
+            );
+        }
+
+        // Get matching outbound flights
+        List<FlightModel> flights = flightLogic.SearchFlights(
+            startAirport,
+            destinationAirport,
+            departureDate
+        );
 
         if (flights.Count == 0)
         {
             Console.WriteLine();
-            Console.WriteLine("  > There are no flights available at the moment.");
+            Console.WriteLine("  > No flights found for this route and date.");
             Console.WriteLine();
             Console.WriteLine("  Press any key to return...");
             Console.ReadKey();
@@ -70,6 +126,7 @@ public static class ReservationPresentation
         {
             string departureCity = flightLogic.GetDepartureCity(flights[i]);
             string destination = flightLogic.GetDestinationCity(flights[i]);
+
             Console.WriteLine($"  [{i + 1}] {departureCity} -> {destination}");
             Console.WriteLine($"      Departure:  {flights[i].DepartureDatetime}");
             Console.WriteLine($"      Price:      EUR {flights[i].Price:0.00}");
@@ -115,12 +172,16 @@ public static class ReservationPresentation
 
         if (isRoundTrip)
         {
-            List<FlightModel> returnFlights = reservationLogic.GetReturnFlights(selectedFlight);
+            List<FlightModel> returnFlights = flightLogic.SearchFlights(
+                destinationAirport,
+                startAirport,
+                returnDate
+            );
 
             if (returnFlights.Count == 0)
             {
                 Console.WriteLine();
-                Console.WriteLine("  > There are no return flights available for this route.");
+                Console.WriteLine("  > There are no return flights available for this route and date.");
                 Console.WriteLine();
                 Console.WriteLine("  Press any key to return...");
                 Console.ReadKey();
@@ -134,6 +195,7 @@ public static class ReservationPresentation
             {
                 string returnDeparture = flightLogic.GetDepartureCity(returnFlights[i]);
                 string returnDestination = flightLogic.GetDestinationCity(returnFlights[i]);
+
                 Console.WriteLine($"  [{i + 1}] {returnDeparture} -> {returnDestination}");
                 Console.WriteLine($"      Departure:  {returnFlights[i].DepartureDatetime}");
                 Console.WriteLine($"      Price:      EUR {returnFlights[i].Price:0.00}");
@@ -180,7 +242,8 @@ public static class ReservationPresentation
             Console.Write("  Number of passengers: ");
             string input = Console.ReadLine() ?? "";
 
-            if (!int.TryParse(input, out passengerCount) || !reservationLogic.IsValidPassengerCount(passengerCount))
+            if (!int.TryParse(input, out passengerCount) ||
+                !reservationLogic.IsValidPassengerCount(passengerCount))
             {
                 Console.WriteLine();
                 Console.WriteLine("  > Invalid number of passengers (must be at least 1). Please try again.");
@@ -275,8 +338,13 @@ public static class ReservationPresentation
 
         // Calculate total price
         double totalPrice = returnFlight != null
-            ? reservationLogic.CalculateTotalPrice(selectedFlight.Price, returnFlight.Price, passengerCount)
-            : reservationLogic.CalculateTotalPrice(selectedFlight.Price, passengerCount);
+            ? reservationLogic.CalculateTotalPrice(
+                selectedFlight.Price,
+                returnFlight.Price,
+                passengerCount)
+            : reservationLogic.CalculateTotalPrice(
+                selectedFlight.Price,
+                passengerCount);
 
         // Reservation overview
         Console.WriteLine();
@@ -292,6 +360,7 @@ public static class ReservationPresentation
         {
             string returnDepartureCity = flightLogic.GetDepartureCity(returnFlight);
             string returnDestinationCity = flightLogic.GetDestinationCity(returnFlight);
+
             Console.WriteLine();
             Console.WriteLine($"  Return route:    {returnDepartureCity} -> {returnDestinationCity}");
             Console.WriteLine($"  Return date:     {flightLogic.GetDate(returnFlight.DepartureDatetime)}");
@@ -311,9 +380,67 @@ public static class ReservationPresentation
         Console.WriteLine("--------------------------------------------------");
 
         SeatManager.Start();
+
         if (SeatManager.UserExited)
         {
             return;
+        }
+    }
+
+    // Ask for a valid airport city
+    private static AirportModel AskCity(string label)
+    {
+        while (true)
+        {
+            Console.Write(label);
+            string input = (Console.ReadLine() ?? "").Trim();
+
+            AirportModel? airport = flightLogic.FindAirportByCity(input);
+
+            if (airport != null)
+            {
+                return airport;
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("  > City not found. Please choose a city from the list.");
+            Console.WriteLine();
+        }
+    }
+
+    // Ask for a date using the standard format
+    private static DateTime AskDate(
+        string label,
+        DateTime? departureDate)
+    {
+        while (true)
+        {
+            Console.Write(label);
+            string input = (Console.ReadLine() ?? "").Trim();
+
+            if (!flightLogic.TryParseDate(input, out DateTime date))
+            {
+                Console.WriteLine();
+                Console.WriteLine("  > Invalid date. Please use dd-MM-yyyy (e.g. 25-12-2026).");
+                Console.WriteLine();
+            }
+            else if (flightLogic.IsDateInPast(date))
+            {
+                Console.WriteLine();
+                Console.WriteLine("  > Date cannot be in the past.");
+                Console.WriteLine();
+            }
+            else if (departureDate.HasValue &&
+                     !flightLogic.IsValidReturnDate(departureDate.Value, date))
+            {
+                Console.WriteLine();
+                Console.WriteLine("  > Return date cannot be before the departure date.");
+                Console.WriteLine();
+            }
+            else
+            {
+                return date;
+            }
         }
     }
 }
