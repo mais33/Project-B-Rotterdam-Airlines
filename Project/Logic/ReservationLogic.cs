@@ -64,16 +64,9 @@ public class ReservationLogic
             return false;
         }
 
-        string[] formats = { "dd-MM-yyyy" };
         DateTime birthDate;
 
-        bool parsed = DateTime.TryParseExact(
-            dateOfBirth.Trim(),
-            formats,
-            System.Globalization.CultureInfo.InvariantCulture,
-            System.Globalization.DateTimeStyles.None,
-            out birthDate
-        );
+        bool parsed = DateLogic.TryReadDate(dateOfBirth.Trim(), out birthDate);
 
         if (!parsed)
         {
@@ -95,16 +88,9 @@ public class ReservationLogic
             return false;
         }
 
-        string[] formats = { "dd-MM-yyyy" };
         DateTime birthDate;
 
-        bool parsed = DateTime.TryParseExact(
-            dateOfBirth.Trim(),
-            formats,
-            System.Globalization.CultureInfo.InvariantCulture,
-            System.Globalization.DateTimeStyles.None,
-            out birthDate
-        );
+        bool parsed = DateLogic.TryReadDate(dateOfBirth.Trim(), out birthDate);
 
         if (!parsed)
         {

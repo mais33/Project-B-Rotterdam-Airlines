@@ -31,8 +31,8 @@ public class AddFlightTests
 
         // Act
         bool result = logic.IsValidDateTime(
-            departure.ToString("dd-MM-yyyy HH:mm"),
-            arrival.ToString("dd-MM-yyyy HH:mm")
+            DateLogic.DateTimeToText(departure),
+            DateLogic.DateTimeToText(arrival)
         );
 
         // Assert
@@ -50,8 +50,8 @@ public class AddFlightTests
 
         // Act
         bool result = logic.IsValidDateTime(
-            departure.ToString("dd-MM-yyyy HH:mm"),
-            arrival.ToString("dd-MM-yyyy HH:mm")
+            DateLogic.DateTimeToText(departure),
+            DateLogic.DateTimeToText(arrival)
         );
 
         // Assert
@@ -68,8 +68,8 @@ public class AddFlightTests
 
         // Act
         bool result = logic.IsValidDateTime(
-            departure.ToString("dd-MM-yyyy HH:mm"),
-            departure.ToString("dd-MM-yyyy HH:mm")
+            DateLogic.DateTimeToText(departure),
+            DateLogic.DateTimeToText(departure)
         );
 
         // Assert
@@ -86,7 +86,7 @@ public class AddFlightTests
 
         // Act
         bool result = logic.IsValidDepartureDate(
-            departure.ToString("dd-MM-yyyy HH:mm")
+            DateLogic.DateTimeToText(departure)
         );
 
         // Assert
@@ -223,8 +223,8 @@ public class AddFlightTests
             StartAirportId = 1,
             DestinationId = 2,
             Price = 150,
-            DepartureDatetime = departure.ToString("dd-MM-yyyy HH:mm"),
-            ArrivalDatetime = arrival.ToString("dd-MM-yyyy HH:mm")
+            DepartureDatetime = DateLogic.DateTimeToText(departure),
+            ArrivalDatetime = DateLogic.DateTimeToText(arrival)
         };
 
         List<AirportModel> airports = new List<AirportModel>
