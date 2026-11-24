@@ -25,6 +25,43 @@ public class ReservationLogic
         return returnFlights;
     }
 
+    public List<FlightModel> GetValidReturnFlights(FlightModel outboundFlight, List<FlightModel> flights)
+    {
+        List<FlightModel> validReturnFlights = new List<FlightModel>();
+
+        for (int i = 0; i < flights.Count; i++)
+        {
+            if (IsValidReturnFlight(outboundFlight, flights[i]))
+            {
+                validReturnFlights.Add(flights[i]);
+            }
+        }
+
+        return validReturnFlights;
+    }
+
+    public bool IsValidReturnFlight(FlightModel outboundFlight, FlightModel returnFlight)
+    {
+        if (returnFlight.StartAirportId != outboundFlight.DestinationId ||
+            returnFlight.DestinationId != outboundFlight.StartAirportId)
+        {
+            return false;
+        }
+
+        if (!TryParseFlightDateTime(outboundFlight.ArrivalDatetime, out DateTime outboundArrival) ||
+            !TryParseFlightDateTime(returnFlight.DepartureDatetime, out DateTime returnDeparture))
+        {
+            return false;
+        }
+
+        return returnDeparture > outboundArrival;
+    }
+
+    private bool TryParseFlightDateTime(string value, out DateTime dateTime)
+    {
+        return DateLogic.TryReadDateTime(value, out dateTime);
+    }
+
     public bool IsValidPassengerCount(int passengerCount)
     {
         if (passengerCount <= 0)
@@ -64,18 +101,11 @@ public class ReservationLogic
             return false;
         }
 
-        string[] formats = { "dd-MM-yyyy", "yyyy-MM-dd", "d-M-yyyy", "dd/MM/yyyy", "yyyy/MM/dd" };
         DateTime birthDate;
 
-        bool parsed = DateTime.TryParseExact(
-            dateOfBirth.Trim(),
-            formats,
-            System.Globalization.CultureInfo.InvariantCulture,
-            System.Globalization.DateTimeStyles.None,
-            out birthDate
-        );
+        bool parsed = DateLogic.TryReadDate(dateOfBirth.Trim(), out birthDate);
 
-        if (!parsed && !DateTime.TryParse(dateOfBirth, out birthDate))
+        if (!parsed)
         {
             return false;
         }
@@ -95,18 +125,11 @@ public class ReservationLogic
             return false;
         }
 
-        string[] formats = { "dd-MM-yyyy", "yyyy-MM-dd", "d-M-yyyy", "dd/MM/yyyy", "yyyy/MM/dd" };
         DateTime birthDate;
 
-        bool parsed = DateTime.TryParseExact(
-            dateOfBirth.Trim(),
-            formats,
-            System.Globalization.CultureInfo.InvariantCulture,
-            System.Globalization.DateTimeStyles.None,
-            out birthDate
-        );
+        bool parsed = DateLogic.TryReadDate(dateOfBirth.Trim(), out birthDate);
 
-        if (!parsed && !DateTime.TryParse(dateOfBirth, out birthDate))
+        if (!parsed)
         {
             return false;
         }

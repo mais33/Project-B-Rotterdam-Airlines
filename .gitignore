@@ -444,3 +444,4 @@ user_stories.json
 .env
 .env.*
 
+Test script template*.csv
