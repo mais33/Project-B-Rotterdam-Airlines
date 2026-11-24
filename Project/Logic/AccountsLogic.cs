@@ -155,6 +155,11 @@ public class AccountsLogic
         return true;
     }
 
+    public bool IsEmailTaken(string email)
+    {
+        return _access.GetByEmail(email) != null;
+    }
+    
     public void CreateAccount(AccountModel account, string password)
     {
         if(account is null)
