@@ -35,4 +35,20 @@ public sealed class Test1
 
         Assert.IsNull(result);
     }
+
+    [DataTestMethod]
+    [DataRow("customer@test.nl", true)]
+    [DataRow("john.doe@mail.com", true)]
+    [DataRow("customer", false)]
+    [DataRow("customer@test", false)]
+    [DataRow("@test.nl", false)]
+    [DataRow("customer.test@nl", false)]
+    public void CheckLoginEmailFormat(string email, bool expected)
+    {
+        AccountsLogic l = new();
+
+        bool result = l.CheckEmail(email);
+
+        Assert.AreEqual(expected, result);
+    }
 }

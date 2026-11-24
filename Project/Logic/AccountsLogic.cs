@@ -95,7 +95,7 @@ public class AccountsLogic
     public bool CheckEmail(string email)
     {
         int atIndex = email.IndexOf('@');
-        int dotIndex = email.IndexOf('.');
+        int dotIndex = email.LastIndexOf('.');
 
         bool IsAtBeforeDot = dotIndex > atIndex;
 
