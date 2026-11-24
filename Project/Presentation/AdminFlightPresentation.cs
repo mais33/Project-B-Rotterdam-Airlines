@@ -84,11 +84,7 @@ public static class AdminFlightPresentation
 
             if (logic.IsValidDepartureDate(input))
             {
-                departureDate = DateTime.ParseExact(
-                    input,
-                    "dd-MM-yyyy HH:mm",
-                    System.Globalization.CultureInfo.InvariantCulture
-                );
+                DateLogic.TryReadDateTime(input, out departureDate);
 
                 break;
             }
@@ -111,14 +107,10 @@ public static class AdminFlightPresentation
 
             // Validate arrival time against the selected departure time.
             if (logic.IsValidDateTime(
-                departureDate.ToString("dd-MM-yyyy HH:mm"),
+                DateLogic.DateTimeToText(departureDate),
                 input))
             {
-                arrivalDate = DateTime.ParseExact(
-                    input,
-                    "dd-MM-yyyy HH:mm",
-                    System.Globalization.CultureInfo.InvariantCulture
-                );
+                DateLogic.TryReadDateTime(input, out arrivalDate);
 
                 break;
             }
@@ -139,8 +131,8 @@ public static class AdminFlightPresentation
         {
             if (logic.IsPlaneAvailable(
                 plane.Id,
-                departureDate.ToString("dd-MM-yyyy HH:mm"),
-                arrivalDate.ToString("dd-MM-yyyy HH:mm"),
+                DateLogic.DateTimeToText(departureDate),
+                DateLogic.DateTimeToText(arrivalDate),
                 existingFlights))
             {
                 availablePlanes.Add(plane);
@@ -222,8 +214,8 @@ public static class AdminFlightPresentation
             Price = price,
 
             // Store dates in day-month-year format.
-            DepartureDatetime = departureDate.ToString("dd-MM-yyyy HH:mm"),
-            ArrivalDatetime = arrivalDate.ToString("dd-MM-yyyy HH:mm")
+            DepartureDatetime = DateLogic.DateTimeToText(departureDate),
+            ArrivalDatetime = DateLogic.DateTimeToText(arrivalDate)
         };
 
         // Show flight overview before saving.
@@ -232,8 +224,8 @@ public static class AdminFlightPresentation
         Console.WriteLine($"Departure airport ID: {departureAirportId}");
         Console.WriteLine($"Destination airport ID: {destinationAirportId}");
         Console.WriteLine($"Plane ID: {planeId}");
-        Console.WriteLine($"Departure: {departureDate:dd-MM-yyyy HH:mm}");
-        Console.WriteLine($"Arrival: {arrivalDate:dd-MM-yyyy HH:mm}");
+        Console.WriteLine($"Departure: {DateLogic.DateTimeToText(departureDate)}");
+        Console.WriteLine($"Arrival: {DateLogic.DateTimeToText(arrivalDate)}");
 
         Console.WriteLine(
             $"Ticket price: €{price.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)}"

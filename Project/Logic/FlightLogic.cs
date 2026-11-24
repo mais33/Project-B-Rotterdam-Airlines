@@ -19,13 +19,7 @@ public class FlightLogic
 
     public bool TryParseDate(string input, out DateTime date)
     {
-        return DateTime.TryParseExact(
-            input,
-            "dd-MM-yyyy",
-            CultureInfo.InvariantCulture,
-            DateTimeStyles.None,
-            out date
-        );
+        return DateLogic.TryReadDate(input, out date);
     }
 
     public bool IsDateInPast(DateTime date)
@@ -43,10 +37,7 @@ public class FlightLogic
      AirportModel destination,
      DateTime date)
     {
-        string searchDate = date.ToString(
-            "dd-MM-yyyy",
-            CultureInfo.InvariantCulture
-        );
+        string searchDate = DateLogic.DateToText(date);
 
         return _access.Search(
             start.Id,

@@ -94,7 +94,7 @@ public static class ReservationPresentation
         }
 
         DateTime departureDate = AskDate(
-            "  Departure date (dd-MM-yyyy): ",
+            "  Departure date (dd-mm-yyyy): ",
             null
         );
 
@@ -103,7 +103,7 @@ public static class ReservationPresentation
         if (isRoundTrip)
         {
             returnDate = AskDate(
-                "  Return date (dd-MM-yyyy):    ",
+                "  Return date (dd-mm-yyyy):    ",
                 departureDate
             );
         }
@@ -325,7 +325,7 @@ public static class ReservationPresentation
 
             while (!reservationLogic.IsValidDateOfBirth(dateOfBirth))
             {
-                Console.Write("  Date of birth:  ");
+                Console.Write("  Date of birth (dd-mm-yyyy): ");
                 dateOfBirth = (Console.ReadLine() ?? "").Trim();
 
                 if (string.IsNullOrWhiteSpace(dateOfBirth))
@@ -344,7 +344,7 @@ public static class ReservationPresentation
                 {
                     Console.WriteLine();
                     Console.WriteLine(
-                        "  > Invalid date of birth (e.g. 1990-05-20 or 20-05-1990).");
+                        "  > Invalid date of birth. Please use dd-mm-yyyy (e.g. 20-05-1990).");
                 }
             }
 
@@ -587,7 +587,7 @@ public static class ReservationPresentation
             {
                 Console.WriteLine();
                 Console.WriteLine(
-                    "  > Invalid date. Please use dd-MM-yyyy (e.g. 25-12-2026).");
+                    "  > Invalid date. Please use dd-mm-yyyy (e.g. 25-12-2026).");
                 Console.WriteLine();
             }
             else if (flightLogic.IsDateInPast(date))

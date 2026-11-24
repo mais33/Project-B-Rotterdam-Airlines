@@ -35,12 +35,12 @@ public sealed class AddPassengerTests
     }
 
     [DataTestMethod]
-    [DataRow("1999-05-20", true)]
     [DataRow("20-05-1999", true)]
+    [DataRow("01-01-2000", true)]
     [DataRow("", false)]
     [DataRow("invalid", false)]
-    [DataRow("2099-01-01", false)]
-    [DataRow("1850-01-01", false)]
+    [DataRow("01-01-2099", false)]
+    [DataRow("01-01-1850", false)]
     public void CheckDateOfBirth(string dob, bool expected)
     {
         ReservationLogic logic = new ReservationLogic();
@@ -51,8 +51,7 @@ public sealed class AddPassengerTests
     }
 
     [DataTestMethod]
-    [DataRow("2099-01-01", true)]
-    [DataRow("1999-05-20", false)]
+    [DataRow("01-01-2099", true)]
     [DataRow("20-05-1999", false)]
     public void CheckIsFutureDate(string dob, bool expected)
     {

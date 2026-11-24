@@ -23,7 +23,7 @@ public class TicketDisplayModel
             BOARDING PASS #{Id}
 ========================================
 Flight    : {Origin} -> {Destination}
-Passenger : {FirstName} {LastName} (DOB: {Dob:yyyy-MM-dd})
+Passenger : {FirstName} {LastName} (DOB: {Dob})
 Email     : {Email}
 Flight ID : {FlightId}
 Departure : {DepartureDatetime}
