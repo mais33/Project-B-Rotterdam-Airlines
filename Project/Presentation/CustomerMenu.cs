@@ -15,9 +15,10 @@ public static class CustomerMenu
             Console.WriteLine();
             Console.WriteLine("  [1] Make a reservation");
             Console.WriteLine("  [2] View flights");
-            Console.WriteLine("  [3] Booking confirmations");
+            Console.WriteLine("  [3] Booking Confiramtions");
             Console.WriteLine("  [4] View my reservations");
-            Console.WriteLine("  [5] Log out");
+            Console.WriteLine("  [5] View tickets");
+            Console.WriteLine("  [6] Log out");
             Console.WriteLine();
             Console.WriteLine("--------------------------------------------------");
             Console.Write("  Choose an option (1-5): ");
@@ -35,14 +36,15 @@ public static class CustomerMenu
                     break;
 
                 case "3":
-                    TicketPresentation.Start(account);
                     break;
 
                 case "4":
                     ViewReservationPresentation.ShowMyReservations(account);
                     break;
-
                 case "5":
+                    TicketPresentation.Start(account);
+                    break;
+                case "6":
                     Console.WriteLine();
                     Console.WriteLine("  > You have been logged out.");
                     Console.WriteLine();
