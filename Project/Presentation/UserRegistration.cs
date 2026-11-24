@@ -1,7 +1,7 @@
 public class UserRegistration
 {
     private static AccountsLogic accountsLogic = new AccountsLogic();
-    private static AccountsAccess accountsAccess = new AccountsAccess();
+    private static PasswordHider passwordHider = new();
 
     public string AskFirstName()
     {
@@ -94,7 +94,7 @@ public class UserRegistration
         while (true)
         {
             Console.Write("  Password:         ");
-            string password = accountsLogic.PassWordHider() ?? "";
+            string password = passwordHider.PassWordHider() ?? "";
 
             if (accountsLogic.PasswordCheck(password))
             {
@@ -125,7 +125,7 @@ public class UserRegistration
             password = GetValidPassword();
 
             Console.Write("  Confirm password: ");
-            string confirmPassword = accountsLogic.PassWordHider() ?? "";
+            string confirmPassword = passwordHider.PassWordHider() ?? "";
 
             if (confirmPassword == password)
             {

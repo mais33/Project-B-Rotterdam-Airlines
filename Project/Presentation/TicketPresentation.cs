@@ -1,7 +1,54 @@
-static class TicketPresentation
+public class TicketPresentation
 {
-    private static TicketLogic ticketLogic = new TicketLogic();
-    private static FlightLogic flightLogic = new FlightLogic();
+    private static TicketLogic ticketLogic = new();
+    public static List<TicketDisplayModel> AllAccTickets = new();
+    private static FlightLogic _flightLogic = new();
+    private static AirportLogic _airportLogic = new();
+
+    public static void Start(AccountModel account)
+    {
+        Console.Clear();
+        AllAccTickets = ticketLogic.GetTicketsByAccountId(account.Id);
+
+        if (AllAccTickets.Count > 0)
+        {
+            foreach (var ticket in AllAccTickets)
+            {
+                Console.WriteLine(ticket);
+            }
+        }
+        else
+        {
+            Console.WriteLine("  > You don't have any tickets yet");
+            Console.WriteLine("  Press any key to continue...");
+            Console.ReadKey(true);
+            return;
+        }
+
+        Console.WriteLine("  \n[1] return to customer menu");
+        string choice = Console.ReadLine() ?? "";
+
+        switch (choice)
+        {
+            case "1":
+                Console.WriteLine("  > Returning to Customer menu");
+                Console.WriteLine("  Press any key to continue...");
+                Console.ReadKey(true);
+                return;
+
+            default:
+                Console.WriteLine("  > Invalid option. Please choose 1, 2, 3 or 4.");
+                Console.WriteLine();
+                Console.WriteLine("  Press any key to continue...");
+                Console.ReadKey(true);
+                break;
+        }
+
+
+
+        Console.WriteLine("\nPress any key to return...");
+        Console.ReadKey(true);
+    }
 
     // Shown right after the customer confirms a reservation
     public static void ShowConfirmation(
@@ -28,11 +75,11 @@ static class TicketPresentation
 
         if (flight == null)
         {
-            flight = flightLogic.GetFlightById(tickets[0].FlightId);
+            flight = _flightLogic.GetFlightById(tickets[0].Id);
         }
 
-        string departureCity = flight != null ? flightLogic.GetDepartureCity(flight) : "Rotterdam";
-        string destination = flight != null ? flightLogic.GetDestinationCity(flight) : "Unknown";
+        string departureCity = flight != null ? _airportLogic.GetDepartureCity(flight) : "Rotterdam";
+        string destination = flight != null ? _airportLogic.GetDestinationCity(flight) : "Unknown";
         string departure = flight != null ? flight.DepartureDatetime : "Unknown";
 
         Console.WriteLine($"  Booking reference:  {tickets[0].BookingReference}");
@@ -40,8 +87,8 @@ static class TicketPresentation
         Console.WriteLine("  FLIGHT");
         Console.WriteLine("  ------------------------------------------------");
         Console.WriteLine($"  Route:           {departureCity} -> {destination}");
-        Console.WriteLine($"  Date:            {flightLogic.GetDate(departure)}");
-        Console.WriteLine($"  Departure time:  {flightLogic.GetTime(departure)}");
+        Console.WriteLine($"  Date:            {_flightLogic.GetDate(departure)}");
+        Console.WriteLine($"  Departure time:  {_flightLogic.GetTime(departure)}");
         Console.WriteLine();
         Console.WriteLine("  PASSENGERS");
         Console.WriteLine("  ------------------------------------------------");
@@ -55,15 +102,15 @@ static class TicketPresentation
 
         if (returnFlight != null && returnTickets != null && returnTickets.Count > 0)
         {
-            string returnDepartureCity = flightLogic.GetDepartureCity(returnFlight);
-            string returnDestination = flightLogic.GetDestinationCity(returnFlight);
+            string returnDepartureCity = _airportLogic.GetDepartureCity(returnFlight);
+            string returnDestination = _airportLogic.GetDestinationCity(returnFlight);
             string returnDeparture = returnFlight.DepartureDatetime;
 
             Console.WriteLine("  RETURN FLIGHT");
             Console.WriteLine("  ------------------------------------------------");
             Console.WriteLine($"  Route:           {returnDepartureCity} -> {returnDestination}");
-            Console.WriteLine($"  Date:            {flightLogic.GetDate(returnDeparture)}");
-            Console.WriteLine($"  Departure time:  {flightLogic.GetTime(returnDeparture)}");
+            Console.WriteLine($"  Date:            {_flightLogic.GetDate(returnDeparture)}");
+            Console.WriteLine($"  Departure time:  {_flightLogic.GetTime(returnDeparture)}");
             Console.WriteLine();
             Console.WriteLine("  PASSENGERS (RETURN)");
             Console.WriteLine("  ------------------------------------------------");
@@ -134,17 +181,17 @@ static class TicketPresentation
                 currentReference = tickets[i].BookingReference;
                 currentFlightId = tickets[i].FlightId;
 
-                FlightModel? flight = flightLogic.GetFlightById(tickets[i].FlightId);
-                string departureCity = flight != null ? flightLogic.GetDepartureCity(flight) : "Rotterdam";
-                string destination = flight != null ? flightLogic.GetDestinationCity(flight) : "Unknown";
+                FlightModel? flight = _flightLogic.GetFlightById(tickets[i].FlightId);
+                string departureCity = flight != null ? _airportLogic.GetDepartureCity(flight) : "Rotterdam";
+                string destination = flight != null ? _airportLogic.GetDestinationCity(flight) : "Unknown";
                 string departure = flight != null ? flight.DepartureDatetime : "Unknown";
 
                 Console.WriteLine("==================================================");
                 Console.WriteLine($"  Booking reference:  {currentReference}");
                 Console.WriteLine("--------------------------------------------------");
                 Console.WriteLine($"  Route:           {departureCity} -> {destination}");
-                Console.WriteLine($"  Date:            {flightLogic.GetDate(departure)}");
-                Console.WriteLine($"  Departure time:  {flightLogic.GetTime(departure)}");
+                Console.WriteLine($"  Date:            {_flightLogic.GetDate(departure)}");
+                Console.WriteLine($"  Departure time:  {_flightLogic.GetTime(departure)}");
                 Console.WriteLine();
                 Console.WriteLine("  Passengers:");
             }
@@ -163,5 +210,59 @@ static class TicketPresentation
         Console.WriteLine("==================================================");
         Console.WriteLine("  Press any key to return...");
         Console.ReadKey();
+    }
+
+    public static void RemoveTicketForCustomer(AccountModel account) //ticket will still exist in database, but user does not see it anymore
+    {
+        Console.Clear();
+
+        if (AllAccTickets.Count == 0)
+        {
+            Console.WriteLine("You have no tickets to remove");
+            Console.WriteLine("\nPress any key to return...");
+            Console.ReadKey(true);
+            return;
+        }
+
+        bool canceling = true;
+
+        while (canceling)
+        {
+            Console.Clear();
+            Console.WriteLine("What ticket do you want to cancel (press ESC to exit)");
+            string input = Console.ReadLine() ?? "";
+
+            ConsoleKeyInfo action = Console.ReadKey(true);
+
+            if (action.Key == ConsoleKey.Escape)
+            {
+                canceling = false;
+            }
+
+            if (int.TryParse(input, out int ticketId))
+            {
+                for (int i = 0; i < AllAccTickets.Count; i++)
+                {
+                    if (AllAccTickets[i].Id == ticketId)
+                    {
+
+                        AllAccTickets.RemoveAt(i);
+                        Console.ReadKey(true);
+                        break;
+
+                    }
+                }
+
+            }
+            else
+            {
+                Console.WriteLine();
+                Console.WriteLine("  > Invalid choice. Please choose a number from the list.");
+                Console.WriteLine();
+                Console.WriteLine("  Press any key to continue...");
+                Console.ReadKey();
+            }
+        }
+
     }
 }

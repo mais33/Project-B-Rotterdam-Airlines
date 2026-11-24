@@ -44,6 +44,18 @@ public class SeatAccess
         return _connection.Query<SeatModel>(sql).ToList();
     }
 
+
+    public void SetSeatAsReserved(SeatModel seat)
+    {
+        string sql = $@"Update {Table} Set is_reserved = 1 WHERE id = @Id";
+        _connection.Execute(sql, new { Id = seat.Id });
+    }
+
+    public void SetSeatAsUnReserved(SeatModel seat)
+    {
+        string sql = $@"Update {Table} Set is_reserved = 0 WHERE id = @Id";
+        _connection.Execute(sql, new { Id = seat.Id });
+    }
     public void ClearSeats()
     {
         // string sql = @"DELETE FROM Account;
@@ -58,18 +70,6 @@ public class SeatAccess
 
         // 3. Re-enable foreign key constraints to keep your database secure
         _connection.Execute("PRAGMA foreign_keys = ON;");
-    }
-
-    public void SetSeatAsReserved(SeatModel seat)
-    {
-        string sql = $@"Update {Table} Set is_reserved = 1 WHERE id = @Id";
-        _connection.Execute(sql, new { Id = seat.Id });
-    }
-
-    public void SetSeatAsUnReserved(SeatModel seat)
-    {
-        string sql = $@"Update {Table} Set is_reserved = 0 WHERE id = @Id";
-        _connection.Execute(sql, new { Id = seat.Id });
     }
 
 

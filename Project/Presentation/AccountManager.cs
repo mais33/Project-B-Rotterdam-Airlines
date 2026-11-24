@@ -185,11 +185,11 @@ public class AccountManager
         }
 
         account.Email = newEmail;
-        bool success = accountsLogic.EditAccount(account);
+        OperationResult editAcc = accountsLogic.EditAccount(account);
 
         Console.WriteLine();
         Console.WriteLine("--------------------------------------------------");
-        if (success)
+        if (editAcc.Success)
         {
             Console.WriteLine($"  > Email successfully updated to: {account.Email}");
         }
@@ -211,9 +211,8 @@ public class AccountManager
         Console.WriteLine($"  Current role:  {account.Role}");
         Console.WriteLine();
         Console.WriteLine("--------------------------------------------------");
-        Console.WriteLine("  [1] Set role to Customer");
-        Console.WriteLine("  [2] Set role to Admin");
-        Console.WriteLine("  [3] Back");
+        Console.WriteLine($" {(account.Role == UserRole.Customer ? " [1] Set role to Admin" : "")}");
+        Console.WriteLine("  [2] Back");
         Console.WriteLine("--------------------------------------------------");
         Console.Write("  Choose an option (1-3): ");
 
@@ -225,36 +224,20 @@ public class AccountManager
             case "1":
                 if (account.Role == UserRole.Customer)
                 {
-                    Console.WriteLine("  > This account already has the Customer role.");
+                    account.Role = UserRole.Admin;
+                    OperationResult editAcc = accountsLogic.EditAccount(account);
+                    if(editAcc.Success)
+                    {
+                        Console.WriteLine("  > Role succesfully updated Admin");
+                    }
                 }
                 else
                 {
-                    account.Role = UserRole.Customer;
-                    bool success = accountsLogic.EditAccount(account);
-                    if (success)
-                    {
-                        Console.WriteLine("  > Role successfully updated to Customer.");
-                    }
+                    Console.WriteLine("  > Cannot change the role of an admin to customer");
                 }
                 break;
 
             case "2":
-                if (account.Role == UserRole.Admin)
-                {
-                    Console.WriteLine("  > This account already has the Admin role.");
-                }
-                else
-                {
-                    account.Role = UserRole.Admin;
-                    bool success = accountsLogic.EditAccount(account);
-                    if (success)
-                    {
-                        Console.WriteLine("  > Role successfully updated to Admin.");
-                    }
-                }
-                break;
-
-            case "3":
                 return;
 
             default:
@@ -325,16 +308,16 @@ public class AccountManager
         switch (choice)
         {
             case "1":
-                bool blockSuccess = accountsLogic.BlockAccount(account);
-                if (blockSuccess)
+                OperationResult blockSuccess = accountsLogic.BlockAccount(account);
+                if (blockSuccess.Success)
                 {
                     Console.WriteLine("  > Account has been successfully blocked.");
                 }
                 break;
 
             case "2":
-                bool unblockSuccess = accountsLogic.UnBlockAccount(account);
-                if (unblockSuccess)
+                OperationResult unblockSuccess = accountsLogic.UnBlockAccount(account);
+                if (unblockSuccess.Success)
                 {
                     Console.WriteLine("  > Account has been successfully unblocked.");
                 }

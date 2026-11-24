@@ -1,12 +1,16 @@
 
 static class Menu
 {
-    // Show the start menu
+    // This method shows the start menu
+    private static AccountsLogic accountsLogic = new();
+    // private static SeatAccess seatAccess = new();
+    // private static AccountsAccess accountsAccess = new();
+    private static TicketLogic ticketLogic = new();
     public static void Start()
     {
         while (true)
         {
-            Console.Clear();
+            // Console.Clear();
             Console.WriteLine();
             Console.WriteLine("==================================================");
             Console.WriteLine("               ROTTERDAM AIRLINES                 ");
@@ -41,7 +45,6 @@ static class Menu
                     Console.WriteLine("  > Thank you for visiting Rotterdam Airlines. Goodbye!");
                     Console.WriteLine();
                     return;
-
                 default:
                     Console.WriteLine();
                     Console.WriteLine("  > Invalid choice. Please choose 1, 2, 3 or 4.");
