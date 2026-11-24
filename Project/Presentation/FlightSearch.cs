@@ -110,7 +110,7 @@ public static class FlightSearch
     {
         while (true)
         {
-            Console.Write("  Departure date:  ");
+            Console.Write("  Departure date (dd-mm-yyyy): ");
             string input = Console.ReadLine() ?? "";
 
             if (!flightLogic.TryParseDate(input, out DateTime date))
@@ -132,7 +132,7 @@ public static class FlightSearch
     {
         while (true)
         {
-            Console.Write("  Return date:     ");
+            Console.Write("  Return date (dd-mm-yyyy):    ");
             string input = Console.ReadLine() ?? "";
 
             if (!flightLogic.TryParseDate(input, out DateTime date))

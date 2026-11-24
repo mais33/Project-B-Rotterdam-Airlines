@@ -64,7 +64,7 @@ public class ReservationLogic
             return false;
         }
 
-        string[] formats = { "dd-MM-yyyy", "yyyy-MM-dd", "d-M-yyyy", "dd/MM/yyyy", "yyyy/MM/dd" };
+        string[] formats = { "dd-MM-yyyy" };
         DateTime birthDate;
 
         bool parsed = DateTime.TryParseExact(
@@ -75,7 +75,7 @@ public class ReservationLogic
             out birthDate
         );
 
-        if (!parsed && !DateTime.TryParse(dateOfBirth, out birthDate))
+        if (!parsed)
         {
             return false;
         }
@@ -95,7 +95,7 @@ public class ReservationLogic
             return false;
         }
 
-        string[] formats = { "dd-MM-yyyy", "yyyy-MM-dd", "d-M-yyyy", "dd/MM/yyyy", "yyyy/MM/dd" };
+        string[] formats = { "dd-MM-yyyy" };
         DateTime birthDate;
 
         bool parsed = DateTime.TryParseExact(
@@ -106,7 +106,7 @@ public class ReservationLogic
             out birthDate
         );
 
-        if (!parsed && !DateTime.TryParse(dateOfBirth, out birthDate))
+        if (!parsed)
         {
             return false;
         }

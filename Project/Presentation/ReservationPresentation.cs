@@ -308,7 +308,7 @@ public static class ReservationPresentation
             string dateOfBirth = "";
             while (!reservationLogic.IsValidDateOfBirth(dateOfBirth))
             {
-                Console.Write("  Date of birth:  ");
+                Console.Write("  Date of birth (dd-mm-yyyy): ");
                 dateOfBirth = (Console.ReadLine() ?? "").Trim();
 
                 if (string.IsNullOrWhiteSpace(dateOfBirth))
@@ -326,7 +326,7 @@ public static class ReservationPresentation
                 else if (!reservationLogic.IsValidDateOfBirth(dateOfBirth))
                 {
                     Console.WriteLine();
-                    Console.WriteLine("  > Invalid date of birth (e.g. 1990-05-20 or 20-05-1990).");
+                    Console.WriteLine("  > Invalid date of birth. Please use dd-mm-yyyy (e.g. 20-05-1990).");
                     Console.WriteLine();
                 }
             }
