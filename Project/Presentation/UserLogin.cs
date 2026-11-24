@@ -24,8 +24,27 @@ static class UserLogin
                 return;
             }
 
-        Console.Write("  Password:      ");
-        string password = passwordHider.PassWordHider();
+            email = email.Trim();
+
+            if (!accountsLogic.CheckEmail(email))
+            {
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("  > Please enter a valid email address. Please try again.");
+                Console.ResetColor();
+                Console.WriteLine();
+                Console.WriteLine("  Press any key to try again...");
+                Console.ReadKey();
+                continue;
+            }
+
+            Console.Write("  Password (or press Enter to return): ");
+            string password = passwordHider.PassWordHider();
+
+            if (password == "")
+            {
+                return;
+            }
 
             Console.WriteLine();
             Console.WriteLine("--------------------------------------------------");
@@ -37,7 +56,9 @@ static class UserLogin
                 if (acc.Role == UserRole.Admin)
                 {
                     Console.WriteLine();
+                    Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("  > Welcome back, Admin!");
+                    Console.ResetColor();
                     Console.WriteLine();
                     Console.WriteLine("  Press any key to continue...");
                     Console.ReadKey();
@@ -47,7 +68,9 @@ static class UserLogin
                 else if (acc.Role == UserRole.Customer)
                 {
                     Console.WriteLine();
+                    Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine($"  > Welcome back, {acc.FirstName} {acc.LastName}!");
+                    Console.ResetColor();
                     Console.WriteLine();
                     Console.WriteLine("  Press any key to continue...");
                     Console.ReadKey();
@@ -58,8 +81,10 @@ static class UserLogin
             else
             {
                 Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("  > Incorrect email address or password.");
                 Console.WriteLine("  > Please try again.");
+                Console.ResetColor();
                 Console.WriteLine();
                 Console.WriteLine("  Press any key to try again...");
                 Console.ReadKey();

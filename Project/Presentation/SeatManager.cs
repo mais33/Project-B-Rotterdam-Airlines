@@ -85,6 +85,8 @@ public class SeatManager
 
             Console.Clear();
             seatManager.DrawSeatMap(currentMap);
+            SeatLegend seatLegend = new();
+            seatLegend.DrawLegend(currentMap);
 
             Console.WriteLine();
             Console.WriteLine(
@@ -92,13 +94,6 @@ public class SeatManager
 
             Console.WriteLine(
                 $"Selected: {SelectedSeatIds.Count}/{requiredSeats}");
-
-            Console.WriteLine();
-            Console.WriteLine(
-                "Standard [S]  Premium [P]  VIP [V]");
-
-            Console.WriteLine(
-                "Selected [✓]  Reserved [X]");
 
             Console.WriteLine();
             Console.WriteLine(

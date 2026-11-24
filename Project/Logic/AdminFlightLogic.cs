@@ -11,28 +11,12 @@ public class AdminFlightLogic
     // Validate departure and arrival times.
     public bool IsValidDateTime(string departure, string arrival)
     {
-        string[] dateFormats =
-        {
-        "dd-MM-yyyy HH:mm",
-        "yyyy-MM-dd HH:mm"
-    };
-
-        if (!DateTime.TryParseExact(
-            departure,
-            dateFormats,
-            System.Globalization.CultureInfo.InvariantCulture,
-            System.Globalization.DateTimeStyles.None,
-            out DateTime departureDate))
+        if (!DateLogic.TryReadDateTime(departure, out DateTime departureDate))
         {
             return false;
         }
 
-        if (!DateTime.TryParseExact(
-            arrival,
-            dateFormats,
-            System.Globalization.CultureInfo.InvariantCulture,
-            System.Globalization.DateTimeStyles.None,
-            out DateTime arrivalDate))
+        if (!DateLogic.TryReadDateTime(arrival, out DateTime arrivalDate))
         {
             return false;
         }
@@ -45,12 +29,7 @@ public class AdminFlightLogic
     // Validate that the departure date is in the future.
     public bool IsValidDepartureDate(string date)
     {
-        if (!DateTime.TryParseExact(
-            date,
-            "dd-MM-yyyy HH:mm",
-            System.Globalization.CultureInfo.InvariantCulture,
-            System.Globalization.DateTimeStyles.None,
-            out DateTime departureDate))
+        if (!DateLogic.TryReadDateTime(date, out DateTime departureDate))
         {
             return false;
         }
@@ -150,25 +129,15 @@ public class AdminFlightLogic
         string arrival,
         List<FlightModel> existingFlights)
     {
-        string[] dateFormats =
+        DateTime newDeparture;
+        DateTime newArrival;
+
+        // Do not mark a plane as available if the new dates cannot be read.
+        if (!DateLogic.TryReadDateTime(departure, out newDeparture) ||
+            !DateLogic.TryReadDateTime(arrival, out newArrival))
         {
-        "dd-MM-yyyy HH:mm",
-        "yyyy-MM-dd HH:mm"
-    };
-
-        DateTime newDeparture = DateTime.ParseExact(
-            departure,
-            dateFormats,
-            System.Globalization.CultureInfo.InvariantCulture,
-            System.Globalization.DateTimeStyles.None
-        );
-
-        DateTime newArrival = DateTime.ParseExact(
-            arrival,
-            dateFormats,
-            System.Globalization.CultureInfo.InvariantCulture,
-            System.Globalization.DateTimeStyles.None
-        );
+            return false;
+        }
 
         foreach (FlightModel flight in existingFlights)
         {
@@ -177,20 +146,14 @@ public class AdminFlightLogic
                 DateTime existingDeparture;
                 DateTime existingArrival;
 
-                // Read existing flight dates in either supported format.
-                bool validDeparture = DateTime.TryParseExact(
+                // Read the dates of the existing flight.
+                bool validDeparture = DateLogic.TryReadDateTime(
                     flight.DepartureDatetime,
-                    dateFormats,
-                    System.Globalization.CultureInfo.InvariantCulture,
-                    System.Globalization.DateTimeStyles.None,
                     out existingDeparture
                 );
 
-                bool validArrival = DateTime.TryParseExact(
+                bool validArrival = DateLogic.TryReadDateTime(
                     flight.ArrivalDatetime,
-                    dateFormats,
-                    System.Globalization.CultureInfo.InvariantCulture,
-                    System.Globalization.DateTimeStyles.None,
                     out existingArrival
                 );
 
