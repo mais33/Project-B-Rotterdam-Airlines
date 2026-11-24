@@ -196,6 +196,8 @@ public static class ReservationPresentation
                 returnDate
             );
 
+            returnFlights = reservationLogic.GetValidReturnFlights(selectedFlight, returnFlights);
+
             if (returnFlights.Count == 0)
             {
                 Console.WriteLine();

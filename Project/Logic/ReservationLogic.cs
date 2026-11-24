@@ -25,6 +25,49 @@ public class ReservationLogic
         return returnFlights;
     }
 
+    public List<FlightModel> GetValidReturnFlights(FlightModel outboundFlight, List<FlightModel> flights)
+    {
+        List<FlightModel> validReturnFlights = new List<FlightModel>();
+
+        for (int i = 0; i < flights.Count; i++)
+        {
+            if (IsValidReturnFlight(outboundFlight, flights[i]))
+            {
+                validReturnFlights.Add(flights[i]);
+            }
+        }
+
+        return validReturnFlights;
+    }
+
+    public bool IsValidReturnFlight(FlightModel outboundFlight, FlightModel returnFlight)
+    {
+        if (returnFlight.StartAirportId != outboundFlight.DestinationId ||
+            returnFlight.DestinationId != outboundFlight.StartAirportId)
+        {
+            return false;
+        }
+
+        if (!TryParseFlightDateTime(outboundFlight.ArrivalDatetime, out DateTime outboundArrival) ||
+            !TryParseFlightDateTime(returnFlight.DepartureDatetime, out DateTime returnDeparture))
+        {
+            return false;
+        }
+
+        return returnDeparture > outboundArrival;
+    }
+
+    private bool TryParseFlightDateTime(string value, out DateTime dateTime)
+    {
+        return DateTime.TryParseExact(
+            value,
+            "dd-MM-yyyy HH:mm",
+            System.Globalization.CultureInfo.InvariantCulture,
+            System.Globalization.DateTimeStyles.None,
+            out dateTime
+        );
+    }
+
     public bool IsValidPassengerCount(int passengerCount)
     {
         if (passengerCount <= 0)
