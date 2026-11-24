@@ -549,6 +549,21 @@ public static class ReservationPresentation
             Console.ReadKey(true);
             return;
         }
+
+        // Save reservation, passengers, and tickets
+        reservationLogic.SaveCompleteReservation(
+            account.Id,
+            selectedFlight,
+            returnFlight,
+            passengers,
+            outboundSeatIds,
+            returnSeatIds
+        );
+
+        Console.WriteLine();
+        Console.WriteLine("  > Reservation confirmed and saved!");
+        Console.WriteLine("  Press any key to return to the menu...");
+        Console.ReadKey(true);
     }
         private static AirportModel AskCity(string label)
     {

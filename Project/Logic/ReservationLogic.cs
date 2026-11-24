@@ -35,6 +35,24 @@ public class ReservationLogic
         return true;
     }
 
+    public List<Int64> SaveCompleteReservation(
+    Int64 accountId,
+    FlightModel outboundFlight,
+    FlightModel? returnFlight,
+    List<PassengerModel> passengers,
+    List<Int64> outboundSeatIds,
+    List<Int64>? returnSeatIds)
+{
+    return _reservationAccess.SaveCompleteReservation(
+        accountId,
+        outboundFlight,
+        returnFlight,
+        passengers,
+        outboundSeatIds,
+        returnSeatIds
+    );
+}
+
     public bool IsValidName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))

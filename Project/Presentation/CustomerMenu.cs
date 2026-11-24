@@ -15,7 +15,7 @@ public static class CustomerMenu
             Console.WriteLine();
             Console.WriteLine("  [1] Make a reservation");
             Console.WriteLine("  [2] View flights");
-            Console.WriteLine("  [3] Booking Confiramtions");
+            Console.WriteLine("  [3] Booking Confirmations");
             Console.WriteLine("  [4] View my reservations");
             Console.WriteLine("  [5] View tickets");
             Console.WriteLine("  [6] Log out");
@@ -36,6 +36,7 @@ public static class CustomerMenu
                     break;
 
                 case "3":
+                    TicketPresentation.ShowMyTickets(account);
                     break;
 
                 case "4":
