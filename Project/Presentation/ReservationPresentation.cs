@@ -3,8 +3,11 @@ public static class ReservationPresentation
 {
     private static ReservationLogic reservationLogic = new ReservationLogic();
     private static FlightLogic flightLogic = new FlightLogic();
+    private static AirportLogic airportLogic = new AirportLogic();
+    private static TicketLogic ticketLogic = new();
 
     public static int passengerCount = 0;
+    public static Int64 reservationId = 0;
 
     public static void Start(AccountModel account)
     {
@@ -59,7 +62,7 @@ public static class ReservationPresentation
         Console.WriteLine("==================================================");
         Console.WriteLine();
 
-        List<AirportModel> airports = flightLogic.GetAirports();
+        List<AirportModel> airports = airportLogic.GetAirports();
         List<string> cities = new List<string>();
 
         foreach (AirportModel airport in airports)
@@ -72,6 +75,7 @@ public static class ReservationPresentation
 
         AirportModel startAirport;
         AirportModel destinationAirport;
+
 
         while (true)
         {
@@ -126,21 +130,11 @@ public static class ReservationPresentation
 
         for (int i = 0; i < flights.Count; i++)
         {
-            string departureCity =
-                flightLogic.GetDepartureCity(flights[i]);
-
-            string destination =
-                flightLogic.GetDestinationCity(flights[i]);
-
-            Console.WriteLine(
-                $"  [{i + 1}] {departureCity} -> {destination}");
-
-            Console.WriteLine(
-                $"      Departure:  {flights[i].DepartureDatetime}");
-
-            Console.WriteLine(
-                $"      Price:      EUR {flights[i].Price:0.00}");
-
+            string departureCity = airportLogic.GetDepartureCity(flights[i]);
+            string destination = airportLogic.GetDestinationCity(flights[i]);
+            Console.WriteLine($"  [{i + 1}] {departureCity} -> {destination}");
+            Console.WriteLine($"      Departure:  {flights[i].DepartureDatetime}");
+            Console.WriteLine($"      Price:      EUR {flights[i].Price:0.00}");
             Console.WriteLine();
         }
 
@@ -178,12 +172,8 @@ public static class ReservationPresentation
         }
 
         FlightModel selectedFlight = flights[flightChoice - 1];
-
-        string selectedDepartureCity =
-            flightLogic.GetDepartureCity(selectedFlight);
-
-        string selectedDestination =
-            flightLogic.GetDestinationCity(selectedFlight);
+        string selectedDepartureCity = airportLogic.GetDepartureCity(selectedFlight);
+        string selectedDestination = airportLogic.GetDestinationCity(selectedFlight);
 
         // Return flight
         FlightModel? returnFlight = null;
@@ -211,21 +201,11 @@ public static class ReservationPresentation
 
             for (int i = 0; i < returnFlights.Count; i++)
             {
-                string returnDeparture =
-                    flightLogic.GetDepartureCity(returnFlights[i]);
-
-                string returnDestination =
-                    flightLogic.GetDestinationCity(returnFlights[i]);
-
-                Console.WriteLine(
-                    $"  [{i + 1}] {returnDeparture} -> {returnDestination}");
-
-                Console.WriteLine(
-                    $"      Departure:  {returnFlights[i].DepartureDatetime}");
-
-                Console.WriteLine(
-                    $"      Price:      EUR {returnFlights[i].Price:0.00}");
-
+                string returnDeparture = airportLogic.GetDepartureCity(returnFlights[i]);
+                string returnDestination = airportLogic.GetDestinationCity(returnFlights[i]);
+                Console.WriteLine($"  [{i + 1}] {returnDeparture} -> {returnDestination}");
+                Console.WriteLine($"      Departure:  {returnFlights[i].DepartureDatetime}");
+                Console.WriteLine($"      Price:      EUR {returnFlights[i].Price:0.00}");
                 Console.WriteLine();
             }
 
@@ -422,8 +402,8 @@ public static class ReservationPresentation
             Console.WriteLine("=== RETURN SEAT SELECTION ===");
 
             Console.WriteLine(
-                $"{flightLogic.GetDepartureCity(returnFlight)} -> " +
-                $"{flightLogic.GetDestinationCity(returnFlight)}");
+                $"{airportLogic.GetDepartureCity(returnFlight)} -> " +
+                $"{airportLogic.GetDestinationCity(returnFlight)}");
 
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey(true);
@@ -486,10 +466,12 @@ public static class ReservationPresentation
 
         if (returnFlight != null)
         {
+            string returnDepartureCity = airportLogic.GetDepartureCity(returnFlight);
+            string returnDestinationCity = airportLogic.GetDestinationCity(returnFlight);
             Console.WriteLine();
             Console.WriteLine(
-                $"  Return route:    {flightLogic.GetDepartureCity(returnFlight)} -> " +
-                $"{flightLogic.GetDestinationCity(returnFlight)}");
+                $"  Return route:    {airportLogic.GetDepartureCity(returnFlight)} -> " +
+                $"{airportLogic.GetDestinationCity(returnFlight)}");
 
             Console.WriteLine(
                 $"  Return date:     {flightLogic.GetDate(returnFlight.DepartureDatetime)}");
@@ -567,107 +549,8 @@ public static class ReservationPresentation
             Console.ReadKey(true);
             return;
         }
-
-        // Save the complete reservation after confirmation
-        try
-        {
-            List<Int64> reservationIds =
-                reservationLogic.ConfirmReservation(
-                    account.Id,
-                    selectedFlight,
-                    returnFlight,
-                    passengers,
-                    outboundSeatIds,
-                    returnSeatIds
-                );
-
-            Console.WriteLine();
-            Console.WriteLine("==================================================");
-            Console.WriteLine("             RESERVATION CONFIRMED                ");
-            Console.WriteLine("==================================================");
-            Console.WriteLine();
-            Console.WriteLine(
-                "  > Your reservation has been confirmed!");
-
-            Console.WriteLine(
-                $"  Outbound reservation ID: {reservationIds[0]}");
-
-            if (reservationIds.Count > 1)
-            {
-                Console.WriteLine(
-                    $"  Return reservation ID:   {reservationIds[1]}");
-
-                Console.WriteLine(
-                    $"  Booking group ID:        {reservationIds[0]}");
-            }
-
-            Console.WriteLine();
-            Console.WriteLine(
-                $"  Total price: EUR {totalPrice:0.00}");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine();
-            Console.WriteLine(
-                "  > Unable to save your reservation.");
-
-            Console.WriteLine($"  Details: {ex.Message}");
-        }
-
-        Console.WriteLine();
-        Console.WriteLine("  Press any key to return to the menu...");
-        Console.ReadKey(true);
     }
-
-    // Get the visible seat number, such as 1A or 2F
-    private static string GetSeatNumber(
-        SeatModel[,] seatMap,
-        Int64 seatId)
-    {
-        foreach (SeatModel? seat in seatMap)
-        {
-            if (seat != null && seat.Id == seatId)
-            {
-                return seat.SeatNumber;
-            }
-        }
-
-        return "Unknown";
-    }
-
-    // Calculate prices of selected seats for the overview
-    private static double CalculateSeatTotal(
-        SeatModel[,] seatMap,
-        List<Int64> selectedSeatIds)
-    {
-        double total = 0;
-
-        foreach (Int64 seatId in selectedSeatIds)
-        {
-            bool found = false;
-
-            foreach (SeatModel? seat in seatMap)
-            {
-                if (seat != null && seat.Id == seatId)
-                {
-                    total += seat.Price;
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found)
-            {
-                throw new InvalidOperationException(
-                    $"Selected seat {seatId} was not found.");
-            }
-        }
-
-        return total;
-    }
-
-    // Ask for a valid airport city
-    private static AirportModel AskCity(string label)
+        private static AirportModel AskCity(string label)
     {
         while (true)
         {
@@ -675,7 +558,7 @@ public static class ReservationPresentation
             string input = (Console.ReadLine() ?? "").Trim();
 
             AirportModel? airport =
-                flightLogic.FindAirportByCity(input);
+                airportLogic.FindAirportByCity(input);
 
             if (airport != null)
             {
@@ -689,10 +572,9 @@ public static class ReservationPresentation
         }
     }
 
-    // Ask for a valid date
     private static DateTime AskDate(
-        string label,
-        DateTime? departureDate)
+            string label,
+            DateTime? departureDate)
     {
         while (true)
         {
@@ -729,4 +611,53 @@ public static class ReservationPresentation
             }
         }
     }
+
+    // Calculate prices of selected seats for the overview
+    private static double CalculateSeatTotal(
+        SeatModel[,] seatMap,
+        List<Int64> selectedSeatIds)
+    {
+        double total = 0;
+
+        foreach (Int64 seatId in selectedSeatIds)
+        {
+            bool found = false;
+
+            foreach (SeatModel? seat in seatMap)
+            {
+                if (seat != null && seat.Id == seatId)
+                {
+                    total += seat.Price;
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+            {
+                throw new InvalidOperationException(
+                    $"Selected seat {seatId} was not found.");
+            }
+        }
+
+        return total;
+    }
+
+    // Get the visible seat number, such as 1A or 2F
+    private static string GetSeatNumber(
+        SeatModel[,] seatMap,
+        Int64 seatId)
+    {
+        foreach (SeatModel? seat in seatMap)
+        {
+            if (seat != null && seat.Id == seatId)
+            {
+                return seat.SeatNumber;
+            }
+        }
+
+        return "Unknown";
+    }
+
 }
+

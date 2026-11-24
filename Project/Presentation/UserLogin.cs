@@ -2,6 +2,7 @@
 static class UserLogin
 {
     private static AccountsLogic accountsLogic = new AccountsLogic();
+    private static PasswordHider passwordHider = new();
 
     public static void Start()
     {
@@ -23,8 +24,8 @@ static class UserLogin
                 return;
             }
 
-            Console.Write("  Password:      ");
-            string password = accountsLogic.PassWordHider();
+        Console.Write("  Password:      ");
+        string password = passwordHider.PassWordHider();
 
             Console.WriteLine();
             Console.WriteLine("--------------------------------------------------");

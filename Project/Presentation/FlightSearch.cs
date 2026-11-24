@@ -3,6 +3,7 @@ public static class FlightSearch
 {
     private static FlightLogic flightLogic = new FlightLogic();
     private static ReservationLogic reservationLogic = new ReservationLogic();
+    private static AirportLogic airportLogic = new AirportLogic();
 
     public static void Start()
     {
@@ -19,7 +20,7 @@ public static class FlightSearch
 
             bool isRoundTrip = AskIsRoundTrip();
 
-            List<AirportModel> airports = flightLogic.GetAirports();
+            List<AirportModel> airports = airportLogic.GetAirports();
             List<string> cities = new List<string>();
             foreach (AirportModel airport in airports)
             {
@@ -95,7 +96,7 @@ public static class FlightSearch
         {
             Console.Write(label);
             string input = Console.ReadLine() ?? "";
-            AirportModel? airport = flightLogic.FindAirportByCity(input);
+            AirportModel? airport = airportLogic.FindAirportByCity(input);
 
             if (airport != null)
             {

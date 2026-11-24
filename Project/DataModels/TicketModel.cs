@@ -1,6 +1,6 @@
 public class TicketModel
 {
-
+ 
     public Int64 Id { get; set; }
     public Int64 ReservationId { get; set; }
     public Int64 AccountId { get; set; }
@@ -9,11 +9,11 @@ public class TicketModel
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Seat { get; set; }
-
+ 
     public TicketModel()
     {
     }
-
+ 
     public TicketModel(Int64 id, Int64 reservationId, Int64 accountId, Int64 flightId, string bookingReference, string firstName, string lastName, string seat)
     {
         Id = id;
@@ -25,5 +25,7 @@ public class TicketModel
         LastName = lastName;
         Seat = seat;
     }
-
+ 
 }
+ 
+ 

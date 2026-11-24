@@ -1,4 +1,4 @@
-
+﻿
 using Microsoft.AspNetCore.Identity;
 
 //This class is not static so later on we can use inheritance and interfaces
@@ -48,38 +48,6 @@ public class AccountsLogic
         }
 
         return true;
-    }
-
-    public string PassWordHider()
-    {
-        string input = "";
-
-        while (true)
-        {
-            ConsoleKeyInfo userInput = Console.ReadKey(true);
-
-            if (userInput.Key == ConsoleKey.Enter)
-            {
-                Console.WriteLine();
-                break;
-            }
-
-            if (userInput.Key == ConsoleKey.Backspace)
-            {
-                if (input.Length > 0)
-                {
-                    input = input.Substring(0, input.Length - 1);
-                    Console.Write("\b \b");
-                }
-            }
-            else if (!char.IsControl(userInput.KeyChar))
-            {
-                input += userInput.KeyChar;
-                Console.Write("*");
-            }
-        }
-
-        return input;
     }
 
     public bool NameCheck(string Name)
@@ -155,35 +123,39 @@ public class AccountsLogic
         return true;
     }
 
-    public void CreateAccount(AccountModel account, string password)
+    public bool IsEmailTaken(string email)
+    {
+        return _access.GetByEmail(email) != null;
+    }
+    
+    public OperationResult CreateAccount(AccountModel account, string password)
     {
         if(account is null)
         {
-            return;
+            return OperationResult.FailureResult("Account cannot be null");
         }
 
         account.Password = _hasher.HashPassword(account, password);
 
-        _access.Write(account!);   
+        _access.Write(account);
+        return OperationResult.SuccessResult();
     }
 
-    public bool EditAccount(AccountModel account)
+    public OperationResult EditAccount(AccountModel account)
     {
         if(account is null)
         {
-            return false;
+            return OperationResult.FailureResult("Account data cannot be null");
         }
 
         if (CurrentAccount is null)
         {
-            Console.WriteLine("No user is currently logged in.");
-            return false;
+            return OperationResult.FailureResult("No user is currently logged in.");
         }
         
         if(CurrentAccount.Role != UserRole.Admin)
         {
-            Console.WriteLine("You are not allowed to edit an account.");
-            return false;
+            return OperationResult.FailureResult("You are not allowed to edit an account.");
         }
 
 
@@ -191,81 +163,72 @@ public class AccountsLogic
 
         if(existingAccount is null)
         {
-            Console.WriteLine("Account not found.");
-            return false;
+            return OperationResult.FailureResult("Account not found.");
         }
     
         if (existingAccount.Role == UserRole.Admin && existingAccount.Id != CurrentAccount.Id) 
         {
-            Console.WriteLine("You cannot edit another Admin account.");
-            return false;
+            return OperationResult.FailureResult("You cannot edit another Admin account.");
         }
 
         if (existingAccount.Id == CurrentAccount.Id && account.Role == UserRole.Customer)
         {
-            Console.WriteLine("As an admin, you cannot change your own role to Customer.");
-            return false;
+            return OperationResult.FailureResult("As an admin, you cannot change your own role to Customer.");
         }
 
         _access.Update(account);
-        return true;
+        return OperationResult.SuccessResult();
     }
 
-    public bool BlockAccount(AccountModel account)
+    public OperationResult BlockAccount(AccountModel account)
     {
 
         if(account is null)
         {
-            return false;
+            return OperationResult.FailureResult("Account data cannot be null");
         }
 
         if(CurrentAccount.Role != UserRole.Admin) //if acc is not an admin, that acc cannot block an acc
         {
-            Console.WriteLine("You are not allowed to block an Account");
-            return false;
+            return OperationResult.FailureResult("You are not allowed to block an Account");
         }
 
         AccountModel existingAccount = _access.GetAccountById(account.Id);
 
         if(existingAccount is null)
         {
-            Console.WriteLine("Account not found");
-            return false;
+            return OperationResult.FailureResult("Account not found");
         }
 
         if(existingAccount.IsBlocked) //Admin cannot block an account that is already blocked
         {
-            Console.WriteLine("This account is already blocked");
-            return false;
+            return OperationResult.FailureResult("This account is already blocked");
         }
 
         if(existingAccount.Role == UserRole.Admin) //Admin acc cannot block another admin acc
         {
-            Console.WriteLine("You cannot change the status of another Admin account");
-            return false;
+            return OperationResult.FailureResult("You cannot change the status of another Admin account");
         }
 
         if(existingAccount.Id == CurrentAccount.Id) //Admin cannot block his own acc
         {
-            Console.WriteLine("You cannot change the status of your own account");
-            return false;
+            return OperationResult.FailureResult("You cannot change the status of your own account");
         }
 
         _access.BlockAccount(existingAccount);
-        return true;
+        return OperationResult.SuccessResult();
     }
 
-    public bool UnBlockAccount(AccountModel account)
+    public OperationResult UnBlockAccount(AccountModel account)
     {
         if(account is null)
         {
-            return false;
+            return OperationResult.FailureResult("Account data cannot be null");
         }
 
         if(CurrentAccount.Role != UserRole.Admin) //if acc is not an admin, that acc cannot unblock an acc
         {
-            Console.WriteLine("You are not allowed to unblock an Account");
-            return false;
+            return OperationResult.FailureResult("You are not allowed to unblock an Account");
         }
 
 
@@ -273,30 +236,26 @@ public class AccountsLogic
 
         if(existingAccount is null)
         {
-            Console.WriteLine("Account not found");
-            return false;
+            return OperationResult.FailureResult("Account not found");
         }
 
         if(!existingAccount.IsBlocked) //Admin cannot unblock an account that is not blocked
         {
-            Console.WriteLine("You cannot unblock an account that is not blocked");
-            return false;
+            return OperationResult.FailureResult("You cannot unblock an account that is not blocked");
         }
 
         if(existingAccount.Role == UserRole.Admin) //Admin acc cannot block another admin acc
         {
-            Console.WriteLine("You cannot change the status of another Admin account");
-            return false;
+            return OperationResult.FailureResult("You cannot change the status of another Admin account");
         }
 
         if(existingAccount.Id == CurrentAccount.Id) //Admin cannot change the status of  his own acc
         {
-            Console.WriteLine("You cannot change the status of your own account");
-            return false;
+            return OperationResult.FailureResult("You cannot change the status of your own account");
         }
 
         _access.UnblockAccount(existingAccount);
-        return true;
+        return OperationResult.SuccessResult();
     }
 
     public List<AccountModel> GetAllAccounts()
