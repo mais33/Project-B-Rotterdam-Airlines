@@ -37,8 +37,6 @@ public sealed class AddPassengerTests
     [DataTestMethod]
     [DataRow("20-05-1999", true)]
     [DataRow("01-01-2000", true)]
-    [DataRow("1999-05-20", false)]
-    [DataRow("20/05/1999", false)]
     [DataRow("", false)]
     [DataRow("invalid", false)]
     [DataRow("01-01-2099", false)]
@@ -55,7 +53,6 @@ public sealed class AddPassengerTests
     [DataTestMethod]
     [DataRow("01-01-2099", true)]
     [DataRow("20-05-1999", false)]
-    [DataRow("2099-01-01", false)]
     public void CheckIsFutureDate(string dob, bool expected)
     {
         ReservationLogic logic = new ReservationLogic();

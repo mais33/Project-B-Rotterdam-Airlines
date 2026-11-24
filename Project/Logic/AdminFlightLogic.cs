@@ -13,8 +13,7 @@ public class AdminFlightLogic
     {
         string[] dateFormats =
         {
-        "dd-MM-yyyy HH:mm",
-        "yyyy-MM-dd HH:mm"
+        "dd-MM-yyyy HH:mm"
     };
 
         if (!DateTime.TryParseExact(
@@ -152,8 +151,7 @@ public class AdminFlightLogic
     {
         string[] dateFormats =
         {
-        "dd-MM-yyyy HH:mm",
-        "yyyy-MM-dd HH:mm"
+        "dd-MM-yyyy HH:mm"
     };
 
         DateTime newDeparture = DateTime.ParseExact(
@@ -177,7 +175,7 @@ public class AdminFlightLogic
                 DateTime existingDeparture;
                 DateTime existingArrival;
 
-                // Read existing flight dates in either supported format.
+                // Read the dates of the existing flight.
                 bool validDeparture = DateTime.TryParseExact(
                     flight.DepartureDatetime,
                     dateFormats,
