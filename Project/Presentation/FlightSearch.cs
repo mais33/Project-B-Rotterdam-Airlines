@@ -115,7 +115,7 @@ public static class FlightSearch
 
             if (!flightLogic.TryParseDate(input, out DateTime date))
             {
-                ShowError("Invalid date. Please use dd-MM-yyyy (e.g. 25-12-2026).");
+                ShowError("Invalid date. Please use dd-mm-yyyy (e.g. 25-12-2026).");
             }
             else if (flightLogic.IsDateInPast(date))
             {
@@ -137,7 +137,7 @@ public static class FlightSearch
 
             if (!flightLogic.TryParseDate(input, out DateTime date))
             {
-                ShowError("Invalid date. Please use dd-MM-yyyy (e.g. 25-12-2026).");
+                ShowError("Invalid date. Please use dd-mm-yyyy (e.g. 25-12-2026).");
             }
             else if (!flightLogic.IsValidReturnDate(departureDate, date))
             {

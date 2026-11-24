@@ -77,7 +77,7 @@ public static class AdminFlightPresentation
         while (true)
         {
             Console.Write(
-                "Enter departure date and time (dd-MM-yyyy HH:mm): "
+                "Enter departure date and time (dd-mm-yyyy hh:mm): "
             );
 
             string input = Console.ReadLine() ?? "";
@@ -104,7 +104,7 @@ public static class AdminFlightPresentation
         while (true)
         {
             Console.Write(
-                "Enter arrival date and time (dd-MM-yyyy HH:mm): "
+                "Enter arrival date and time (dd-mm-yyyy hh:mm): "
             );
 
             string input = Console.ReadLine() ?? "";

@@ -87,7 +87,7 @@ public static class ReservationPresentation
         }
 
         DateTime departureDate = AskDate(
-            "  Departure date (dd-MM-yyyy): ",
+            "  Departure date (dd-mm-yyyy): ",
             null
         );
 
@@ -96,7 +96,7 @@ public static class ReservationPresentation
         if (isRoundTrip)
         {
             returnDate = AskDate(
-                "  Return date (dd-MM-yyyy):    ",
+                "  Return date (dd-mm-yyyy):    ",
                 departureDate
             );
         }
@@ -421,7 +421,7 @@ public static class ReservationPresentation
             if (!flightLogic.TryParseDate(input, out DateTime date))
             {
                 Console.WriteLine();
-                Console.WriteLine("  > Invalid date. Please use dd-MM-yyyy (e.g. 25-12-2026).");
+                Console.WriteLine("  > Invalid date. Please use dd-mm-yyyy (e.g. 25-12-2026).");
                 Console.WriteLine();
             }
             else if (flightLogic.IsDateInPast(date))
