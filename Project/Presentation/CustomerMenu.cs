@@ -15,10 +15,11 @@ public static class CustomerMenu
             Console.WriteLine("  [1] Make a reservation");
             Console.WriteLine("  [2] View flights");
             Console.WriteLine("  [3] Booking confirmations");
-            Console.WriteLine("  [4] Log out");
+            Console.WriteLine("  [4] View my reservations");
+            Console.WriteLine("  [5] Log out");
             Console.WriteLine();
             Console.WriteLine("--------------------------------------------------");
-            Console.Write("  Choose an option (1-4): ");
+            Console.Write("  Choose an option (1-5): ");
 
             string choice = Console.ReadLine() ?? "";
 
@@ -37,6 +38,10 @@ public static class CustomerMenu
                     break;
 
                 case "4":
+                    ViewReservationPresentation.ShowMyReservations(account);
+                    break;
+
+                case "5":
                     Console.WriteLine();
                     Console.WriteLine("  > You have been logged out.");
                     Console.WriteLine();
@@ -46,7 +51,7 @@ public static class CustomerMenu
 
                 default:
                     Console.WriteLine();
-                    Console.WriteLine("  > Invalid option. Please choose 1, 2, 3 or 4.");
+                    Console.WriteLine("  > Invalid option. Please choose a number from 1 to 5.");
                     Console.WriteLine();
                     Console.WriteLine("  Press any key to continue...");
                     Console.ReadKey();
