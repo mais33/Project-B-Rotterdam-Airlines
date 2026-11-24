@@ -74,7 +74,7 @@ public class FlightLogic
         return _access.Search(start.Id, destination.Id, searchDate);
     }
 
-    // Departure looks like "2026-11-02 08:30", so the part before the space is the date
+    // Departure looks like "02-11-2026 08:30", so the part before the space is the date
     public string GetDate(string departure)
     {
         string[] parts = departure.Split(' ');
