@@ -71,8 +71,10 @@ public class SeatManager
         {
             Console.Clear();
             seatManager.DrawSeatMap(currentMap);
+            SeatLegend seatLegend = new();
+            seatLegend.DrawLegend(currentMap);
 
-            Console.WriteLine("\nEnter a seat to select (for example: 1A)  Standard -->[S]  Premium -->[P]  Vip -->[V]");
+            Console.WriteLine("\nEnter a seat to select (for example: 1A)");
             Console.WriteLine("type 'confirm' to confirm seat reservation or 'exit' to return to customer menu");
             string choice = Console.ReadLine()?.Trim().ToUpper() ?? "";
 
