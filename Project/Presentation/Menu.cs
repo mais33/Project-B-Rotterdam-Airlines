@@ -71,10 +71,11 @@ static class Menu
             Console.WriteLine("  [3] Booking confirmations");
             Console.WriteLine("  [4] Manage accounts");
             Console.WriteLine("  [5] Add Flight");
-            Console.WriteLine("  [6] Log out");
+            Console.WriteLine("  [6] View all reservations");
+            Console.WriteLine("  [7] Log out");
             Console.WriteLine();
             Console.WriteLine("--------------------------------------------------");
-            Console.Write("  Choose an option (1-6): ");
+            Console.Write("  Choose an option (1-7): ");
 
             string choice = Console.ReadLine() ?? "";
 
@@ -101,6 +102,10 @@ static class Menu
                     break;
 
                 case "6":
+                    ViewReservationPresentation.ShowAllReservations(account);
+                    break;
+
+                case "7":
                     Console.WriteLine();
                     Console.WriteLine("  > You have been logged out.");
                     Console.WriteLine();
@@ -110,7 +115,7 @@ static class Menu
 
                 default:
                     Console.WriteLine();
-                    Console.WriteLine("  > Invalid choice. Please choose 1, 2, 3, 4, 5 or 6.");
+                    Console.WriteLine("  > Invalid choice. Please choose a number from 1 to 7.");
                     Console.WriteLine();
                     Console.WriteLine("  Press any key to continue...");
                     Console.ReadKey();

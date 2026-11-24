@@ -14,6 +14,7 @@ public class SeatLegend
         DrawLegendLine("[S]", ConsoleColor.Blue, "Standard", $"EUR {standardPrice:F2}");
         DrawLegendLine("[P]", ConsoleColor.DarkYellow, "Premium", $"EUR {premiumPrice:F2}");
         DrawLegendLine("[V]", ConsoleColor.DarkMagenta, "VIP", $"EUR {vipPrice:F2}");
+        DrawLegendLine("[✓]", ConsoleColor.Green, "Selected", "your seat");
         DrawLegendLine("[X]", ConsoleColor.Red, "Reserved", "not available");
     }
 

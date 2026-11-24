@@ -179,4 +179,122 @@ public class ReservationLogic
     {
         return _reservationAccess.GetByReservationId(reservationId);
     }
+
+
+    public List<ReservationModel> GetReservationsForAccount(Int64 accountId)
+    {
+        if (accountId <= 0)
+        {
+            throw new ArgumentException("Invalid account ID.");
+        }
+
+        return _reservationAccess.GetReservationsByAccountId(accountId);
+    }
+
+    public List<ReservationModel> GetAllReservations()
+    {
+        return _reservationAccess.GetAllReservations();
+    }
+
+
+
+    public List<ReservationDetailsModel> GetReservationDetailsForAccount(
+        long accountId)
+    {
+        if (accountId <= 0)
+        {
+            throw new ArgumentException("Invalid account ID.");
+        }
+
+        return _reservationAccess.GetReservationDetails(accountId);
+    }
+
+    public List<ReservationDetailsModel> GetAllReservationDetails()
+    {
+        return _reservationAccess.GetReservationDetails();
+    }
+
+    public List<Int64> ConfirmReservation(
+        Int64 accountId,
+        FlightModel outboundFlight,
+        FlightModel? returnFlight,
+        List<PassengerModel> passengers,
+        List<Int64> outboundSeatIds,
+        List<Int64>? returnSeatIds = null)
+    {
+        if (accountId <= 0)
+        {
+            throw new ArgumentException("Invalid account ID.");
+        }
+
+        if (outboundFlight == null)
+        {
+            throw new ArgumentException("An outbound flight is required.");
+        }
+
+        if (passengers == null || passengers.Count == 0)
+        {
+            throw new ArgumentException("At least one passenger is required.");
+        }
+
+        if (outboundSeatIds == null ||
+            outboundSeatIds.Count != passengers.Count)
+        {
+            throw new ArgumentException(
+                "Each passenger must have an outbound seat.");
+        }
+
+        if (returnFlight != null &&
+            (returnSeatIds == null ||
+             returnSeatIds.Count != passengers.Count))
+        {
+            throw new ArgumentException(
+                "Each passenger must have a return seat.");
+        }
+
+        if (returnFlight == null &&
+            returnSeatIds != null &&
+            returnSeatIds.Count > 0)
+        {
+            throw new ArgumentException(
+                "Return seats require a return flight.");
+        }
+
+        foreach (PassengerModel passenger in passengers)
+        {
+            if (!IsValidName(passenger.FirstName) ||
+                !IsValidName(passenger.LastName) ||
+                !IsValidDateOfBirth(passenger.Dob))
+            {
+                throw new ArgumentException(
+                    "Passenger information is invalid.");
+            }
+        }
+
+        if (outboundSeatIds.Distinct().Count() != outboundSeatIds.Count)
+        {
+            throw new ArgumentException(
+                "Outbound seats must be unique.");
+        }
+
+        if (returnSeatIds != null &&
+            returnSeatIds.Distinct().Count() != returnSeatIds.Count)
+        {
+            throw new ArgumentException(
+                "Return seats must be unique.");
+        }
+
+        // The DataAccess method will save reservations,
+        // passengers and tickets in one database transaction.
+        return _reservationAccess.SaveCompleteReservation(
+            accountId,
+            outboundFlight,
+            returnFlight,
+            passengers,
+            outboundSeatIds,
+            returnSeatIds
+        );
+    }
+
+
 }

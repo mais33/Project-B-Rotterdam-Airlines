@@ -9,6 +9,7 @@ public static class ReservationPresentation
     public static void Start(AccountModel account)
     {
         passengerCount = 0;
+
         Console.Clear();
         Console.WriteLine();
         Console.WriteLine("==================================================");
@@ -25,6 +26,7 @@ public static class ReservationPresentation
         Console.WriteLine("--------------------------------------------------");
 
         bool isRoundTrip = false;
+
         while (true)
         {
             Console.Write("  Choose an option (1-3): ");
@@ -82,7 +84,8 @@ public static class ReservationPresentation
             }
 
             Console.WriteLine();
-            Console.WriteLine("  > Departure and destination cannot be the same.");
+            Console.WriteLine(
+                "  > Departure and destination cannot be the same.");
             Console.WriteLine();
         }
 
@@ -101,7 +104,7 @@ public static class ReservationPresentation
             );
         }
 
-        // Get matching outbound flights
+        // Search outbound flights
         List<FlightModel> flights = flightLogic.SearchFlights(
             startAirport,
             destinationAirport,
@@ -111,34 +114,42 @@ public static class ReservationPresentation
         if (flights.Count == 0)
         {
             Console.WriteLine();
-            Console.WriteLine("  > No flights found for this route and date.");
-            Console.WriteLine();
+            Console.WriteLine(
+                "  > No flights found for this route and date.");
             Console.WriteLine("  Press any key to return...");
             Console.ReadKey();
             return;
         }
 
-        // Show outbound flights
         Console.WriteLine();
         Console.WriteLine("  Available flights:\n");
 
         for (int i = 0; i < flights.Count; i++)
         {
-            string departureCity = flightLogic.GetDepartureCity(flights[i]);
-            string destination = flightLogic.GetDestinationCity(flights[i]);
+            string departureCity =
+                flightLogic.GetDepartureCity(flights[i]);
 
-            Console.WriteLine($"  [{i + 1}] {departureCity} -> {destination}");
-            Console.WriteLine($"      Departure:  {flights[i].DepartureDatetime}");
-            Console.WriteLine($"      Price:      EUR {flights[i].Price:0.00}");
+            string destination =
+                flightLogic.GetDestinationCity(flights[i]);
+
+            Console.WriteLine(
+                $"  [{i + 1}] {departureCity} -> {destination}");
+
+            Console.WriteLine(
+                $"      Departure:  {flights[i].DepartureDatetime}");
+
+            Console.WriteLine(
+                $"      Price:      EUR {flights[i].Price:0.00}");
+
             Console.WriteLine();
         }
 
         int backOption = flights.Count + 1;
+
         Console.WriteLine("--------------------------------------------------");
         Console.WriteLine($"  [{backOption}] Back to Customer Menu");
         Console.WriteLine("--------------------------------------------------");
 
-        // Select outbound flight
         int flightChoice = 0;
 
         while (true)
@@ -152,22 +163,29 @@ public static class ReservationPresentation
                 {
                     return;
                 }
-                else if (flightChoice >= 1 && flightChoice <= flights.Count)
+
+                if (flightChoice >= 1 &&
+                    flightChoice <= flights.Count)
                 {
                     break;
                 }
             }
 
             Console.WriteLine();
-            Console.WriteLine($"  > Invalid choice. Please choose a number between 1 and {backOption}.");
+            Console.WriteLine(
+                $"  > Invalid choice. Please choose a number between 1 and {backOption}.");
             Console.WriteLine();
         }
 
         FlightModel selectedFlight = flights[flightChoice - 1];
-        string selectedDepartureCity = flightLogic.GetDepartureCity(selectedFlight);
-        string selectedDestination = flightLogic.GetDestinationCity(selectedFlight);
 
-        // Select return flight if round trip
+        string selectedDepartureCity =
+            flightLogic.GetDepartureCity(selectedFlight);
+
+        string selectedDestination =
+            flightLogic.GetDestinationCity(selectedFlight);
+
+        // Return flight
         FlightModel? returnFlight = null;
 
         if (isRoundTrip)
@@ -181,8 +199,8 @@ public static class ReservationPresentation
             if (returnFlights.Count == 0)
             {
                 Console.WriteLine();
-                Console.WriteLine("  > There are no return flights available for this route and date.");
-                Console.WriteLine();
+                Console.WriteLine(
+                    "  > There are no return flights available for this route and date.");
                 Console.WriteLine("  Press any key to return...");
                 Console.ReadKey();
                 return;
@@ -193,25 +211,38 @@ public static class ReservationPresentation
 
             for (int i = 0; i < returnFlights.Count; i++)
             {
-                string returnDeparture = flightLogic.GetDepartureCity(returnFlights[i]);
-                string returnDestination = flightLogic.GetDestinationCity(returnFlights[i]);
+                string returnDeparture =
+                    flightLogic.GetDepartureCity(returnFlights[i]);
 
-                Console.WriteLine($"  [{i + 1}] {returnDeparture} -> {returnDestination}");
-                Console.WriteLine($"      Departure:  {returnFlights[i].DepartureDatetime}");
-                Console.WriteLine($"      Price:      EUR {returnFlights[i].Price:0.00}");
+                string returnDestination =
+                    flightLogic.GetDestinationCity(returnFlights[i]);
+
+                Console.WriteLine(
+                    $"  [{i + 1}] {returnDeparture} -> {returnDestination}");
+
+                Console.WriteLine(
+                    $"      Departure:  {returnFlights[i].DepartureDatetime}");
+
+                Console.WriteLine(
+                    $"      Price:      EUR {returnFlights[i].Price:0.00}");
+
                 Console.WriteLine();
             }
 
             int returnBackOption = returnFlights.Count + 1;
+
             Console.WriteLine("--------------------------------------------------");
-            Console.WriteLine($"  [{returnBackOption}] Back to Customer Menu");
+            Console.WriteLine(
+                $"  [{returnBackOption}] Back to Customer Menu");
             Console.WriteLine("--------------------------------------------------");
 
             int returnChoice = 0;
 
             while (true)
             {
-                Console.Write($"  Choose a return flight (1-{returnBackOption}): ");
+                Console.Write(
+                    $"  Choose a return flight (1-{returnBackOption}): ");
+
                 string input = Console.ReadLine() ?? "";
 
                 if (int.TryParse(input, out returnChoice))
@@ -220,14 +251,17 @@ public static class ReservationPresentation
                     {
                         return;
                     }
-                    else if (returnChoice >= 1 && returnChoice <= returnFlights.Count)
+
+                    if (returnChoice >= 1 &&
+                        returnChoice <= returnFlights.Count)
                     {
                         break;
                     }
                 }
 
                 Console.WriteLine();
-                Console.WriteLine($"  > Invalid choice. Please choose a number between 1 and {returnBackOption}.");
+                Console.WriteLine(
+                    $"  > Invalid choice. Please choose a number between 1 and {returnBackOption}.");
                 Console.WriteLine();
             }
 
@@ -246,12 +280,13 @@ public static class ReservationPresentation
                 !reservationLogic.IsValidPassengerCount(passengerCount))
             {
                 Console.WriteLine();
-                Console.WriteLine("  > Invalid number of passengers (must be at least 1). Please try again.");
+                Console.WriteLine(
+                    "  > Invalid number of passengers (must be at least 1). Please try again.");
                 Console.WriteLine();
             }
         }
 
-        // Passenger information (entered once, used for both flights on a round trip)
+        // Passenger information
         List<string> passengerFirstNames = new List<string>();
         List<string> passengerLastNames = new List<string>();
         List<string> passengerDatesOfBirth = new List<string>();
@@ -262,8 +297,8 @@ public static class ReservationPresentation
             Console.WriteLine($"  Passenger {i + 1}:");
             Console.WriteLine("  ------------------------------------------------");
 
-            // First name
             string firstName = "";
+
             while (!reservationLogic.IsValidName(firstName))
             {
                 Console.Write("  First name:     ");
@@ -272,19 +307,19 @@ public static class ReservationPresentation
                 if (string.IsNullOrWhiteSpace(firstName))
                 {
                     Console.WriteLine();
-                    Console.WriteLine("  > First name is required. Please enter a first name.");
-                    Console.WriteLine();
+                    Console.WriteLine(
+                        "  > First name is required. Please enter a first name.");
                 }
                 else if (!reservationLogic.IsValidName(firstName))
                 {
                     Console.WriteLine();
-                    Console.WriteLine("  > Invalid first name (only letters, at least 3 characters).");
-                    Console.WriteLine();
+                    Console.WriteLine(
+                        "  > Invalid first name (only letters, at least 3 characters).");
                 }
             }
 
-            // Last name
             string lastName = "";
+
             while (!reservationLogic.IsValidName(lastName))
             {
                 Console.Write("  Last name:      ");
@@ -293,19 +328,19 @@ public static class ReservationPresentation
                 if (string.IsNullOrWhiteSpace(lastName))
                 {
                     Console.WriteLine();
-                    Console.WriteLine("  > Last name is required. Please enter a last name.");
-                    Console.WriteLine();
+                    Console.WriteLine(
+                        "  > Last name is required. Please enter a last name.");
                 }
                 else if (!reservationLogic.IsValidName(lastName))
                 {
                     Console.WriteLine();
-                    Console.WriteLine("  > Invalid last name (only letters, at least 3 characters).");
-                    Console.WriteLine();
+                    Console.WriteLine(
+                        "  > Invalid last name (only letters, at least 3 characters).");
                 }
             }
 
-            // Date of birth
             string dateOfBirth = "";
+
             while (!reservationLogic.IsValidDateOfBirth(dateOfBirth))
             {
                 Console.Write("  Date of birth (dd-mm-yyyy): ");
@@ -314,20 +349,20 @@ public static class ReservationPresentation
                 if (string.IsNullOrWhiteSpace(dateOfBirth))
                 {
                     Console.WriteLine();
-                    Console.WriteLine("  > Date of birth is required. Please enter a date of birth.");
-                    Console.WriteLine();
+                    Console.WriteLine(
+                        "  > Date of birth is required. Please enter a date of birth.");
                 }
                 else if (reservationLogic.IsFutureDate(dateOfBirth))
                 {
                     Console.WriteLine();
-                    Console.WriteLine("  > Date of birth cannot be in the future.");
-                    Console.WriteLine();
+                    Console.WriteLine(
+                        "  > Date of birth cannot be in the future.");
                 }
                 else if (!reservationLogic.IsValidDateOfBirth(dateOfBirth))
                 {
                     Console.WriteLine();
-                    Console.WriteLine("  > Invalid date of birth. Please use dd-mm-yyyy (e.g. 20-05-1990).");
-                    Console.WriteLine();
+                    Console.WriteLine(
+                        "  > Invalid date of birth. Please use dd-mm-yyyy (e.g. 20-05-1990).");
                 }
             }
 
@@ -336,8 +371,22 @@ public static class ReservationPresentation
             passengerDatesOfBirth.Add(dateOfBirth);
         }
 
-        // Calculate total price
-        double totalPrice = returnFlight != null
+        // Prepare passenger models
+        List<PassengerModel> passengers = new List<PassengerModel>();
+
+        for (int i = 0; i < passengerCount; i++)
+        {
+            passengers.Add(new PassengerModel(
+                0,
+                account.Id,
+                passengerFirstNames[i],
+                passengerLastNames[i],
+                passengerDatesOfBirth[i]
+            ));
+        }
+
+        // Base flight price
+        double flightTotal = returnFlight != null
             ? reservationLogic.CalculateTotalPrice(
                 selectedFlight.Price,
                 returnFlight.Price,
@@ -346,45 +395,275 @@ public static class ReservationPresentation
                 selectedFlight.Price,
                 passengerCount);
 
-        // Reservation overview
-        Console.WriteLine();
-        Console.WriteLine("==================================================");
-        Console.WriteLine("               RESERVATION OVERVIEW               ");
-        Console.WriteLine("==================================================");
-        Console.WriteLine();
-        Console.WriteLine($"  Route:           {selectedDepartureCity} -> {selectedDestination}");
-        Console.WriteLine($"  Date:            {flightLogic.GetDate(selectedFlight.DepartureDatetime)}");
-        Console.WriteLine($"  Departure time:  {flightLogic.GetTime(selectedFlight.DepartureDatetime)}");
+        // Outbound seats
+        Console.Clear();
+        Console.WriteLine("=== OUTBOUND SEAT SELECTION ===");
+        Console.WriteLine(
+            $"{selectedDepartureCity} -> {selectedDestination}");
+        Console.WriteLine("Press any key to continue...");
+        Console.ReadKey(true);
 
-        if (returnFlight != null)
-        {
-            string returnDepartureCity = flightLogic.GetDepartureCity(returnFlight);
-            string returnDestinationCity = flightLogic.GetDestinationCity(returnFlight);
-
-            Console.WriteLine();
-            Console.WriteLine($"  Return route:    {returnDepartureCity} -> {returnDestinationCity}");
-            Console.WriteLine($"  Return date:     {flightLogic.GetDate(returnFlight.DepartureDatetime)}");
-            Console.WriteLine($"  Return time:     {flightLogic.GetTime(returnFlight.DepartureDatetime)}");
-        }
-
-        Console.WriteLine();
-        Console.WriteLine("  Passengers:");
-
-        for (int i = 0; i < passengerCount; i++)
-        {
-            Console.WriteLine($"  {i + 1}. {passengerFirstNames[i]} {passengerLastNames[i]} ({passengerDatesOfBirth[i]})");
-        }
-
-        Console.WriteLine();
-        Console.WriteLine($"  Total price:    EUR {totalPrice:0.00}");
-        Console.WriteLine("--------------------------------------------------");
-
-        SeatManager.Start();
+        SeatManager.Start(selectedFlight.Id);
 
         if (SeatManager.UserExited)
         {
             return;
         }
+
+        List<Int64> outboundSeatIds =
+            new List<Int64>(SeatManager.SelectedSeatIds);
+
+        // Return seats
+        List<Int64>? returnSeatIds = null;
+
+        if (returnFlight != null)
+        {
+            Console.Clear();
+            Console.WriteLine("=== RETURN SEAT SELECTION ===");
+
+            Console.WriteLine(
+                $"{flightLogic.GetDepartureCity(returnFlight)} -> " +
+                $"{flightLogic.GetDestinationCity(returnFlight)}");
+
+            Console.WriteLine("Press any key to continue...");
+            Console.ReadKey(true);
+
+            SeatManager.Start(returnFlight.Id);
+
+            if (SeatManager.UserExited)
+            {
+                return;
+            }
+
+            returnSeatIds =
+                new List<Int64>(SeatManager.SelectedSeatIds);
+        }
+
+        // Calculate selected seat prices
+        SeatLogic seatLogic = new SeatLogic();
+
+        SeatModel[,] outboundSeatMap =
+            seatLogic.LoadSeatMapByPlaneId(selectedFlight.PlaneId);
+
+        double outboundSeatTotal = CalculateSeatTotal(
+            outboundSeatMap,
+            outboundSeatIds
+        );
+
+        SeatModel[,]? returnSeatMap = null;
+        double returnSeatTotal = 0;
+
+        if (returnFlight != null && returnSeatIds != null)
+        {
+            returnSeatMap =
+                seatLogic.LoadSeatMapByPlaneId(returnFlight.PlaneId);
+
+            returnSeatTotal = CalculateSeatTotal(
+                returnSeatMap,
+                returnSeatIds
+            );
+        }
+
+        double totalPrice =
+            flightTotal + outboundSeatTotal + returnSeatTotal;
+
+        // Final overview
+        Console.Clear();
+        Console.WriteLine();
+        Console.WriteLine("==================================================");
+        Console.WriteLine("               RESERVATION OVERVIEW               ");
+        Console.WriteLine("==================================================");
+        Console.WriteLine();
+
+        Console.WriteLine(
+            $"  Route:           {selectedDepartureCity} -> {selectedDestination}");
+
+        Console.WriteLine(
+            $"  Date:            {flightLogic.GetDate(selectedFlight.DepartureDatetime)}");
+
+        Console.WriteLine(
+            $"  Departure time:  {flightLogic.GetTime(selectedFlight.DepartureDatetime)}");
+
+        if (returnFlight != null)
+        {
+            Console.WriteLine();
+            Console.WriteLine(
+                $"  Return route:    {flightLogic.GetDepartureCity(returnFlight)} -> " +
+                $"{flightLogic.GetDestinationCity(returnFlight)}");
+
+            Console.WriteLine(
+                $"  Return date:     {flightLogic.GetDate(returnFlight.DepartureDatetime)}");
+
+            Console.WriteLine(
+                $"  Return time:     {flightLogic.GetTime(returnFlight.DepartureDatetime)}");
+        }
+
+        Console.WriteLine();
+        Console.WriteLine("  Passengers and seats:");
+
+        for (int i = 0; i < passengerCount; i++)
+        {
+            Console.WriteLine(
+                $"  {i + 1}. {passengerFirstNames[i]} " +
+                $"{passengerLastNames[i]} " +
+                $"({passengerDatesOfBirth[i]})");
+
+            Console.WriteLine(
+                $"     Outbound seat: {GetSeatNumber(outboundSeatMap, outboundSeatIds[i])}");
+
+            if (returnSeatIds != null && returnSeatMap != null)
+            {
+                Console.WriteLine(
+                    $"     Return seat:   {GetSeatNumber(returnSeatMap, returnSeatIds[i])}");
+            }
+        }
+
+        Console.WriteLine();
+        Console.WriteLine($"  Flight price:        EUR {flightTotal:0.00}");
+        Console.WriteLine($"  Outbound seats:      EUR {outboundSeatTotal:0.00}");
+
+        if (returnFlight != null)
+        {
+            Console.WriteLine(
+                $"  Return seats:        EUR {returnSeatTotal:0.00}");
+        }
+
+        Console.WriteLine("--------------------------------------------------");
+        Console.WriteLine($"  TOTAL PRICE:         EUR {totalPrice:0.00}");
+        Console.WriteLine("--------------------------------------------------");
+
+        // Confirm or discard
+        Console.WriteLine();
+        Console.WriteLine("==================================================");
+        Console.WriteLine("              CONFIRM RESERVATION                 ");
+        Console.WriteLine("==================================================");
+        Console.WriteLine();
+        Console.WriteLine("  [1] Confirm reservation");
+        Console.WriteLine("  [2] Discard reservation");
+        Console.WriteLine();
+
+        string confirmationChoice = "";
+
+        while (confirmationChoice != "1" &&
+               confirmationChoice != "2")
+        {
+            Console.Write("  Choose an option (1-2): ");
+            confirmationChoice = (Console.ReadLine() ?? "").Trim();
+
+            if (confirmationChoice != "1" &&
+                confirmationChoice != "2")
+            {
+                Console.WriteLine(
+                    "  > Invalid choice. Please enter 1 or 2.");
+            }
+        }
+
+        if (confirmationChoice == "2")
+        {
+            Console.WriteLine();
+            Console.WriteLine("  > Reservation discarded.");
+            Console.WriteLine("  No reservation was saved.");
+            Console.WriteLine("  Press any key to return...");
+            Console.ReadKey(true);
+            return;
+        }
+
+        // Save the complete reservation after confirmation
+        try
+        {
+            List<Int64> reservationIds =
+                reservationLogic.ConfirmReservation(
+                    account.Id,
+                    selectedFlight,
+                    returnFlight,
+                    passengers,
+                    outboundSeatIds,
+                    returnSeatIds
+                );
+
+            Console.WriteLine();
+            Console.WriteLine("==================================================");
+            Console.WriteLine("             RESERVATION CONFIRMED                ");
+            Console.WriteLine("==================================================");
+            Console.WriteLine();
+            Console.WriteLine(
+                "  > Your reservation has been confirmed!");
+
+            Console.WriteLine(
+                $"  Outbound reservation ID: {reservationIds[0]}");
+
+            if (reservationIds.Count > 1)
+            {
+                Console.WriteLine(
+                    $"  Return reservation ID:   {reservationIds[1]}");
+
+                Console.WriteLine(
+                    $"  Booking group ID:        {reservationIds[0]}");
+            }
+
+            Console.WriteLine();
+            Console.WriteLine(
+                $"  Total price: EUR {totalPrice:0.00}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine();
+            Console.WriteLine(
+                "  > Unable to save your reservation.");
+
+            Console.WriteLine($"  Details: {ex.Message}");
+        }
+
+        Console.WriteLine();
+        Console.WriteLine("  Press any key to return to the menu...");
+        Console.ReadKey(true);
+    }
+
+    // Get the visible seat number, such as 1A or 2F
+    private static string GetSeatNumber(
+        SeatModel[,] seatMap,
+        Int64 seatId)
+    {
+        foreach (SeatModel? seat in seatMap)
+        {
+            if (seat != null && seat.Id == seatId)
+            {
+                return seat.SeatNumber;
+            }
+        }
+
+        return "Unknown";
+    }
+
+    // Calculate prices of selected seats for the overview
+    private static double CalculateSeatTotal(
+        SeatModel[,] seatMap,
+        List<Int64> selectedSeatIds)
+    {
+        double total = 0;
+
+        foreach (Int64 seatId in selectedSeatIds)
+        {
+            bool found = false;
+
+            foreach (SeatModel? seat in seatMap)
+            {
+                if (seat != null && seat.Id == seatId)
+                {
+                    total += seat.Price;
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+            {
+                throw new InvalidOperationException(
+                    $"Selected seat {seatId} was not found.");
+            }
+        }
+
+        return total;
     }
 
     // Ask for a valid airport city
@@ -395,7 +674,8 @@ public static class ReservationPresentation
             Console.Write(label);
             string input = (Console.ReadLine() ?? "").Trim();
 
-            AirportModel? airport = flightLogic.FindAirportByCity(input);
+            AirportModel? airport =
+                flightLogic.FindAirportByCity(input);
 
             if (airport != null)
             {
@@ -403,12 +683,13 @@ public static class ReservationPresentation
             }
 
             Console.WriteLine();
-            Console.WriteLine("  > City not found. Please choose a city from the list.");
+            Console.WriteLine(
+                "  > City not found. Please choose a city from the list.");
             Console.WriteLine();
         }
     }
 
-    // Ask for a date using the standard format
+    // Ask for a valid date
     private static DateTime AskDate(
         string label,
         DateTime? departureDate)
@@ -421,20 +702,25 @@ public static class ReservationPresentation
             if (!flightLogic.TryParseDate(input, out DateTime date))
             {
                 Console.WriteLine();
-                Console.WriteLine("  > Invalid date. Please use dd-mm-yyyy (e.g. 25-12-2026).");
+                Console.WriteLine(
+                    "  > Invalid date. Please use dd-mm-yyyy (e.g. 25-12-2026).");
                 Console.WriteLine();
             }
             else if (flightLogic.IsDateInPast(date))
             {
                 Console.WriteLine();
-                Console.WriteLine("  > Date cannot be in the past.");
+                Console.WriteLine(
+                    "  > Date cannot be in the past.");
                 Console.WriteLine();
             }
             else if (departureDate.HasValue &&
-                     !flightLogic.IsValidReturnDate(departureDate.Value, date))
+                     !flightLogic.IsValidReturnDate(
+                         departureDate.Value,
+                         date))
             {
                 Console.WriteLine();
-                Console.WriteLine("  > Return date cannot be before the departure date.");
+                Console.WriteLine(
+                    "  > Return date cannot be before the departure date.");
                 Console.WriteLine();
             }
             else
