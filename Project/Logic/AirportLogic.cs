@@ -2,6 +2,7 @@ public class AirportLogic
 {
     private AirportAccess _airportAccess = new();
 
+
     // Get the actual departure city of the flight.
     public string GetDepartureCity(FlightModel flight)
     {

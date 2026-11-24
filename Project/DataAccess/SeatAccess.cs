@@ -7,12 +7,28 @@ public class SeatAccess
 
     private const string Table = "Seat";
 
-    public void Write(SeatModel seat)
+
+    public void Write(SeatModel seat, Int64 planeId)
     {
-        string sql = $@"INSERT INTO {Table} (seat_number, row_number, price, is_reserved, tier)
-            VALUES (@SeatNumber, @RowNumber, @Price, @IsReserved, @Tier)";
-        _connection.Execute(sql, seat);
+        const string sql = @"
+        INSERT INTO Seat
+            (plane_id, seat_number, row_number,
+             price, is_reserved, tier)
+        VALUES
+            (@PlaneId, @SeatNumber, @RowNumber,
+             @Price, @IsReserved, @Tier)";
+
+        _connection.Execute(sql, new
+        {
+            PlaneId = planeId,
+            seat.SeatNumber,
+            seat.RowNumber,
+            seat.Price,
+            seat.IsReserved,
+            seat.Tier
+        });
     }
+
 
     public SeatModel GetSeatById(Int64 id)
     {
@@ -54,5 +70,71 @@ public class SeatAccess
 
         // 3. Re-enable foreign key constraints to keep your database secure
         _connection.Execute("PRAGMA foreign_keys = ON;");
-        }
+    }
+
+
+    public List<SeatModel> GetSeatsByPlaneId(Int64 planeId)
+    {
+        const string sql = @"
+        SELECT
+            id AS Id,
+            seat_number AS SeatNumber,
+            row_number AS RowNumber,
+            price AS Price,
+            is_reserved AS IsReserved,
+            tier AS Tier
+        FROM Seat
+        WHERE plane_id = @PlaneId
+        ORDER BY row_number, seat_number";
+
+        return _connection.Query<SeatModel>(
+            sql,
+            new { PlaneId = planeId }
+        ).ToList();
+    }
+
+
+    public List<SeatModel> GetSeatsByFlightId(Int64 flightId)
+    {
+        const string sql = @"
+        SELECT
+            s.id AS Id,
+            s.seat_number AS SeatNumber,
+            s.row_number AS RowNumber,
+            s.price AS Price,
+            CASE
+                WHEN EXISTS (
+                    SELECT 1
+                    FROM Ticket t
+                    INNER JOIN Reservation r
+                        ON r.id = t.reservation_id
+                    WHERE t.seat_id = s.id
+                      AND r.flight_id = @FlightId
+                      AND r.status = 'Confirmed'
+                )
+                THEN 1
+                ELSE 0
+            END AS IsReserved,
+            s.tier AS Tier
+        FROM Seat s
+        INNER JOIN Flight f
+            ON f.plane_id = s.plane_id
+        WHERE f.id = @FlightId
+        ORDER BY s.row_number, s.seat_number";
+
+        return _connection.Query<SeatModel>(
+            sql,
+            new { FlightId = flightId }
+        ).ToList();
+    }
+
+
+    public List<Int64> GetPlaneIds()
+    {
+        const string sql = "SELECT id FROM Plane ORDER BY id";
+
+        return _connection.Query<Int64>(sql).ToList();
+    }
+
+
 }

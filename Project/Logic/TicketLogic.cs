@@ -1,3 +1,4 @@
+
 public class TicketLogic
 {
     private TicketAccess _access = new();
@@ -7,13 +8,17 @@ public class TicketLogic
         return _access.GetTicketsByAccountId(accountId);
     }
 
-    public Int64 AddTicket(Int64 passengerId, Int64 reservationId, Int64 seatId)
+    public Int64 AddTicket(TicketModel ticket)
     {
-        return _access.AddTicket(new TicketModel(0, passengerId, reservationId, seatId));
+        return _access.AddTicket(ticket);
     }
 
     public List<TicketDisplayModel> GetTicketsByReservationId(Int64 reservationId)
     {
         return _access.GetTicketsByReservationId(reservationId);
+    }
+    public List<TicketModel> GetTicketsForAccount(Int64 accountId)
+    {
+        return _access.GetByAccountId(accountId);
     }
 }
