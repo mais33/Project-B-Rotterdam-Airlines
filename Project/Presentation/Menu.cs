@@ -37,7 +37,8 @@ static class Menu
                     break;
 
                 case "3":
-                    FlightOverview.Start();
+                    FlightOverview flightOverview = new();
+                    flightOverview.Start();
                     break;
 
                 case "4":
@@ -74,8 +75,9 @@ static class Menu
             Console.WriteLine("  [3] Booking confirmations");
             Console.WriteLine("  [4] Manage accounts");
             Console.WriteLine("  [5] Add Flight");
-            Console.WriteLine("  [6] View all reservations");
-            Console.WriteLine("  [7] Log out");
+            Console.WriteLine("  [6] Edit Flight");
+            Console.WriteLine("  [7] View all reservations");
+            Console.WriteLine("  [8] Log out");
             Console.WriteLine();
             Console.WriteLine("--------------------------------------------------");
             Console.Write("  Choose an option (1-7): ");
@@ -89,7 +91,8 @@ static class Menu
                     break;
 
                 case "2":
-                    FlightOverview.Start();
+                    FlightOverview flightOverview = new();
+                    flightOverview.Start();
                     break;
 
                 case "3":
@@ -105,10 +108,16 @@ static class Menu
                     break;
 
                 case "6":
-                    ViewReservationPresentation.ShowAllReservations(account);
+                    EditFlight editFlight = new();
+                    editFlight.Start();
                     break;
 
                 case "7":
+                    ViewReservationPresentation.ShowAllReservations(account);
+                    break;
+
+
+                case "8":
                     Console.WriteLine();
                     Console.WriteLine("  > You have been logged out.");
                     Console.WriteLine();

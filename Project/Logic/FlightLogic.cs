@@ -16,7 +16,6 @@ public class FlightLogic
         return _access.GetById(id);
     }
 
-
     public bool TryParseDate(string input, out DateTime date)
     {
         return DateLogic.TryReadDate(input, out date);
@@ -64,5 +63,10 @@ public class FlightLogic
         }
 
         return "";
+    }
+
+    public void UpdateFlight(FlightModel flight)
+    {
+        _access.Update(flight); 
     }
 }

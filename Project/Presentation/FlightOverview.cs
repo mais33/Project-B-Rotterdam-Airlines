@@ -3,7 +3,7 @@ public class FlightOverview
     private static FlightLogic flightLogic = new FlightLogic();
     private static AirportLogic airportLogic = new AirportLogic();
 
-    public static void Start()
+    public void Start()
     {
         while (true)
         {
@@ -32,7 +32,7 @@ public class FlightOverview
         }
     }
 
-    private static void ShowOverview()
+    public void ShowOverview()
     {
         Console.Clear();
         Console.WriteLine();

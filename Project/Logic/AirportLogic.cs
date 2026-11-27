@@ -33,4 +33,12 @@ public class AirportLogic
 
         return null;
     }
+
+    public AirportModel GetAirportById(Int64 id)
+    {
+        List<AirportModel> airports = GetAirports();
+        return airports.Find(airport => airport.Id == id);
+    }
+
+    
 }
