@@ -11,9 +11,11 @@ public class FlightAccess
         // Get flight information including the departure airport.
         string sql = @"SELECT
                            id AS Id,
+                           plane_id AS PlaneId,
                            start_airport_id AS StartAirportId,
                            destination_id AS DestinationId,
                            price AS Price,
+                           arrival_datetime AS ArrivalDatetime,
                            departure_datetime AS DepartureDatetime
                        FROM Flight";
 
@@ -32,9 +34,11 @@ public class FlightAccess
         // Get a specific flight including the departure airport.
         string sql = @"SELECT
                            id AS Id,
+                           plane_id AS PlaneId,
                            start_airport_id AS StartAirportId,
                            destination_id AS DestinationId,
                            price AS Price,
+                           arrival_datetime AS ArrivalDatetime,
                            departure_datetime AS DepartureDatetime
                        FROM Flight
                        WHERE id = @Id";
@@ -43,5 +47,19 @@ public class FlightAccess
             sql,
             new { Id = id }
         );
+    }
+
+    public void Update(FlightModel flight)
+    {
+        string sql = @"UPDATE Flight 
+                    SET plane_id = @PlaneId, 
+                        start_airport_id = @StartAirportId, 
+                        destination_id = @DestinationId, 
+                        price = @Price, 
+                        arrival_datetime = @ArrivalDatetime, 
+                        departure_datetime = @DepartureDatetime 
+                    WHERE id = @Id";
+
+        _connection.Execute(sql, flight);
     }
 }

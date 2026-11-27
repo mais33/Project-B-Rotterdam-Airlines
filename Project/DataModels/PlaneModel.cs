@@ -6,5 +6,10 @@ public class PlaneModel
 
     public string Model { get; set; } = "";
 
-    public int Capacity { get; set; }
+    public PlaneModel(long id, string name, string model)
+    {
+        Id = id;
+        Name = name;
+        Model = model;
+    }
 }

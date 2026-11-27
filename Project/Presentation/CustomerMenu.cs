@@ -32,7 +32,8 @@ public static class CustomerMenu
                     break;
 
                 case "2":
-                    FlightOverview.Start();
+                    FlightOverview overview = new FlightOverview();
+                    overview.Start();
                     break;
 
                 case "3":
